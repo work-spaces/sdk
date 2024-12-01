@@ -6,37 +6,37 @@ load(
     "checkout.star",
     "checkout_add_platform_archive",
     "checkout_update_asset",
+    "checkout_update_env"
 )
 load("run.star", "run_add_exec")
-load("//@packages/star/github.com/astral-sh/packages.star", "packages")
+load("//@packages/star/github.com/astral-sh/packages.star", astral_packages = "packages")
 
-def python_add_uv(rule_name, uv_version, ruff_version, python_version, packages = []):
+def python_add_uv(name, uv_version, ruff_version, python_version, packages = []):
     """
     Add Python to your sysroot.
 
     Args:
-        rule_name (str): The name of the rule.
+        name (str): The name of the rule.
         uv_version (str): uv version from //@packages/star/github.com/astral-sh/uv
         ruff_version (str): ruff version from //@packages/star/github.com/astral-sh/ruff
         python_version (str): The version of Python to install
         packages (list): The Python packages to install
     """
-
-    uv_platforms = packages["uv"][uv_version]
-    ruff_platforms = packages["ruff"][ruff_version]
+    uv_platforms = astral_packages["uv"][uv_version]
+    ruff_platforms = astral_packages["ruff"][ruff_version]
 
     checkout_add_platform_archive(
-        "{}_checkout_uv".format(rule_name),
+        "{}_checkout_uv".format(name),
         platforms = uv_platforms,
     )
 
     checkout_add_platform_archive(
-        "{}_checkout_ruff".format(rule_name),
+        "{}_checkout_ruff".format(name),
         platforms = ruff_platforms,
     )
 
     checkout_update_asset(
-        "{}_black_formatter_vs_code".format(rule_name),
+        "{}_black_formatter_vs_code".format(name),
         destination = ".vscode/extensions.json",
         value = {
             "recommendations": ["ms-python.python", "ms-python.black-formatter"],
@@ -46,8 +46,8 @@ def python_add_uv(rule_name, uv_version, ruff_version, python_version, packages 
     workspace_path = info.get_absolute_path_to_workspace()
     store_path = info.get_path_to_store()
 
-    checkout_update_asset(
-        "{}_update_uv_env".format(rule_name),
+    checkout_update_env(
+        "{}_update_uv_env".format(name),
         paths = ["{}/venv/bin".format(workspace_path)],
         vars = {
             "VIRTUAL_ENV": "{}/venv".format(workspace_path),
@@ -59,24 +59,24 @@ def python_add_uv(rule_name, uv_version, ruff_version, python_version, packages 
     )
 
     run_add_exec(
-        "{}_install_python".format(rule_name),
+        "{}_install_python".format(name),
         type = "Setup",
         command = "uv",
         args = ["python", "install", "{}".format(python_version)],
     )
 
     run_add_exec(
-        "{}_venv".format(rule_name),
+        "{}_venv".format(name),
         type = "Setup",
-        deps = ["{}_install_python".format(rule_name)],
+        deps = ["{}_install_python".format(name)],
         command = "uv",
         args = ["venv", "--python={}".format(python_version), "venv"],
     )
 
-    run.add_exec(
-        "{}_packages".format(rule_name),
+    run_add_exec(
+        "{}_packages".format(name),
         type = "Setup",
-        deps = ["{}_venv".format(rule_name)],
+        deps = ["{}_venv".format(name)],
         command = "uv",
         args = ["pip", "install"] + packages,
     )
