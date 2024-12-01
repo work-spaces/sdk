@@ -10,22 +10,22 @@ load(
     "checkout_add_asset",
 )
 
-def llvm_add(rule_name, version, toolchain_name = "llvm-toolchain.cmake"):
+def llvm_add(name, version, toolchain_name = "llvm-toolchain.cmake"):
     """
     Add LLVM to your sysroot.
 
     Args:
-        rule_name (str): The name of the rule.
+        name (str): The name of the rule.
         version (str): The LLVM version from //@packages/star/llvm.org/llvm
         toolchain_name (str): The name of the toolchain file (default is "llvm-toolchain.cmake").
     """
     checkout_add_platform_archive(
-        rule_name,
+        name,
         platforms = github_llvm_project_packages[version],
     )
 
     checkout_update_env(
-        "{}_update_env".format(rule_name),
+        "{}_update_env".format(name),
         vars = {
             "LLVM_SPACES_WORKSPACE": info.get_absolute_path_to_workspace(),
         },
@@ -51,7 +51,7 @@ set(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld")
 """
 
     checkout_add_asset(
-        "{}_toolchain".format(rule_name),
+        "{}_toolchain".format(name),
         destination = toolchain_name,
         content = toolchain_content,
     )
