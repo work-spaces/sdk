@@ -10,13 +10,13 @@ load(
 )
 load("run.star", "run_add_exec")
 
-def add_rust(rule_name, toolchain_version):
+def rust_add(name, version):
     """
     Add the Rust toolchain to your sysroot using rustup in the spaces store
 
     Args:
-        rule_name (str): The name of the rule to add the Rust toolchain to
-        toolchain_version (str): The version of the Rust toolchain to install
+        name (str): The name of the rule to add the Rust toolchain to
+        version (str): The version of the Rust toolchain to install
     """
 
     # more binaries https://forge.rust-lang.org/infra/other-installation-methods.html
@@ -54,14 +54,14 @@ def add_rust(rule_name, toolchain_version):
     cargo_home = "{}/cargo".format(store_path)
 
     checkout_update_env(
-        "{}_rust_env".format(rule_name),
+        "{}_rust_env".format(name),
         vars = {"RUSTUP_HOME": rustup_home, "RUST_TOOLCHAIN": toolchain_version, "CARGO_HOME": cargo_home},
         paths = [cargo_path],
     )
 
-    init_permissions = "{}_rustup-init-permissions".format(rule_name)
-    rustup_init = "{}_rustup-init".format(rule_name)
-    vscode_settings = "{}_vscode_settings".format(rule_name)
+    init_permissions = "{}_rustup-init-permissions".format(name)
+    rustup_init = "{}_rustup-init".format(name)
+    vscode_settings = "{}_vscode_settings".format(name)
 
     run_add_exec(
         "{}".format(init_permissions),
@@ -71,7 +71,7 @@ def add_rust(rule_name, toolchain_version):
     )
 
     cargo_path = "{}/cargo/bin".format(info.get_path_to_store())
-    cargo_exists = fs.exists(cargo_path)
+    cargo_exists = fs.exists("{}/cargo".format(cargo_path))
     run_add_exec(
         "{}".format(rustup_init),
         deps = ["{}".format(init_permissions)],
