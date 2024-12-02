@@ -55,7 +55,7 @@ def rust_add(name, version):
 
     checkout_update_env(
         "{}_rust_env".format(name),
-        vars = {"RUSTUP_HOME": rustup_home, "RUST_TOOLCHAIN": toolchain_version, "CARGO_HOME": cargo_home},
+        vars = {"RUSTUP_HOME": rustup_home, "RUST_TOOLCHAIN": version, "CARGO_HOME": cargo_home},
         paths = [cargo_path],
     )
 
