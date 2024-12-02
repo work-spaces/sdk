@@ -20,7 +20,7 @@ def rpath_update_macos_install_dir(rule_name, install_path, deps):
     run_add_exec(
         bin_rule_name,
         deps = deps,
-        command = "spaces-starlark-sdk/script/update-rpath-macos.star",
+        command = "@sdk/script/update-rpath-macos.star",
         args = [
             "--binary-path={}/bin".format(install_path),
             "--old-path={}".format(install_path),
@@ -32,7 +32,7 @@ def rpath_update_macos_install_dir(rule_name, install_path, deps):
     run_add_exec(
         lib_rule_name,
         deps = deps,
-        command = "spaces-starlark-sdk/script/update-rpath-macos.star",
+        command = "@sdk/script/update-rpath-macos.star",
         args = [
             "--binary-path={}/lib".format(install_path),
             "--old-path={}/lib".format(install_path),

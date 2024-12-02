@@ -135,13 +135,13 @@ def gnu_add_configure_make_install_from_source(
 
     checkout_add_archive(
         name,
-        url = source_archive.url,
-        sha256 = source_archive.sha256,
+        url = source_archive["url"],
+        sha256 = source_archive["sha256"],
     )
 
     gnu_add_configure_make_install(
         name,
-        source_directory,
+        source_directory = "{}-{}".format(repo, version),
         autoreconf_args = autoreconf_args,
         configure_args = configure_args,
         make_args = make_args,
