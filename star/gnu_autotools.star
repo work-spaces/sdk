@@ -15,6 +15,7 @@ load(
     "//@packages/star/github.com/packages.star",
     github_packages = "packages",
 )
+load("//@sources/star/ftp.gnu.org/sources.star", gnu_sources = "sources")
 
 def gnu_add_configure_make_install(
         name,
@@ -23,7 +24,8 @@ def gnu_add_configure_make_install(
         configure_args = [],
         make_args = [],
         build_artifact_globs = [],
-        deps = []):
+        deps = [],
+        install_path = None):
     """
     Add an autotools project to the build
 
@@ -35,6 +37,7 @@ def gnu_add_configure_make_install(
         make_args: The arguments to pass to the make command
         build_artifact_globs: The globs to match the build artifacts
         deps: The dependencies of the project
+        install_path: The path to install the project
     """
 
     build_dir = "build/{}".format(name)
@@ -44,7 +47,7 @@ def gnu_add_configure_make_install(
     build_rule_name = "{}_build".format(name)
     install_rule_name = "{}_install".format(name)
     workspace = info.get_absolute_path_to_workspace()
-    install_path = "{}/build/install".format(workspace)
+    install_path = "{}/build/install".format(workspace) if install_path == None else install_path
     prefix_arg = "--prefix={}".format(install_path)
     num_cpus = info.get_cpu_count()
 
@@ -101,35 +104,39 @@ def gnu_add_configure_make_install(
         help = "Install {}".format(name),
     )
 
-def gnu_add_source_archive(
+def gnu_add_configure_make_install_from_source(
         name,
-        url,
-        sha256,
-        source_directory,
+        owner,
+        repo,
+        version,
         autoreconf_args = None,
         configure_args = [],
         make_args = [],
         build_artifact_globs = [],
-        deps = []):
+        deps = [],
+        install_path = None):
     """
     Add an autotools project from an archive
 
     Args:
         name: The name of the project
-        url: The URL of the archive
-        sha256: The SHA256 of the archive
-        source_directory: The directory of the project
+        owner: The owner of the repository
+        repo: The repository name
+        version: The version of the repository
         autoreconf_args: The arguments to pass to the autoreconf script
         configure_args: The arguments to pass to the configure script
         make_args: The arguments to pass to the make
         build_artifact_globs: The globs to match the build artifacts
         deps: The dependencies of the project
+        install_path: The path to install the project
     """
+
+    source_archive = gnu_sources[owner][repo][version]
 
     checkout_add_archive(
         name,
-        url = url,
-        sha256 = sha256,
+        url = source_archive.url,
+        sha256 = source_archive.sha256,
     )
 
     gnu_add_configure_make_install(
@@ -140,6 +147,7 @@ def gnu_add_source_archive(
         make_args = make_args,
         deps = deps,
         build_artifact_globs = build_artifact_globs,
+        install_path = install_path,
     )
 
 def gnu_add_repo(
@@ -150,7 +158,8 @@ def gnu_add_repo(
         configure_args = [],
         make_args = [],
         checkout_submodules = False,
-        deps = []):
+        deps = [],
+        install_path = None):
     """
     Add an autotools project from a repository
 
@@ -163,6 +172,7 @@ def gnu_add_repo(
         make_args: The arguments to pass to the make
         checkout_submodules: Whether to checkout submodules
         deps: The dependencies of the project
+        install_path: The path to install the project
     """
     checkout_add_repo(
         name,
@@ -189,23 +199,34 @@ def gnu_add_repo(
         configure_args = configure_args,
         make_args = make_args,
         deps = deps + submodule_deps,
+        install_path = install_path,
     )
 
-def gnu_add_autotools_from_source():
+def gnu_add_autotools_from_source(
+        name,
+        autoconf_version,
+        automake_version,
+        libtool_version,
+        install_path = None):
     """
     Add the autotools from source
+
+    Args:
+        name: The name of the add autotools ruls
+        autoconf_version: The version of autoconf
+        automake_version: The version of automake
+        libtool_version: The version of libtool
+        install_path: The path to install the autotools
     """
 
-    autoconf_version = "2.72"
-    autoconf_sha256 = "ba885c1319578d6c94d46e9b0dceb4014caafe2490e437a0dbca3f270a223f5a"
-    automake_version = "1.17"
-    automake_sha256 = "8920c1fc411e13b90bf704ef9db6f29d540e76d232cb3b2c9f4dc4cc599bd990"
-    libtool_version = "2.5.4"
-    libtool_sha256 = "f81f5860666b0bc7d84baddefa60d1cb9fa6fceb2398cc3baca6afaa60266675"
+    autoconf_rule = "{}_autoconf".format(name)
+    autoconf_install_rule = "{}_install".format(autoconf_rule)
+    automake_rule = "{}_automake".format(name)
+    libtool_rule = "{}_libtool".format(name)
+    update_env_rule = "{}_update_env".format(name)
 
     workspace = info.get_absolute_path_to_workspace()
-    install_path = "{}/build/install/autotools".format(workspace)
-    prefix_arg = "--prefix={}".format(install_path)
+    effective_install_path = "{}/build/install/autotools".format(workspace) if install_path == None  else install_path
 
     checkout_add_platform_archive(
         "m4-1",
@@ -217,34 +238,39 @@ def gnu_add_autotools_from_source():
         platforms = github_packages["work-spaces"]["spaces"]["v0.10.4"],
     )
 
-    gnu_add_source_archive(
+    gnu_add_configure_make_install_from_source(
+        autoconf_rule,
         "autoconf",
-        url = "https://ftp.gnu.org/gnu/autoconf/autoconf-{}.tar.xz".format(autoconf_version),
-        sha256 = autoconf_sha256,
-        source_directory = "autoconf-{}".format(autoconf_version),
-        configure_args = [prefix_arg],
+        "autoconf",
+        autoconf_version,
+        install_path = effective_install_path,
     )
 
-    gnu_add_source_archive(
+    gnu_add_configure_make_install_from_source(
+        automake_rule,
         "automake",
-        url = "https://ftp.gnu.org/gnu/automake/automake-{}.tar.xz".format(automake_version),
-        sha256 = automake_sha256,
-        source_directory = "automake-{}".format(automake_version),
-        deps = ["autoconf_install"],
-        configure_args = [prefix_arg],
+        "automake",
+        automake_version,
+        deps = [autoconf_install_rule],
+        install_path = effective_install_path,
     )
 
-    gnu_add_source_archive(
+    gnu_add_configure_make_install_from_source(
+        libtool_rule,
         "libtool",
-        url = "https://ftp.gnu.org/gnu/libtool/libtool-{}.tar.xz".format(libtool_version),
-        sha256 = libtool_sha256,
-        source_directory = "libtool-{}".format(libtool_version),
-        deps = ["autoconf_install"],
-        configure_args = [prefix_arg],
+        "libtool",
+        libtool_version,
+        deps = [autoconf_install_rule],
+        install_path = effective_install_path,
     )
 
     checkout_update_env(
-        "gnu_autotools_update_build_env",
-        paths = ["{}/bin".format(install_path)],
+        update_env_rule,
+        paths = ["{}/bin".format(effective_install_path)],
     )
-    run_add_target("gnu_autotools_from_source", deps = ["autoconf_install", "automake_install", "libtool_install"])
+    
+    run_add_target(name, deps = [
+        autoconf_install_rule,
+        "{}_install".format(automake_rule),
+        "{}_install".format(libtool_rule),
+    ])
