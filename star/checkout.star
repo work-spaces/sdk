@@ -30,7 +30,6 @@ def checkout_add_repo(
             "rev": rev,
             "checkout": checkout_type,
             "clone": clone,
-            "is_recursive": is_recursive,
         } | evaluate_spaces_modules,
     )
 
