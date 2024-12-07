@@ -7,7 +7,8 @@ def checkout_add_repo(
         url,
         rev,
         checkout_type = "Revision",
-        clone = "Default"):
+        clone = "Default",
+        is_evaluate_spaces_modules = None):
     """
     Clones a repository and checks it out at a specific revision.
 
@@ -17,7 +18,11 @@ def checkout_add_repo(
         rev (str): The branch or commit hash to checkout
         checkout_type (str): Revision | NewBranch
         clone (str): Default | Worktree
+        is_evaluate_spaces_modules (bool): Whether to evaluate spaces.star files in the repo (default is True).
     """
+
+    evaluate_spaces_modules = { "is_evaluate_spaces_modules": is_evaluate_spaces_modules} if is_evaluate_spaces_modules != None else {}
+
     checkout.add_repo(
         rule = {"name": rule_name},
         repo = {
@@ -25,7 +30,8 @@ def checkout_add_repo(
             "rev": rev,
             "checkout": checkout_type,
             "clone": clone,
-        },
+            "is_recursive": is_recursive,
+        } | evaluate_spaces_modules,
     )
 
 def checkout_add_archive(
