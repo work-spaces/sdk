@@ -231,6 +231,29 @@ def checkout_add_which_asset(
         },
     )
 
+def checkout_add_capsule(
+        name,
+        required,
+        scripts,
+        deps = []):
+    """
+    Adds a capsule dependency to the workspace.
+
+    Args:
+        name (str): The name of the rule.
+        required (list): List of dependencies that the capsule is expected to provide.
+        scripts (list): List of scripts to run that define how to install the capsule on the local machine.
+        deps (list): List of dependencies for creating the capsule.
+    """
+    checkout.add_capsule(
+    rule = {"name": name, "deps": deps},
+    capsule = {
+        "required": required,
+        "scripts": scripts,
+    },
+)
+
+
 def update_platforms_prefix(
         platforms,
         add_prefix):
