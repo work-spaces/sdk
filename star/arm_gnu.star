@@ -93,7 +93,7 @@ def arm_gnu_add_arm_none_eabi(rule_name, version):
         version (str): arm-none-eabi version from packages/arm.developer.com/gnu/arm-none-eabi
     """
     checkout_add_platform_archive(
-        rule = {"name": rule_name},
+        rule_name,
         platforms = packages[version],
     )
 
