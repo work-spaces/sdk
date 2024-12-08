@@ -60,12 +60,13 @@ def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "ta
     release_rule_name = "{}_release".format(name)
     publish_binary_rule_name = "{}_publish_release".format(name)
     publish_sha256_rule_name = "{}_publish_sha256".format(name)
+    gh_command = "{}/gh".format(info.get_path_to_spaces_tools)
 
     run.add_exec_if(
         rule = {"name": check_release_rule_name, "deps": [archive_rule_name]},
         exec_if = {
             "if": {
-                "command": "gh",
+                "command": gh_command,
                 "args": [
                     "release",
                     "view",
@@ -82,7 +83,7 @@ def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "ta
         release_rule_name,
         deps = [check_release_rule_name],
         type = "Optional",
-        command = "gh",
+        command = gh_command,
         args = [
             "release",
             "create",
@@ -95,7 +96,7 @@ def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "ta
     run_add_exec(
         publish_binary_rule_name,
         deps = [release_rule_name],
-        command = "gh",
+        command = gh_command,
         args = [
             "release",
             "upload",
@@ -108,7 +109,7 @@ def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "ta
     run_add_exec(
         publish_sha256_rule_name,
         deps = [release_rule_name],
-        command = "gh",
+        command = gh_command,
         args = [
             "release",
             "upload",
