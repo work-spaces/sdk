@@ -85,7 +85,7 @@ def capsule_gh_add(name, capsule_name, deploy_repo, suffix = "tar.xz"):
 
     # check to see if the release is available for the platform
     platform = info.get_platform_name()
-    url = "{}/releases/download/{}/{}-{}-{}".format(deploy_repo, release_name, release_name, platform)
+    url = "{}/releases/download/{}/{}-{}".format(deploy_repo, release_name, release_name, platform)
 
     platform_url = "{}.{}".format(url, suffix)
     platform_sha256_url = "{}.sha256.txt".format(url)
@@ -105,7 +105,7 @@ def capsule_gh_add(name, capsule_name, deploy_repo, suffix = "tar.xz"):
     if not platform_url_is_found or not platform_sha256_url_is_found:
         return None
 
-    checkout_platform_rule = "{}_capsule_gh_add".format(capsule_name)
+    checkout_platform_rule = "{}_add_platform_archive".format(capsule_name)
     checkout_add_platform_archive(
         checkout_platform_rule,
         platforms = {
