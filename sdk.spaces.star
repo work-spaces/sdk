@@ -12,6 +12,6 @@ checkout_add_repo(
 checkout_add_repo(
     "@packages",
     url = "https://github.com/work-spaces/packages",
-    rev = "f516050d37154bd38be20755db820f6eeafba41d",
+    rev = "a2827ef33ea705e8d3c9d79fc6e1f11efc6e8b15",
     clone = "Blobless"
 )
