@@ -22,11 +22,12 @@ def capsule_get_prefix(name):
     digest = info.get_workspace_digest()
     return "{}/capsules/{}/{}".format(store, name, digest)
 
-def capsule_gh_publish(capsule_name, deps, deploy_repo, suffix = "tar.xz"):
+def capsule_gh_publish(name, capsule_name, deps, deploy_repo, suffix = "tar.xz"):
     """
     Publish the capsule to github
 
     Args:
+        name: The name of the rule
         capsule_name: The name of the capsule
         deps: The dependencies of the capsule
         deploy_repo: The repository to deploy the capsule to
@@ -38,7 +39,7 @@ def capsule_gh_publish(capsule_name, deps, deploy_repo, suffix = "tar.xz"):
     install_path = "{}/capsules/{}/{}".format(store, capsule_name, digest)
 
     gh_add_publish_archive(
-        capsule_name,
+        name,
         input = install_path,
         version = digest,
         deploy_repo = deploy_repo,
