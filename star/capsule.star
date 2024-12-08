@@ -83,7 +83,7 @@ def capsule_get_install_path(name):
     """
     store = info.get_path_to_store()
     digest = info.get_workspace_digest()
-    install_path = "{}/capules/{}/{}".format(store, name, digest)
+    install_path = "{}/capsules/{}/{}".format(store, name, digest)
     if fs.exists(install_path):
         return None
     return install_path
@@ -103,7 +103,7 @@ def capsule_get_prefix(name):
     """
     store = info.get_path_to_store()
     digest = info.get_workspace_digest()
-    return "{}/capules/{}/{}".format(store, name, digest)
+    return "{}/capsules/{}/{}".format(store, name, digest)
 
 def capsule_checkout_define_dependency(
         name,
