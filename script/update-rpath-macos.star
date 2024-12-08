@@ -2,12 +2,12 @@
 
 """Update the rpaths in an install directory"""
 
-def _update_rpaths(files, install_path, new_base_path):
+def _update_rpaths(binary_path, install_path, new_base_path):
     """
     Update the rpaths in the files to use the new_base_path
 
     Args:
-        files (list): List of files to update
+        binary_path (str): The path to the binaries to update
         install_path (str): The path to search for in the rpaths
         new_base_path (str): The new path to replace install_path with
     """
@@ -15,8 +15,10 @@ def _update_rpaths(files, install_path, new_base_path):
     if info.is_platform_macos() == False:
         return
 
-    if not fs.exists(install_path):
+    if not fs.exists(binary_path):
         return
+
+    files = fs.read_directory(binary_path)
 
     for file in files:
         if file.endswith(".a") or file.endswith(".o"):
@@ -55,6 +57,4 @@ binary_path = args["named"]["--binary-path"]
 old_path = args["named"]["--old-path"]
 new_path = args["named"]["--new-path"]
 
-files = fs.read_directory(binary_path)
-
-_update_rpaths(files, old_path, new_path)
+_update_rpaths(binary_path, old_path, new_path)
