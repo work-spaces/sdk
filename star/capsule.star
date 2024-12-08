@@ -51,7 +51,7 @@ def capsule_add(
         prefix (str): The workspace prefix where capsule artifacts should be hard-linked. Default is not hard-linking
         deps (list): List of dependencies for creating the capsule.
     """
-    checkout_add_capsule(name, required, scripts, deps)
+    checkout_add_capsule(name, required, scripts, prefix = prefix, deps = deps)
 
 def capsule_get_depedency_info(depedency):
     """

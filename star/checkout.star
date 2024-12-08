@@ -247,13 +247,15 @@ def checkout_add_capsule(
         prefix (str): The workspace prefix where capsule artifacts should be hard-linked. Default is not hard-linking
         deps (list): List of dependencies for creating the capsule.
     """
+
+    prefix_option = {"prefix": prefix} if prefix != None else {}
+
     checkout.add_capsule(
     rule = {"name": name, "deps": deps},
     capsule = {
         "required": required,
         "scripts": scripts,
-        "prefix": prefix,
-    },
+    } | prefix_option,
 )
 
 
