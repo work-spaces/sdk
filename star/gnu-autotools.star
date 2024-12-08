@@ -133,10 +133,11 @@ def gnu_add_configure_make_install_from_source(
         install_path: The path to install the project
     """
 
+    checkout_archive_rule = "{}_checkout_archive".format(name)
     source_archive = gnu_sources[owner][repo][version]
 
     checkout_add_archive(
-        name,
+        checkout_archive_rule,
         url = source_archive["url"],
         sha256 = source_archive["sha256"],
     )
