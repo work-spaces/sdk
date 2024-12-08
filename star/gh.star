@@ -45,11 +45,13 @@ def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "ta
         "platform": platform,
     }
 
-    archive_output = info.get_path_to_build_archive(rule_name = archive_rule_name, archive = archive_info)
+    archive_info = info.get_build_archive_info(rule_name = archive_rule_name, archive = archive_info)
+    archive_output = archive_info["archive_path"]
+    archive_sha256 = archive_info["archive_sha256"]
 
     run.add_archive(
         rule = {"name": archive_rule_name, "deps": deps},
-        archive = archive_info,
+        archive = archive_output,
     )
 
     repo_arg = "--repo={}".format(deploy_repo)
@@ -57,6 +59,7 @@ def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "ta
     check_release_rule_name = "{}_check_release".format(name)
     release_rule_name = "{}_release".format(name)
     publish_binary_rule_name = "{}_publish_release".format(name)
+    publish_sha256_rule_name = "{}_publish_sha256".format(name)
 
     run.add_exec_if(
         rule = {"name": check_release_rule_name, "deps": [archive_rule_name]},
@@ -98,6 +101,19 @@ def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "ta
             "upload",
             archive_name,
             archive_output,
+            repo_arg,
+        ],
+    )
+
+    run_add_exec(
+        publish_sha256_rule_name,
+        deps = [release_rule_name],
+        command = "gh",
+        args = [
+            "release",
+            "upload",
+            archive_name,
+            archive_sha256,
             repo_arg,
         ],
     )
