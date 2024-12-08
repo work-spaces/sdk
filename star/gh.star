@@ -2,7 +2,7 @@
 Spaces starlark function for archiving and publishing to github using GH
 """
 
-load("run.star", "run_add_exec")
+load("run.star", "run_add_exec", "run_add_target")
 load("checkout.star", "checkout_add_platform_archive")
 load("//@packages/star/github.com/cli/cli/packages.star", "packages")
 
@@ -117,3 +117,6 @@ def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "ta
             repo_arg,
         ],
     )
+
+    run_add_target(name, deps = [publish_binary_rule_name, publish_sha256_rule_name])
+

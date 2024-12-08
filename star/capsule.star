@@ -4,6 +4,115 @@ Spaces starlark functions for creating and working with capsules
 
 load("checkout.star", "checkout_add_capsule", "checkout_update_asset")
 
+def capsule_get_prefix(name):
+    """
+    Get the prefix of the capsule.
+
+    This is where the capsule is available on the machine. This is used
+    when creating capsules.
+
+    Args:
+        name: The name of the capsule
+
+    Returns:
+        The prefix of the capsule
+    """
+    store = info.get_path_to_store()
+    digest = info.get_workspace_digest()
+    return "{}/capsules/{}/{}".format(store, name, digest)
+
+def capsule_gh_publish(capsule_name, deps, deploy_repo, suffix = "tar.xz"):
+    """
+    Publish the capsule to github
+
+    Args:
+        capsule_name: The name of the capsule
+        deps: The dependencies of the capsule
+        deploy_repo: The repository to deploy the capsule to
+        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
+    """
+    
+    store = info.get_path_to_store()
+    digest = info.get_workspace_digest()
+    install_path = "{}/capsules/{}/{}".format(store, name, digest)
+
+    gh_add_publish_archive(
+        capsule_name,
+        input = install_path,
+        version = digest,
+        deploy_repo = deploy_repo,
+        deps = deps,
+        suffix = suffix,
+    )
+
+def capsule_gh_add(capsule_name, deploy_repo, suffix):
+    """
+    Add the gh executable to the sysroot.
+
+    If the release is not available None is returned. Otherwise, a platform archive dictionary is returned.
+
+    Args:
+        capsule_name: The name of the capsule
+        deploy_repo: The repository to deploy the capsule to
+        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
+    
+    Returns:
+        dict: with the platform and the url to download the gh executable
+    """
+
+    # https://github.com/work-spaces/tools/releases/download/ninja-v1.12.1/ninja-v1.12.1-macos-x86_64.sha256.txt
+    digest = info.get_workspace_digest()
+    release_name = "{}-v{}".format(capsule_name, digest)
+
+    # Check gh to see if the executable is available
+    check_release = process.exec({
+        "command": "gh",
+        "args": [
+            "release",
+            "view",
+            release_name,
+            "--repo={}".format(deploy_repo),
+            "--json=assets"
+        ],
+    })
+
+    if check_release["status"] != 0:
+        # the release is not available
+        return None
+
+    # check to see if the release is available for the platform
+    platform = info.get_platform_name()
+    url = "{}/releases/downloads/{}/{}-{}-{}".format(deploy_repo, release_name, release_name, platform)
+
+    platform_url = "{}.{}".format(url, suffix)
+    platform_sha256_url = "{}.sha256.txt".format(url)
+
+    assets_root = json.string_to_dict(check_release["stdout"])
+    assets = assets_root["assets"]
+
+    # Ensure that the platform assets are both available
+    platform_url_is_found = False
+    platform_sha256_url_is_found = False
+    for asset in assets:
+        if asset["url"] == platform_url:
+           platform_url_is_found = True
+        if asset["url"] == platform_sha256_url:
+           platform_sha256_url_is_found = True
+
+    if not platform_url_is_found or not platform_sha256_url_is_found:
+        return None
+
+    # return the platform archive object that will in installed where the capsule belongs
+    return {
+        platform: {
+            "url": "{}.{}".format(url, suffix),
+            "sha256": "{}.sha256.txt".format(url),
+            "add_prefix": capsule_get_prefix(capsule_name),
+            "link": "Hard",
+        }
+    }
+
+   
 
 def capsule_dependency(
         domain,
@@ -87,23 +196,6 @@ def capsule_get_install_path(name):
     if fs.exists(install_path):
         return None
     return install_path
-
-def capsule_get_prefix(name):
-    """
-    Get the prefix of the capsule.
-
-    This is where the capsule is available on the machine. This is used
-    when creating capsules.
-
-    Args:
-        name: The name of the capsule
-
-    Returns:
-        The prefix of the capsule
-    """
-    store = info.get_path_to_store()
-    digest = info.get_workspace_digest()
-    return "{}/capsules/{}/{}".format(store, name, digest)
 
 def capsule_checkout_define_dependency(
         name,

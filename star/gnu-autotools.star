@@ -104,7 +104,7 @@ def gnu_add_configure_make_install(
         help = "Install {}".format(name),
     )
 
-    run_add_target(name, deps = [name])
+    run_add_target(name, deps = [install_rule_name])
 
 def gnu_add_configure_make_install_from_source(
         name,
