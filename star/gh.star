@@ -45,9 +45,9 @@ def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "ta
         "platform": platform,
     }
 
-    archive_info = info.get_build_archive_info(rule_name = archive_rule_name, archive = archive_info)
-    archive_output = archive_info["archive_path"]
-    archive_sha256 = archive_info["sha256_path"]
+    archive_output_info = info.get_build_archive_info(rule_name = archive_rule_name, archive = archive_info)
+    archive_output = archive_output_info["archive_path"]
+    archive_sha256 = archive_output_info["sha256_path"]
 
     run.add_archive(
         rule = {"name": archive_rule_name, "deps": deps},
