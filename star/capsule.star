@@ -72,7 +72,7 @@ def capsule_gh_add(name, capsule_name, deploy_repo, suffix = "tar.xz"):
     # https://github.com/work-spaces/tools/releases/download/ninja-v1.12.1/ninja-v1.12.1-macos-x86_64.sha256.txt
     digest = info.get_workspace_digest()
     release_name = "{}-v{}".format(name, digest)
-    gh_command = "{}/sysroot/bin/gh".format(info.get_path_to_spaces_tools)
+    gh_command = "{}/sysroot/bin/gh".format(info.get_path_to_spaces_tools())
 
     # Check gh to see if the executable is available
     check_release = process.exec({
