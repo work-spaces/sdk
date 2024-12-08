@@ -15,6 +15,9 @@ def _update_rpaths(files, install_path, new_base_path):
     if info.is_platform_macos() == False:
         return
 
+    if not fs.exists(install_path):
+        return
+
     for file in files:
         if file.endswith(".a") or file.endswith(".o"):
             continue
