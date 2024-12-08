@@ -293,7 +293,7 @@ def gnu_capsule_define_dependency(capsule_name, owner, repo, version, domain = "
         domain: The domain of the repository
     """
     capsule_checkout_define_dependency(
-        "{{}}_info".format(capsule_name),
+        "{}_info".format(capsule_name),
         capsule_name = capsule_name,
         domain = domain,
         owner = owner,
@@ -334,7 +334,7 @@ def gnu_capsule_add_checkout_and_run(
 
     install_path = capsule_get_install_path(capsule_name)
     if install_path != None:
-        capsule_publish_name = "{{}}_capsule".format(capsule_name)
+        capsule_publish_name = "{}_capsule".format(capsule_name)
 
         platform_archive = None
         if deploy_repo != None:
@@ -348,7 +348,7 @@ def gnu_capsule_add_checkout_and_run(
 
         if platform_archive == None:
             # build from source and install
-            capsule_from_source = "{{}}_from_source".format(capsule_name)
+            capsule_from_source = "{}_from_source".format(capsule_name)
             gnu_add_configure_make_install_from_source(
                 capsule_from_source,
                 effective_owner,
@@ -360,7 +360,7 @@ def gnu_capsule_add_checkout_and_run(
 
             if deploy_repo != None:
                 # rewrites binary and shared library rpaths to make them relocatable
-                relocate_rule_name = "{{}}_update_macos_install_dir".format(capsule_name)
+                relocate_rule_name = "{}_update_macos_install_dir".format(capsule_name)
                 rpath_update_macos_install_dir(
                     relocate_rule_name,
                     install_path = install_path,
