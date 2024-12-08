@@ -47,13 +47,14 @@ def capsule_gh_publish(name, capsule_name, deps, deploy_repo, suffix = "tar.xz")
         suffix = suffix,
     )
 
-def capsule_gh_add(capsule_name, deploy_repo, suffix = "tar.xz"):
+def capsule_gh_add(name, capsule_name, deploy_repo, suffix = "tar.xz"):
     """
     Add the gh executable to the sysroot.
 
     If the release is not available None is returned. Otherwise, a platform archive dictionary is returned.
 
     Args:
+        name: same name used with capsule_gh_publish()
         capsule_name: The name of the capsule
         deploy_repo: The repository to deploy the capsule to
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
@@ -64,7 +65,7 @@ def capsule_gh_add(capsule_name, deploy_repo, suffix = "tar.xz"):
 
     # https://github.com/work-spaces/tools/releases/download/ninja-v1.12.1/ninja-v1.12.1-macos-x86_64.sha256.txt
     digest = info.get_workspace_digest()
-    release_name = "{}-v{}".format(capsule_name, digest)
+    release_name = "{}-v{}".format(name, digest)
 
     # Check gh to see if the executable is available
     check_release = process.exec({
@@ -84,7 +85,7 @@ def capsule_gh_add(capsule_name, deploy_repo, suffix = "tar.xz"):
 
     # check to see if the release is available for the platform
     platform = info.get_platform_name()
-    url = "{}/releases/downloads/{}/{}-{}-{}".format(deploy_repo, release_name, release_name, platform)
+    url = "{}/releases/download/{}/{}-{}-{}".format(deploy_repo, release_name, release_name, platform)
 
     platform_url = "{}.{}".format(url, suffix)
     platform_sha256_url = "{}.sha256.txt".format(url)
