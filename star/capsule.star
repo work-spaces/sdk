@@ -2,7 +2,7 @@
 Spaces starlark functions for creating and working with capsules
 """
 
-load("checkout.star", "checkout_add_capsule", "checkout_update_asset")
+load("checkout.star", "checkout_add_capsule", "checkout_update_asset", "checkout_add_platform_archive")
 
 def capsule_get_prefix(name):
     """
@@ -45,7 +45,7 @@ def capsule_gh_publish(capsule_name, deps, deploy_repo, suffix = "tar.xz"):
         suffix = suffix,
     )
 
-def capsule_gh_add(capsule_name, deploy_repo, suffix):
+def capsule_gh_add(capsule_name, deploy_repo, suffix = "tar.xz"):
     """
     Add the gh executable to the sysroot.
 
@@ -102,15 +102,20 @@ def capsule_gh_add(capsule_name, deploy_repo, suffix):
     if not platform_url_is_found or not platform_sha256_url_is_found:
         return None
 
-    # return the platform archive object that will in installed where the capsule belongs
-    return {
-        platform: {
-            "url": "{}.{}".format(url, suffix),
-            "sha256": "{}.sha256.txt".format(url),
-            "add_prefix": capsule_get_prefix(capsule_name),
-            "link": "Hard",
+    checkout_platform_rule = "{}_capsule_gh_add".format(capsule_name)
+    checkout_add_platform_archive(
+        checkout_platform_rule,
+        platforms = {
+            platform: {
+                "url": platform_url,
+                "sha256": platform_sha256_url,
+                "link": "Hard",
+                "add_prefix": capsule_get_prefix(capsule_name),
+            }
         }
-    }
+    )
+   
+    return checkout_platform_rule
 
    
 
