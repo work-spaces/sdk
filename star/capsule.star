@@ -34,7 +34,7 @@ def capsule_gh_publish(capsule_name, deps, deploy_repo, suffix = "tar.xz"):
     
     store = info.get_path_to_store()
     digest = info.get_workspace_digest()
-    install_path = "{}/capsules/{}/{}".format(store, name, digest)
+    install_path = "{}/capsules/{}/{}".format(store, capsule_name, digest)
 
     gh_add_publish_archive(
         capsule_name,
