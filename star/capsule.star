@@ -3,6 +3,7 @@ Spaces starlark functions for creating and working with capsules
 """
 
 load("checkout.star", "checkout_add_capsule", "checkout_update_asset", "checkout_add_platform_archive")
+load("gh.star", "gh_add_publish_archive")
 
 def capsule_get_prefix(name):
     """
