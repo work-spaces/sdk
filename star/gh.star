@@ -51,7 +51,7 @@ def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "ta
 
     run.add_archive(
         rule = {"name": archive_rule_name, "deps": deps},
-        archive = archive_output,
+        archive = archive_info,
     )
 
     repo_arg = "--repo={}".format(deploy_repo)
