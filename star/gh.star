@@ -17,7 +17,7 @@ def gh_add(name, version):
 
     checkout_add_platform_archive(
         name = name,
-        platforms = packages[version]["packages"],
+        platforms = packages[version],
     )
 
 def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "tar.xz"):
