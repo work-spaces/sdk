@@ -364,7 +364,7 @@ def gnu_capsule_add_checkout_and_run(
                 rpath_update_macos_install_dir(
                     relocate_rule_name,
                     install_path = install_path,
-                    deps = ["m4_from_source"],
+                    deps = [capsule_from_source],
                 )
 
                 # publish the binary packages for re-use
