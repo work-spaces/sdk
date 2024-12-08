@@ -12,7 +12,13 @@ load(
 )
 load("run.star", "run_add_exec", "run_add_target")
 load("rpath.star", "rpath_update_macos_install_dir")
-load("capsule.star", "capsule_checkout_define_dependency", "capsule_get_install_path")
+load(
+    "capsule.star",
+    "capsule_checkout_define_dependency",
+    "capsule_get_install_path",
+    "capsule_gh_add",
+    "capsule_gh_publish",
+)
 load(
     "//@packages/star/github.com/packages.star",
     github_packages = "packages",
