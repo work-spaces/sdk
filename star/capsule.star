@@ -2,7 +2,13 @@
 Spaces starlark functions for creating and working with capsules
 """
 
-load("checkout.star", "checkout_add_capsule", "checkout_update_asset", "checkout_add_platform_archive")
+load(
+    "checkout.star",
+    "checkout_add_capsule",
+    "checkout_add_platform_archive",
+    "checkout_add_repo",
+    "checkout_update_asset",
+)
 load("gh.star", "gh_add_publish_archive")
 
 def capsule_get_prefix(name):
@@ -33,7 +39,7 @@ def capsule_gh_publish(name, capsule_name, deps, deploy_repo, suffix = "tar.xz")
         deploy_repo: The repository to deploy the capsule to
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
     """
-    
+
     store = info.get_path_to_store()
     digest = info.get_workspace_digest()
     install_path = "{}/capsules/{}/{}".format(store, capsule_name, digest)
@@ -58,7 +64,7 @@ def capsule_gh_add(name, capsule_name, deploy_repo, suffix = "tar.xz"):
         capsule_name: The name of the capsule
         deploy_repo: The repository to deploy the capsule to
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
-    
+
     Returns:
         dict: with the platform and the url to download the gh executable
     """
@@ -75,7 +81,7 @@ def capsule_gh_add(name, capsule_name, deploy_repo, suffix = "tar.xz"):
             "view",
             release_name,
             "--repo={}".format(deploy_repo),
-            "--json=assets"
+            "--json=assets",
         ],
     })
 
@@ -98,9 +104,9 @@ def capsule_gh_add(name, capsule_name, deploy_repo, suffix = "tar.xz"):
     platform_sha256_url_is_found = False
     for asset in assets:
         if asset["url"] == platform_url:
-           platform_url_is_found = True
+            platform_url_is_found = True
         if asset["url"] == platform_sha256_url:
-           platform_sha256_url_is_found = True
+            platform_sha256_url_is_found = True
 
     if not platform_url_is_found or not platform_sha256_url_is_found:
         return None
@@ -114,17 +120,16 @@ def capsule_gh_add(name, capsule_name, deploy_repo, suffix = "tar.xz"):
                 "sha256": platform_sha256_url,
                 "link": "Hard",
                 "add_prefix": capsule_get_prefix(capsule_name),
-            }
-        }
+            },
+        },
     )
-   
+
     return checkout_platform_rule
 
-
 def capsule_add_workflow_repo(
-    name,
-    url,
-    rev):
+        name,
+        url,
+        rev):
     """
     Adds a repository to the @capsules folder where `spaces checkout` is called.
 
@@ -142,9 +147,8 @@ def capsule_add_workflow_repo(
         url = url,
         rev = rev,
         clone = "Blobless",
-        is_evaluate_spaces_modules = False
+        is_evaluate_spaces_modules = False,
     )
-   
 
 def capsule_dependency(
         domain,
@@ -198,8 +202,8 @@ def capsule_get_depedency_info(depedency):
     """
     Gets the information about the dependency.
 
-    The depedency is resolved from all the capsules available using sematic versioning. The 
-    minimal version solutions algorithm is used. 
+    The depedency is resolved from all the capsules available using sematic versioning. The
+    minimal version solutions algorithm is used.
 
     Args:
         depedency: The dependency descriptor
