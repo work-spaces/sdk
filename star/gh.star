@@ -60,7 +60,7 @@ def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "ta
     release_rule_name = "{}_release".format(name)
     publish_binary_rule_name = "{}_publish_release".format(name)
     publish_sha256_rule_name = "{}_publish_sha256".format(name)
-    gh_command = "{}/gh".format(info.get_path_to_spaces_tools)
+    gh_command = "{}/sysroot/bin/gh".format(info.get_path_to_spaces_tools)
 
     run.add_exec_if(
         rule = {"name": check_release_rule_name, "deps": [archive_rule_name]},
