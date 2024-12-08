@@ -11,6 +11,8 @@ load(
     "checkout_update_env",
 )
 load("run.star", "run_add_exec", "run_add_target")
+load("rpath.star", "rpath_update_macos_install_dir")
+load("capsule.star", "capsule_checkout_define_dependency", "capsule_get_install_path")
 load(
     "//@packages/star/github.com/packages.star",
     github_packages = "packages",
@@ -229,7 +231,7 @@ def gnu_add_autotools_from_source(
     update_env_rule = "{}_update_env".format(name)
 
     workspace = info.get_absolute_path_to_workspace()
-    effective_install_path = "{}/build/install/autotools".format(workspace) if install_path == None  else install_path
+    effective_install_path = "{}/build/install/autotools".format(workspace) if install_path == None else install_path
 
     checkout_add_platform_archive(
         "m4-1",
@@ -266,9 +268,104 @@ def gnu_add_autotools_from_source(
         update_env_rule,
         paths = ["{}/bin".format(effective_install_path)],
     )
-    
+
     run_add_target(name, deps = [
         autoconf_install_rule,
         "{}_install".format(automake_rule),
         "{}_install".format(libtool_rule),
     ])
+
+def gnu_capsule_define_dependency(capsule_name, owner, repo, version, domain = "ftp.gnu.org"):
+    """
+    Define the dependency for the capsule
+
+    Args:
+        capsule_name: The name of the capsule
+        owner: The owner of the repository
+        repo: The repository name
+        version: The version of the repository
+        domain: The domain of the repository
+    """
+    capsule_checkout_define_dependency(
+        "{{}}_info".format(capsule_name),
+        capsule_name = capsule_name,
+        domain = domain,
+        owner = owner,
+        repo = repo,
+        version = version,
+    )
+
+def gnu_capsule_add_checkout_and_run(
+        capsule_name,
+        version,
+        owner = None,
+        repo = None,
+        deploy_repo = None,
+        suffix = "tar.gz",
+        configure_args = []):
+    """
+    Add the checkout and run if the install path does not exist
+
+    Args:
+        capsule_name: The name of the capsule
+        owner: The owner of the repository
+        repo: The repository name
+        version: The version of the repository
+        deploy_repo: The repository to deploy the capsule to
+        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
+        configure_args: The arguments to pass to the configure script
+    """
+
+    effective_repo = repo if repo != None else capsule_name
+    effective_owner = owner if owner != None else capsule_name
+
+    gnu_capsule_define_dependency(
+        capsule_name,
+        effective_owner,
+        effective_repo,
+        version,
+    )
+
+    install_path = capsule_get_install_path(capsule_name)
+    if install_path != None:
+        capsule_publish_name = "{{}}_capsule".format(capsule_name)
+
+        platform_archive = None
+        if deploy_repo != None:
+            # check to see if the capsule has a downloadable release
+            platform_archive = capsule_gh_add(
+                capsule_publish_name,
+                capsule_name,
+                deploy_repo,
+                suffix = suffix,
+            )
+
+        if platform_archive == None:
+            # build from source and install
+            capsule_from_source = "{{}}_from_source".format(capsule_name)
+            gnu_add_configure_make_install_from_source(
+                capsule_from_source,
+                effective_owner,
+                effective_repo,
+                version,
+                install_path = install_path,
+                configure_args = configure_args,
+            )
+
+            if deploy_repo != None:
+                # rewrites binary and shared library rpaths to make them relocatable
+                relocate_rule_name = "{{}}_update_macos_install_dir".format(capsule_name)
+                rpath_update_macos_install_dir(
+                    relocate_rule_name,
+                    install_path = install_path,
+                    deps = ["m4_from_source"],
+                )
+
+                # publish the binary packages for re-use
+                capsule_gh_publish(
+                    capsule_publish_name,
+                    capsule_name,
+                    deps = [relocate_rule_name],
+                    deploy_repo = deploy_repo,
+                    suffix = suffix,
+                )

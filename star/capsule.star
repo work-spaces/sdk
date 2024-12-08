@@ -120,6 +120,30 @@ def capsule_gh_add(name, capsule_name, deploy_repo, suffix = "tar.xz"):
    
     return checkout_platform_rule
 
+
+def capsule_add_workflow_repo(
+    name,
+    url,
+    rev):
+    """
+    Adds a repository to the @capsules folder where `spaces checkout` is called.
+
+    The files in the repo will be available to capsule_add() scripts argument. The
+    files will not be evaluated in the parent workspace.
+
+    Args:
+        name: The name of the rule
+        url: The url of the repository
+        rev: The revision of the repository
+    """
+
+    checkout_add_repo(
+        "@capsules/{}".format(name),
+        url = url,
+        rev = rev,
+        clone = "Blobless",
+        is_evaluate_spaces_modules = False
+    )
    
 
 def capsule_dependency(
