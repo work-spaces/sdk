@@ -8,6 +8,7 @@ load(
     "checkout_add_platform_archive",
     "checkout_add_repo",
     "checkout_update_asset",
+    "checkout_add_soft_link_asset"
 )
 load("gh.star", "gh_add_publish_archive")
 
@@ -157,6 +158,29 @@ def capsule_add_workflow_repo(
     )
 
     return checkout_rule_name
+
+def capsule_add_workflow_repo_as_soft_link(name):
+    """
+    Soft link the parent workflow repo to the capsule.
+
+    Args:
+        name: The name of the rule
+
+    Returns:
+        str: Name of the checkout rule to add the soft link
+    """
+
+    rule_name = "{}_soft_link_parent".format(name)
+    workspace = info.get_absolute_path_to_workspace()
+    source = "{}/../{}".format(workspace, name)
+
+    checkout_add_soft_link_asset(
+        rule_name,
+        destination = "@capsules/{}".format(name),
+        source = source,
+    )
+
+    return rule_name
     
 
 def capsule_dependency(

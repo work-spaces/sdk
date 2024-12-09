@@ -157,6 +157,26 @@ def checkout_add_hard_link_asset(
         },
     )
 
+def checkout_add_soft_link_asset(
+        name,
+        source,
+        destination):
+    """
+    Adds a hard link asset to the workspace.
+
+    Args:
+        name (str): The name of the rule.
+        source (str): The source path of the soft link.
+        destination (str): The relative workspace path of the soft link destination.
+    """
+    checkout.add_soft_link_asset(
+        rule = {"name": name},
+        asset = {
+            "source": source,
+            "destination": destination,
+        },
+    )
+
 def checkout_add_target(
         name,
         deps):
