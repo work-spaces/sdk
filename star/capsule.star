@@ -262,7 +262,8 @@ def capsule_get_install_path(name):
     store = info.get_path_to_store()
     digest = info.get_workspace_digest()
     install_path = "{}/capsules/{}/{}".format(store, name, digest)
-    if fs.exists(install_path):
+    capsule_info_path = "{}/{}.json".format(install_path, digest)
+    if fs.exists(capsule_info_path):
         return None
     return install_path
 
