@@ -141,15 +141,24 @@ def capsule_add_workflow_repo(
         name: The name of the rule
         url: The url of the repository
         rev: The revision of the repository
+
+    Returns:
+        str: Name of the checkout rule
     """
 
+    checkout_rule_name = "@capsules/{}".format(name),
+
+
     checkout_add_repo(
-        "@capsules/{}".format(name),
+        checkout_rule_name,
         url = url,
         rev = rev,
         clone = "Blobless",
         is_evaluate_spaces_modules = False,
     )
+
+    return checkout_rule_name
+    
 
 def capsule_dependency(
         domain,

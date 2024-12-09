@@ -21,7 +21,7 @@ def checkout_add_repo(
         is_evaluate_spaces_modules (bool): Whether to evaluate spaces.star files in the repo (default is True).
     """
 
-    evaluate_spaces_modules = { "is_evaluate_spaces_modules": is_evaluate_spaces_modules} if is_evaluate_spaces_modules != None else {}
+    evaluate_spaces_modules = {"is_evaluate_spaces_modules": is_evaluate_spaces_modules} if is_evaluate_spaces_modules != None else {}
 
     checkout.add_repo(
         rule = {"name": rule_name},
@@ -251,13 +251,12 @@ def checkout_add_capsule(
     prefix_option = {"prefix": prefix} if prefix != None else {}
 
     checkout.add_capsule(
-    rule = {"name": name, "deps": deps},
-    capsule = {
-        "required": required,
-        "scripts": scripts,
-    } | prefix_option,
-)
-
+        rule = {"name": name, "deps": deps},
+        capsule = {
+            "required": required,
+            "scripts": scripts,
+        } | prefix_option,
+    )
 
 def update_platforms_prefix(
         platforms,
