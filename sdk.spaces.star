@@ -5,7 +5,7 @@ load("star/checkout.star", "checkout_add_repo")
 checkout_add_repo(
     "@sources",
     url = "https://github.com/work-spaces/sources",
-    rev = "476f5dcc3081aa2cf20bb4e59b521a916a70b4d2",
+    rev = "8e0d72289bdbc3a06bd7d5a22b9ef3b0a907117e",
     clone = "Blobless"
 )
 
