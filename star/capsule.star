@@ -146,8 +146,7 @@ def capsule_add_workflow_repo(
         str: Name of the checkout rule
     """
 
-    checkout_rule_name = "@capsules/{}".format(name),
-
+    checkout_rule_name = "@capsules/{}".format(name)
 
     checkout_add_repo(
         checkout_rule_name,
