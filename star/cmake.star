@@ -62,7 +62,7 @@ def add_cmake(rule_name, platforms):
     )
 
 def cmake_add_configure_build_install(
-        rule_name,
+        name,
         source_directory,
         configure_args = [],
         build_args = [],
@@ -73,7 +73,7 @@ def cmake_add_configure_build_install(
     Add a CMake project to the build
 
     Args:
-        rule_name: The name of the project
+        name: The name of the project
         source_directory: The directory of the project
         configure_args: The arguments to pass to the configure script
         build_args: The arguments to pass to the build command
@@ -82,15 +82,15 @@ def cmake_add_configure_build_install(
         install_path: The path to install the project
     """
 
-    configure_rule_name = "{}_configure".format(rule_name)
-    build_rule_name = "{}_build".format(rule_name)
-    install_rule_name = "{}_install".format(rule_name)
+    configure_rule_name = "{}_configure".format(name)
+    build_rule_name = "{}_build".format(name)
+    install_rule_name = "{}_install".format(name)
     workspace = info.get_absolute_path_to_workspace()
 
     effective_install_path = install_path if install_path != None else "{}/build/install".format(workspace)
     install_prefix_arg = "-DCMAKE_INSTALL_PREFIX={}".format(effective_install_path)
     prefix_arg = "-DCMAKE_PREFIX_PATH={};{}/sysroot".format(effective_install_path, workspace)
-    working_directory = "build/{}".format(rule_name)
+    working_directory = "build/{}".format(name)
 
     run_add_exec(
         configure_rule_name,
@@ -108,7 +108,7 @@ def cmake_add_configure_build_install(
             "-B{}".format(working_directory),
             "-S{}".format(source_directory),
         ] + configure_args,
-        help = "CMake Configure:{}".format(rule_name),
+        help = "CMake Configure:{}".format(name),
     )
 
     run_add_exec(
@@ -117,7 +117,7 @@ def cmake_add_configure_build_install(
         inputs = ["+{}/**".format(source_directory)],
         deps = [configure_rule_name],
         args = ["--build", working_directory] + build_args,
-        help = "CMake build:{}".format(rule_name),
+        help = "CMake build:{}".format(name),
     )
 
     run_add_exec(
@@ -126,7 +126,7 @@ def cmake_add_configure_build_install(
         command = "cmake",
         deps = [build_rule_name],
         args = ["--build", working_directory, "--target", "install"],
-        help = "CMake install:{}".format(rule_name),
+        help = "CMake install:{}".format(name),
     )
 
     run_add_target(name, deps = [install_rule_name])
