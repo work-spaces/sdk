@@ -157,7 +157,7 @@ def cmake_add_repo(
         name,
         url = url,
         rev = rev,
-        clone = "Shallow",
+        clone = "Blobless",
     )
 
     submodule_rule = "{}_submodules".format(name)
@@ -268,7 +268,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         deploy_repo = deploy_repo,
         suffix = suffix,
         build_function = build_function,
-        build_args = {
+        build_function_args = {
             "url": effective_url,
             "version": version,
             "configure_args": configure_args,
