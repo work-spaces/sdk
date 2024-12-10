@@ -14,7 +14,7 @@ load(
     "capsule.star",
     "capsule_add_checkout_and_run",
 )
-load("run.star", "run_add_exec")
+load("run.star", "run_add_exec", "run_add_target")
 
 def cmake_add(name, version):
     """
@@ -129,6 +129,8 @@ def cmake_add_configure_build_install(
         help = "CMake install:{}".format(rule_name),
     )
 
+    run_add_target(name, deps = [install_rule_name])
+
 def cmake_add_repo(
         name,
         url,
@@ -153,8 +155,10 @@ def cmake_add_repo(
         checkout_submodules: Whether to checkout submodules
         deps: The dependencies of the project
     """
+
+    checkout_rule = "{}_source".format(name)
     checkout_add_repo(
-        name,
+        checkout_rule,
         url = url,
         rev = rev,
         clone = "Blobless",
@@ -173,7 +177,7 @@ def cmake_add_repo(
 
     cmake_add_configure_build_install(
         name,
-        source_directory = name,
+        source_directory = checkout_rule,
         configure_args = configure_args,
         build_args = build_args,
         build_artifact_globs = build_artifact_globs,

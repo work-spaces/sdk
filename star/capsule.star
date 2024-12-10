@@ -390,7 +390,7 @@ def capsule_add_checkout_and_run(
 
         if platform_archive == None:
             # build from source and install
-            capsule_from_source = "{}_from_source".format(capsule_name)
+            capsule_from_source = "{}_build".format(capsule_name)
 
             build_function(capsule_from_source, install_path, build_function_args)
 
