@@ -12,10 +12,7 @@ load(
 )
 load(
     "capsule.star",
-    "capsule_checkout_define_dependency",
-    "capsule_get_install_path",
-    "capsule_gh_add",
-    "capsule_relocate_and_gh_publish",
+    "capsule_add_checkout_and_run",
 )
 load("run.star", "run_add_exec")
 
@@ -160,7 +157,7 @@ def cmake_add_repo(
         name,
         url = url,
         rev = rev,
-        clone = "Shallow",
+        clone = "Blobless",
     )
 
     submodule_rule = "{}_submodules".format(name)
@@ -271,7 +268,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         deploy_repo = deploy_repo,
         suffix = suffix,
         build_function = build_function,
-        build_args = {
+        build_function_args = {
             "url": effective_url,
             "version": version,
             "configure_args": configure_args,
