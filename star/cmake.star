@@ -224,6 +224,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         domain,
         owner,
         repo,
+        rev,
         version,
         url = None,
         deploy_repo = None,
@@ -238,7 +239,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         domain: The domain of the repository
         owner: The owner of the repository
         repo: The repository name
-
+        rev: The commit/rev of the repository
         version: The version of the repository
         url: The URL of the repository (built from domain, owner, and repo if not provided)
         deploy_repo: The repository to deploy the capsule to
@@ -253,7 +254,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         cmake_add_repo(
             name,
             url = args["url"],
-            rev = args["version"],
+            rev = args["rev"],
             install_path = install_path,
             configure_args = args["configure_args"],
             build_args = args["build_args"],
@@ -271,6 +272,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         build_function_args = {
             "url": effective_url,
             "version": version,
+            "rev": rev,
             "configure_args": configure_args,
             "build_args": build_args,
         },
