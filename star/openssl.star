@@ -84,7 +84,7 @@ def openssl_add(
         name,
         url = url,
         rev = tag,
-        clone = "Shallow",
+        clone = "Blobless",
     )
     
     openssl_build(name, name, configure_args, make_args, deps = deps)

@@ -186,7 +186,7 @@ def gnu_add_repo(
         name,
         url = url,
         rev = rev,
-        clone = "Shallow",
+        clone = "Blobless",
     )
 
     submodule_rule = "{}_submodules".format(name)
