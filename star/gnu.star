@@ -18,6 +18,7 @@ load(
     "capsule_get_install_path",
     "capsule_gh_add",
     "capsule_gh_publish",
+    "capsule_add_checkout_and_run"
 )
 load(
     "//@packages/star/github.com/packages.star",
@@ -325,53 +326,29 @@ def gnu_capsule_add_checkout_and_run(
     effective_repo = repo if repo != None else capsule_name
     effective_owner = owner if owner != None else capsule_name
 
-    gnu_capsule_define_dependency(
-        capsule_name,
-        effective_owner,
-        effective_repo,
-        version,
-    )
-
-    install_path = capsule_get_install_path(capsule_name)
-    if install_path != None:
-        capsule_publish_name = "{}_capsule".format(capsule_name)
-
-        platform_archive = None
-        if deploy_repo != None:
-            # check to see if the capsule has a downloadable release
-            platform_archive = capsule_gh_add(
-                capsule_publish_name,
-                capsule_name,
-                deploy_repo,
-                suffix = suffix,
-            )
-
-        if platform_archive == None:
-            # build from source and install
-            capsule_from_source = "{}_from_source".format(capsule_name)
-            gnu_add_configure_make_install_from_source(
-                capsule_from_source,
-                effective_owner,
-                effective_repo,
-                version,
+    def build_function(name, install_path, args):
+        gnu_add_configure_make_install_from_source(
+                name,
+                owner = args["owner"],
+                repo = args["repo"],
+                version = args["version"],
                 install_path = install_path,
-                configure_args = configure_args,
+                configure_args = args["configure_args"],
             )
 
-            if deploy_repo != None:
-                # rewrites binary and shared library rpaths to make them relocatable
-                relocate_rule_name = "{}_update_macos_install_dir".format(capsule_name)
-                rpath_update_macos_install_dir(
-                    relocate_rule_name,
-                    install_path = install_path,
-                    deps = [capsule_from_source],
-                )
-
-                # publish the binary packages for re-use
-                capsule_gh_publish(
-                    capsule_publish_name,
-                    capsule_name,
-                    deps = [relocate_rule_name],
-                    deploy_repo = deploy_repo,
-                    suffix = suffix,
-                )
+    capsule_add_checkout_and_run(
+        capsule_name = capsule_name,
+        domain = "ftp.gnu.org",
+        owner = effective_owner,
+        repo = effective_repo,
+        version = version,
+        deploy_repo = deploy_repo,
+        suffix = suffix,
+        build_function = build_function,
+        build_args = {
+            "owner": effective_owner,
+            "repo": effective_repo,
+            "version": version,
+            "configure_args": configure_args,
+        }
+    )

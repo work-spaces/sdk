@@ -7,10 +7,11 @@ load(
     "checkout_add_capsule",
     "checkout_add_platform_archive",
     "checkout_add_repo",
+    "checkout_add_soft_link_asset",
     "checkout_update_asset",
-    "checkout_add_soft_link_asset"
 )
 load("gh.star", "gh_add_publish_archive")
+load("rpath.star", "rpath_update_macos_install_dir")
 
 def capsule_get_prefix(name):
     """
@@ -51,6 +52,39 @@ def capsule_gh_publish(name, capsule_name, deps, deploy_repo, suffix = "tar.xz")
         version = digest,
         deploy_repo = deploy_repo,
         deps = deps,
+        suffix = suffix,
+    )
+
+def capsule_relocate_and_gh_publish(
+        name,
+        capsule_name,
+        deps,
+        deploy_repo,
+        install_path,
+        suffix = "tar.xz"):
+    """
+    Relocate the capsule and publish to github.
+
+    Args:
+        name: The name of the rule
+        capsule_name: The name of the capsule
+        deps: The dependencies of the capsule
+        deploy_repo: The repository to deploy the capsule to
+        install_path: The path to install the capsule
+        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
+    """
+    relocate_rule_name = "{}_update_macos_install_dir".format(capsule_name)
+    rpath_update_macos_install_dir(
+        relocate_rule_name,
+        install_path = install_path,
+        deps = deps,
+    )
+
+    capsule_gh_publish(
+        name,
+        capsule_name = capsule_name,
+        deps = [relocate_rule_name],
+        deploy_repo = deploy_repo,
         suffix = suffix,
     )
 
@@ -181,7 +215,6 @@ def capsule_add_workflow_repo_as_soft_link(name):
     )
 
     return rule_name
-    
 
 def capsule_dependency(
         domain,
@@ -305,3 +338,67 @@ def capsule_checkout_define_dependency(
             "prefix": capsule_prefix,
         }],
     )
+
+def capsule_add_checkout_and_run(
+        capsule_name,
+        domain,
+        owner,
+        repo,
+        version,
+        build_function,
+        build_function_args,
+        deploy_repo = None,
+        suffix = "tar.gz"):
+    """
+    Add the checkout and run if the install path does not exist
+
+    Args:
+        capsule_name: The name of the capsule
+        domain: The domain of the repository
+        owner: The owner of the repository
+        repo: The repository name
+
+        version: The version of the repository
+        deploy_repo: The repository to deploy the capsule to
+        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
+        build_function: The function to build the capsule
+        build_function_args: dict to pass to the build function
+    """
+
+    capsule_checkout_define_dependency(
+        "{}_info".format(capsule_name),
+        domain = domain,
+        owner = owner,
+        repo = repo,
+        version = version,
+    )
+
+    install_path = capsule_get_install_path(capsule_name)
+    if install_path != None:
+        capsule_publish_name = "{}_capsule".format(capsule_name)
+
+        platform_archive = None
+        if deploy_repo != None:
+            # check to see if the capsule has a downloadable release
+            platform_archive = capsule_gh_add(
+                capsule_publish_name,
+                capsule_name,
+                deploy_repo,
+                suffix = suffix,
+            )
+
+        if platform_archive == None:
+            # build from source and install
+            capsule_from_source = "{}_from_source".format(capsule_name)
+
+            build_function(capsule_from_source, install_path, build_function_args)
+
+            if deploy_repo != None:
+                capsule_relocate_and_gh_publish(
+                    capsule_publish_name,
+                    capsule_name = capsule_name,
+                    deps = [capsule_from_source],
+                    deploy_repo = deploy_repo,
+                    install_path = install_path,
+                    suffix = suffix,
+                )

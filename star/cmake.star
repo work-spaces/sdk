@@ -3,7 +3,20 @@ Add CMake to your sysroot.
 """
 
 load("//@packages/star/github.com/Kitware/CMake/packages.star", "packages")
-load("checkout.star", "checkout_add_archive", "checkout_add_platform_archive", "checkout_add_repo", "checkout_update_asset")
+load(
+    "checkout.star",
+    "checkout_add_archive",
+    "checkout_add_platform_archive",
+    "checkout_add_repo",
+    "checkout_update_asset",
+)
+load(
+    "capsule.star",
+    "capsule_checkout_define_dependency",
+    "capsule_get_install_path",
+    "capsule_gh_add",
+    "capsule_relocate_and_gh_publish",
+)
 load("run.star", "run_add_exec")
 
 def cmake_add(name, version):
@@ -57,7 +70,8 @@ def cmake_add_configure_build_install(
         configure_args = [],
         build_args = [],
         build_artifact_globs = [],
-        deps = []):
+        deps = [],
+        install_path = None):
     """
     Add a CMake project to the build
 
@@ -68,15 +82,17 @@ def cmake_add_configure_build_install(
         build_args: The arguments to pass to the build command
         build_artifact_globs: The globs to match when installing build artifacts
         deps: The dependencies of the project
+        install_path: The path to install the project
     """
 
     configure_rule_name = "{}_configure".format(rule_name)
     build_rule_name = "{}_build".format(rule_name)
     install_rule_name = "{}_install".format(rule_name)
     workspace = info.get_absolute_path_to_workspace()
-    install_path = "{}/build/install".format(workspace)
-    install_prefix_arg = "-DCMAKE_INSTALL_PREFIX={}".format(install_path)
-    prefix_arg = "-DCMAKE_PREFIX_PATH={};{}/sysroot".format(install_path, workspace)
+
+    effective_install_path = install_path if install_path != None else "{}/build/install".format(workspace)
+    install_prefix_arg = "-DCMAKE_INSTALL_PREFIX={}".format(effective_install_path)
+    prefix_arg = "-DCMAKE_PREFIX_PATH={};{}/sysroot".format(effective_install_path, workspace)
     working_directory = "build/{}".format(rule_name)
 
     run_add_exec(
@@ -120,6 +136,7 @@ def cmake_add_repo(
         name,
         url,
         rev,
+        install_path = None,
         configure_args = [],
         build_args = [],
         build_artifact_globs = [],
@@ -132,6 +149,7 @@ def cmake_add_repo(
         name: The name of the project
         url: The URL of the repository
         rev: The revision of the repository
+        install_path: The path to install the project
         configure_args: The arguments to pass to the configure script
         build_args: The arguments to pass to the build command
         build_artifact_globs: The globs to match when installing build artifacts
@@ -163,6 +181,7 @@ def cmake_add_repo(
         build_args = build_args,
         build_artifact_globs = build_artifact_globs,
         deps = deps + submodule_deps,
+        install_path = install_path,
     )
 
 def cmake_add_source_archive(
@@ -201,4 +220,61 @@ def cmake_add_source_archive(
         make_args = make_args,
         deps = deps,
         build_artifact_globs = build_artifact_globs,
+    )
+
+def cmake_capsule_add_repo_checkout_and_run(
+        capsule_name,
+        domain,
+        owner,
+        repo,
+        version,
+        url = None,
+        deploy_repo = None,
+        suffix = "tar.gz",
+        configure_args = [],
+        build_args = []):
+    """
+    Add the checkout and run if the install path does not exist
+
+    Args:
+        capsule_name: The name of the capsule
+        domain: The domain of the repository
+        owner: The owner of the repository
+        repo: The repository name
+
+        version: The version of the repository
+        url: The URL of the repository (built from domain, owner, and repo if not provided)
+        deploy_repo: The repository to deploy the capsule to
+        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
+        configure_args: The arguments to pass to the configure script
+        build_args: The arguments to pass to the build command
+    """
+
+    effective_url = url if url != None else "https://{}/{}/{}".format(domain, owner, repo)
+
+    def build_function(name, install_path, args):
+        cmake_add_repo(
+            name,
+            url = args["url"],
+            rev = args["version"],
+            install_path = install_path,
+            configure_args = args["configure_args"],
+            build_args = args["build_args"],
+        )
+
+    capsule_add_checkout_and_run(
+        capsule_name = capsule_name,
+        domain = domain,
+        owner = owner,
+        repo = repo,
+        version = version,
+        deploy_repo = deploy_repo,
+        suffix = suffix,
+        build_function = build_function,
+        build_args = {
+            "url": effective_url,
+            "version": version,
+            "configure_args": configure_args,
+            "build_args": build_args,
+        },
     )
