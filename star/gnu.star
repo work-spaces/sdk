@@ -11,14 +11,10 @@ load(
     "checkout_update_env",
 )
 load("run.star", "run_add_exec", "run_add_target")
-load("rpath.star", "rpath_update_macos_install_dir")
 load(
     "capsule.star",
+    "capsule_add_checkout_and_run",
     "capsule_checkout_define_dependency",
-    "capsule_get_install_path",
-    "capsule_gh_add",
-    "capsule_gh_publish",
-    "capsule_add_checkout_and_run"
 )
 load(
     "//@packages/star/github.com/packages.star",
@@ -328,13 +324,13 @@ def gnu_capsule_add_checkout_and_run(
 
     def build_function(name, install_path, args):
         gnu_add_configure_make_install_from_source(
-                name,
-                owner = args["owner"],
-                repo = args["repo"],
-                version = args["version"],
-                install_path = install_path,
-                configure_args = args["configure_args"],
-            )
+            name,
+            owner = args["owner"],
+            repo = args["repo"],
+            version = args["version"],
+            install_path = install_path,
+            configure_args = args["configure_args"],
+        )
 
     capsule_add_checkout_and_run(
         capsule_name = capsule_name,
@@ -350,5 +346,5 @@ def gnu_capsule_add_checkout_and_run(
             "repo": effective_repo,
             "version": version,
             "configure_args": configure_args,
-        }
+        },
     )

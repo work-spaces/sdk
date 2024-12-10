@@ -12,10 +12,7 @@ load(
 )
 load(
     "capsule.star",
-    "capsule_checkout_define_dependency",
-    "capsule_get_install_path",
-    "capsule_gh_add",
-    "capsule_relocate_and_gh_publish",
+    "capsule_add_checkout_and_run",
 )
 load("run.star", "run_add_exec")
 

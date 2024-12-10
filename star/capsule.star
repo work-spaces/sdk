@@ -367,6 +367,7 @@ def capsule_add_checkout_and_run(
 
     capsule_checkout_define_dependency(
         "{}_info".format(capsule_name),
+        capsule_name = capsule_name,
         domain = domain,
         owner = owner,
         repo = repo,
