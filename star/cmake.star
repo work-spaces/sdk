@@ -191,8 +191,9 @@ def cmake_add_source_archive(
         sha256,
         source_directory,
         filename = None,
+        install_path = None,
         configure_args = [],
-        make_args = [],
+        build_args = [],
         build_artifact_globs = [],
         deps = []):
     """
@@ -204,8 +205,9 @@ def cmake_add_source_archive(
         sha256: The SHA256 of the source archive
         source_directory: The directory of the project
         filename: The filename of the source archive
+        install_path: The path to install the project
         configure_args: The arguments to pass to the configure script
-        make_args: The arguments to pass to the build command
+        build_args: The arguments to pass to the build command
         build_artifact_globs: The globs to match when installing build artifacts
         deps: The dependencies of the project
     """
@@ -221,7 +223,8 @@ def cmake_add_source_archive(
         name,
         source_directory,
         configure_args = configure_args,
-        make_args = make_args,
+        build_args = build_args,
+        install_path = install_path,
         deps = deps,
         build_artifact_globs = build_artifact_globs,
     )
