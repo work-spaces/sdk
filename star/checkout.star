@@ -41,7 +41,8 @@ def checkout_add_archive(
         includes = None,
         excludes = None,
         strip_prefix = None,
-        add_prefix = "./"):
+        add_prefix = "./",
+        filename = None):
     """
     Adds an archive to the workspace.
 
@@ -54,6 +55,7 @@ def checkout_add_archive(
         excludes (list): List of globs to exclude.
         strip_prefix (str): Prefix to strip from the archive.
         add_prefix (str): Prefix to add to the archive.
+        filename (str): The filename if it isn't the last part of the URL
     """
     checkout.add_archive(
         rule = {"name": name},
@@ -65,6 +67,7 @@ def checkout_add_archive(
             "excludes": excludes,
             "strip_prefix": strip_prefix,
             "add_prefix": add_prefix,
+            "filename": filename,
         },
     )
 
