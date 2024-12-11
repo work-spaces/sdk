@@ -140,6 +140,7 @@ def cmake_add_repo(
         build_args = [],
         build_artifact_globs = [],
         checkout_submodules = False,
+        relative_source_directory = None,
         deps = []):
     """
     Add a CMake project to the build
@@ -153,6 +154,7 @@ def cmake_add_repo(
         build_args: The arguments to pass to the build command
         build_artifact_globs: The globs to match when installing build artifacts
         checkout_submodules: Whether to checkout submodules
+        relative_source_directory: The directory of the project (default is the name)
         deps: The dependencies of the project
     """
 
@@ -175,9 +177,11 @@ def cmake_add_repo(
         )
         submodule_deps = [submodule_rule]
 
+    source_directory = "{}/{}".format(checkout_rule, relative_source_directory) if relative_source_directory != None else checkout_rule
+
     cmake_add_configure_build_install(
         name,
-        source_directory = checkout_rule,
+        source_directory = source_directory,
         configure_args = configure_args,
         build_args = build_args,
         build_artifact_globs = build_artifact_globs,
@@ -240,7 +244,8 @@ def cmake_capsule_add_repo_checkout_and_run(
         deploy_repo = None,
         suffix = "tar.gz",
         configure_args = [],
-        build_args = []):
+        build_args = [],
+        relative_source_directory = None):
     """
     Add the checkout and run if the install path does not exist
 
@@ -256,6 +261,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
         configure_args: The arguments to pass to the configure script
         build_args: The arguments to pass to the build command
+        relative_source_directory: The directory to set `-S<source_directory>` when configuraing CMake (default is where repo is checked out)
     """
 
     effective_url = url if url != None else "https://{}/{}/{}".format(domain, owner, repo)
@@ -268,6 +274,7 @@ def cmake_capsule_add_repo_checkout_and_run(
             install_path = install_path,
             configure_args = args["configure_args"],
             build_args = args["build_args"],
+            relative_source_directory = args["relative_source_directory"],
         )
 
     capsule_add_checkout_and_run(
@@ -283,6 +290,7 @@ def cmake_capsule_add_repo_checkout_and_run(
             "url": effective_url,
             "version": version,
             "rev": rev,
+            "relative_source_directory": relative_source_directory,
             "configure_args": configure_args,
             "build_args": build_args,
         },
