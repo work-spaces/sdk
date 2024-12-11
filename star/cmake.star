@@ -213,7 +213,7 @@ def cmake_add_source_archive(
     """
 
     checkout_add_archive(
-        name,
+        "{}_source".format(name),
         url = url,
         sha256 = sha256,
         filename = filename,
