@@ -293,6 +293,7 @@ def cmake_capsule_add_archive_checkout_and_run(
         version,
         url,
         sha256,
+        source_directory,
         filename = None,
         deploy_repo = None,
         suffix = "tar.gz",
@@ -309,6 +310,7 @@ def cmake_capsule_add_archive_checkout_and_run(
         version: The version of the repository
         url: The URL of the repository (built from domain, owner, and repo if not provided)
         sha256: The SHA256 of the archive
+        source_directory: The directory of the project
         filename: The filename if the URL does not end in the filename
         deploy_repo: The repository to deploy the capsule to
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
@@ -319,6 +321,7 @@ def cmake_capsule_add_archive_checkout_and_run(
     def build_function(name, install_path, args):
         cmake_add_source_archive(
             name,
+            source_directory = args["source_directory"],
             url = args["url"],
             sha256 = args["sha256"],
             filename = args["filename"],
@@ -340,6 +343,7 @@ def cmake_capsule_add_archive_checkout_and_run(
             "url": url,
             "sha256": sha256,
             "version": version,
+            "source_directory": source_directory,
             "filename": filename,
             "configure_args": configure_args,
             "build_args": build_args,
