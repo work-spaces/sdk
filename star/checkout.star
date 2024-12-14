@@ -213,7 +213,8 @@ def checkout_update_env(
         name,
         vars = {},
         paths = [],
-        system_paths = None):
+        system_paths = None,
+        inherited_vars = None):
     """
     Updates the environment with the given variables and paths.
 
@@ -222,7 +223,10 @@ def checkout_update_env(
         vars (dict): Dictionary of environment variables to set.
         paths (list): List of paths to add to the PATH.
         system_paths (str): The path to add to the system PATH.
+        inherited_vars (list): List of environment variables to inherit from the calling environment.
     """
+
+    effective_inherited_vars = {"inherited_vars": inherited_vars } if inherited_vars != None else {}
 
     checkout.update_env(
         rule = {"name": name},
@@ -230,7 +234,7 @@ def checkout_update_env(
             "paths": paths,
             "vars": vars,
             "system_paths": system_paths,
-        },
+        } | effective_inherited_vars,
     )
 
 def checkout_add_which_asset(

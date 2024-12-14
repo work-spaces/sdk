@@ -45,6 +45,44 @@ def run_add_exec(
         },
     )
 
+def run_add_kill_exec(
+        rule_name,
+        target,
+        signal = "Kill",
+        help = None,
+        expect = "Success",
+        deps = [],
+        type = None,
+        platforms = None):
+    """
+    Adds a command to the run dependency graph
+
+    Args:
+        rule_name (str): The name of the rule.
+        target (str): The name of the rule to kill.
+        signal (str): The signal to send to the target.
+        help (str): The help message for the rule.
+        expect (str): The expected result of the kill. (default is Success)
+        deps (str): Run rule dependencies.
+        type (str): The exec type ("Run"| "Setup" | "Optional")
+        platforms (list): Platforms to run on (default is all).
+    """
+    run.add_kill_exec(
+        rule = {
+            "name": rule_name,
+            "deps": deps,
+            "platforms": platforms,
+            "help": help,
+            "type": type,
+            "inputs": inputs,
+        },
+        kill = {
+            "target": target,
+            "signal": signal,
+            "expect": expect,
+        },
+    )
+
 def run_add_target(
         name,
         deps,
