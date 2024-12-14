@@ -55,7 +55,7 @@ def oras_add_publish_archive(
             oras_artifact,
         ],
         deps = [
-            archive_output,
+            archive_rule_name,
         ],
     )
 
