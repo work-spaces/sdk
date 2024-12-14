@@ -56,7 +56,12 @@ def oras_add_publish_archive(
     )
 
     oras_label = _get_oras_label(domain, owner, name, version)
-    oras_artifact = "{}:application/vnd.unknown.layer.{}+{}".format(archive_output, version, suffix)
+
+    # split archive_output between parent folder and file name
+    archive_output_folder = archive_output.rsplit("/", 1)[0]
+    archive_output_file = archive_output.rsplit("/", 1)[1]
+    oras_artifact = "{}:application/vnd.unknown.layer.{}+{}".format(archive_output_file, version, suffix)
+
     oras_command = _get_oras_command()
     run_add_exec(
         oras_rule_push_name,
@@ -69,6 +74,7 @@ def oras_add_publish_archive(
         deps = [
             archive_rule_name,
         ],
+        working_directory = archive_output_folder,
     )
 
     run_add_target(name, deps = [oras_rule_push_name])
