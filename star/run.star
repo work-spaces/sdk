@@ -89,15 +89,27 @@ def run_add_kill_exec(
 def run_add_target(
         name,
         deps,
+        help = None,
+        type = None,
         platforms = None):
     """
     Adds a target to the workspace.
+
+    This rule can be used to consilidate dependencies into a single target.
 
     Args:
         name (str): The name of the rule.
         deps (list): List of dependencies for the target.
         platforms (list): List of platforms to build the target for (default is all).
+        type (str): The exec type ("Run"| "Setup" | "Optional")
+        help (str): The help message for the rule.
     """
     run.add_target(
-        rule = {"name": name, "deps": deps, "platforms": platforms},
+        rule = {
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "type": type,
+            "help": help,
+        },
     )
