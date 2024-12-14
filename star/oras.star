@@ -3,6 +3,7 @@ Spaces starlark functions for publishing packages using oras
 """
 
 load("run.star", "run_add_exec", "run_add_target")
+load("checkout.star", "checkout_add_platform_archive")
 
 
 def _get_oras_command():
@@ -77,8 +78,7 @@ def oras_checkout_archive(
         domain,
         owner,
         version,
-        add_prefix = "sysroot",
-        deps = []):
+        add_prefix = "sysroot"):
     """
     Checks out an archive using oras.
 
