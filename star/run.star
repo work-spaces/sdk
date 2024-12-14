@@ -74,7 +74,7 @@ def run_add_kill_exec(
             "platforms": platforms,
             "help": help,
             "type": type,
-            "inputs": inputs,
+            "inputs": None,
         },
         kill = {
             "target": target,
