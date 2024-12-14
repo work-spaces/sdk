@@ -4,8 +4,24 @@ Spaces starlark functions for publishing packages using oras
 
 load("run.star", "run_add_exec", "run_add_target")
 
+
+def _get_oras_command():
+    return "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
+
+def _get_oras_label(domain, owner, name, version):
+    platform = info.get_platform_name()
+    oras_name = "{}-{}".format(name, platform)
+    return "{}/{}/{}:{}".format(domain, owner, oras_name, version)
+
+
 def oras_add_publish_archive(
-    name, domain, owner, input, version, deps, suffix = "tar.xz"):
+        name,
+        domain,
+        owner,
+        version,
+        input,
+        deps,
+        suffix = "tar.xz"):
     """
     Publishes an archive using oras.
 
@@ -33,25 +49,20 @@ def oras_add_publish_archive(
 
     archive_output_info = info.get_build_archive_info(rule_name = archive_rule_name, archive = archive_info)
     archive_output = archive_output_info["archive_path"]
-
     run.add_archive(
         rule = {"name": archive_rule_name, "deps": deps},
         archive = archive_info,
     )
 
-    oras_name = "{}-{}".format(name, platform)
-    oras_address = "{}/{}/{}:{}".format(domain, owner, oras_name, version)
-
+    oras_label = _get_oras_label(domain, owner, name, version)
     oras_artifact = "{}:application/vnd.unknown.layer.{}+{}".format(archive_output, version, suffix)
-
-    oras_command = "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
-
+    oras_command = _get_oras_command()
     run_add_exec(
         oras_rule_push_name,
         command = oras_command,
         args = [
             "push",
-            oras_address,
+            oras_label,
             oras_artifact,
         ],
         deps = [
@@ -60,3 +71,37 @@ def oras_add_publish_archive(
     )
 
     run_add_target(name, deps = [oras_rule_push_name])
+
+def oras_checkout_archive(
+        name,
+        domain,
+        owner,
+        version,
+        add_prefix = "sysroot",
+        deps = []):
+    """
+    Checks out an archive using oras.
+
+    Args:
+        name: Name of the project to publish.
+        domain: The domain of the project.
+        owner: The owner of the project.
+        version: Version to publish
+        add_prefix: prefix of where to install the archive
+        deps: dependencies for the archive
+    """
+
+    url = _get_oras_label(domain, owner, name, version)
+    platform = info.get_platform_name()
+
+    checkout_add_platform_archive(
+        name,
+        platforms = {
+            platform : {
+                "url": url,
+                "sha256": "oras",
+                "link": "Hard",
+                "add_prefix": add_prefix,
+            }
+        }
+    )
