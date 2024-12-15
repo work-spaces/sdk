@@ -596,7 +596,7 @@ def capsule_add_checkout_and_run(
 
             build_function(capsule_from_source, install_path, build_function_args)
 
-            if url != None:
+            if oras_url != None or gh_deploy_repo != None:
                 capsule_relocate_and_publish(
                     capsule_publish_name,
                     capsule_name = capsule_name,
