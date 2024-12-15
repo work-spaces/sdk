@@ -22,7 +22,7 @@ def oras_add_publish_archive(
         tag,
         input,
         deps,
-        layer_info = "application/vnd.unknown.layer",
+        layer_info = "application/archive",
         suffix = "tar.xz"):
     """
     Publishes an archive using oras.
@@ -43,8 +43,6 @@ def oras_add_publish_archive(
     archive_rule_name = "{}_archive".format(name)
     oras_rule_push_name = "{}_oras_push".format(name)
 
-
-
     archive_info = {
         "input": input,
         "name": artifact,
@@ -60,12 +58,12 @@ def oras_add_publish_archive(
         archive = archive_info,
     )
 
-    oras_label = _get_oras_label(url, artifact, tag)
+    oras_url_label = _get_oras_label(url, artifact, tag)
 
     # split archive_output between parent folder and file name
     archive_output_folder = archive_output.rsplit("/", 1)[0]
     archive_output_file = archive_output.rsplit("/", 1)[1]
-    oras_artifact = "{}:{}.{}+{}".format(archive_output_file, layer_info, tag, suffix)
+    artifact_type = "{}+{}".format(layer_info, suffix)
 
     oras_command = _get_oras_command()
     run_add_exec(
@@ -73,8 +71,9 @@ def oras_add_publish_archive(
         command = oras_command,
         args = [
             "push",
-            oras_label,
-            oras_artifact,
+            "--artifact-type={}".format(artifact_type),
+            oras_url_label,
+            archive_output_file,
         ],
         deps = [
             archive_rule_name,
