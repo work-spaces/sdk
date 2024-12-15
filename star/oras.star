@@ -105,7 +105,7 @@ def oras_checkout_archive(
         platforms = {
             platform : {
                 "url": url,
-                "sha256": "{}:/label/0/digest:/layers/0/annotations/org.opencontainers.image.title".format(url),
+                "sha256": "{}:/layers/0/digest:/layers/0/annotations/org.opencontainers.image.title".format(url),
                 "link": "Hard",
                 "add_prefix": add_prefix,
             }
