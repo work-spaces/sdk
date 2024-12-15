@@ -257,7 +257,7 @@ def capsule_oras_add(name, capsule, url):
         url = url,
         artifact = capsule_descriptor_to_oras_artifact(capsule),
         tag = digest,
-        add_prefix = capsule_get_store_prefix(capsule_name),
+        add_prefix = capsule_get_store_prefix(capsule),
     )
 
     return checkout_platform_rule
