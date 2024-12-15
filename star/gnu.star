@@ -13,6 +13,7 @@ load(
 load("run.star", "run_add_exec", "run_add_target")
 load(
     "capsule.star",
+    "capsule",
     "capsule_add_checkout_and_run",
     "capsule_checkout_define_dependency",
 )
