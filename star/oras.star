@@ -3,7 +3,7 @@ Spaces starlark functions for publishing packages using oras
 """
 
 load("run.star", "run_add_exec", "run_add_target")
-load("checkout.star", "checkout_add_platform_archive")
+load("checkout.star", "checkout_add_oras_archive")
 
 
 def _get_oras_command():
