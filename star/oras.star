@@ -97,7 +97,7 @@ def oras_checkout_archive(
         deps: dependencies for the archive
     """
 
-    url = _get_oras_label(domain, owner, name, version)
+    url = "oras://{}".format(_get_oras_label(domain, owner, name, version))
     platform = info.get_platform_name()
 
     checkout_add_platform_archive(
@@ -105,7 +105,7 @@ def oras_checkout_archive(
         platforms = {
             platform : {
                 "url": url,
-                "sha256": "oras",
+                "sha256": "{}:/label/0/digest:/layers/0/annotations/org.opencontainers.image.title".format(url),
                 "link": "Hard",
                 "add_prefix": add_prefix,
             }
