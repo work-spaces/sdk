@@ -264,7 +264,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         relative_source_directory: The directory to set `-S<source_directory>` when configuraing CMake (default is where repo is checked out)
     """
 
-    effective_url = source_url if source_url != None else "https://{}/{}/{}".format(domain, owner, repo)
+    effective_url = source_url if source_url != None else "https://{}/{}/{}".format(capsule["domain"], capsule["owner"], capsule["repo"])
 
     def build_function(name, install_path, args):
         cmake_add_repo(
