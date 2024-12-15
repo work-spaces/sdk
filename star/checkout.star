@@ -306,3 +306,40 @@ def update_platforms_prefix(
             updated_platforms[platform] = platforms[platform] | {"add_prefix": add_prefix}
 
     return updated_platforms
+
+
+def checkout_add_oras_archive(
+    name,
+    url,
+    artifact,
+    tag,
+    add_prefix,
+    manifest_digest_path = "/layers/0/digest",
+    manifest_artifact_path = "/layers/0/annotations/org.opencontainers.image.title",
+    globs = None):
+    """
+    Adds an oras archive to the workspace.
+
+    Args:
+        name (str): The name of the rule.
+        url (str): The URL of the oras archive to download.
+        artifact (str): The artifact name of the oras archive.
+        tag (str): The tag of the oras archive.
+        add_prefix (str): The prefix to add to the archive.
+        manifest_digest_path (str): The path to the manifest digest in the oras archive.
+        manifest_artifact_path (str): The path to the manifest artifact in the oras archive.
+        globs (list): List of globs to include/exclude.
+    """
+
+    checkout.add_oras_archive(
+    rule = { "name": name },
+    oras_archive = {
+        "url": url,
+        "artifact": artifact,
+        "tag": tag,
+        "manifest_digest_path": manifest_digest_path,
+        "manifest_artifact_path": manifest_artifact_path,
+        "add_prefix": add_prefix,
+        "globs": globs,
+    }
+)

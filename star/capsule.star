@@ -10,7 +10,11 @@ load(
     "checkout_add_soft_link_asset",
     "checkout_update_asset",
 )
-load("gh.star", "gh_add_publish_archive")
+load(
+    "oras.star",
+    "oras_add_platform_archive",
+    "oras_add_publish_archive",
+)
 load("rpath.star", "rpath_update_macos_install_dir")
 
 def capsule_get_prefix(name):
@@ -30,7 +34,7 @@ def capsule_get_prefix(name):
     digest = info.get_workspace_digest()
     return "{}/capsules/{}/{}".format(store, name, digest)
 
-def capsule_gh_publish(name, capsule_name, deps, deploy_repo, suffix = "tar.xz"):
+def capsule_oras_publish(name, capsule_name, deps, deploy_repo, suffix = "tar.xz"):
     """
     Publish the capsule to github
 
@@ -165,7 +169,8 @@ def capsule_gh_add(name, capsule_name, deploy_repo, suffix = "tar.xz"):
 def capsule_add_workflow_repo(
         name,
         url,
-        rev):
+        rev,
+        clone = "Worktree"):
     """
     Adds a repository to the @capsules folder where `spaces checkout` is called.
 
@@ -176,6 +181,7 @@ def capsule_add_workflow_repo(
         name: The name of the rule
         url: The url of the repository
         rev: The revision of the repository
+        clone: Default is Worktree
 
     Returns:
         str: Name of the checkout rule
@@ -187,7 +193,7 @@ def capsule_add_workflow_repo(
         checkout_rule_name,
         url = url,
         rev = rev,
-        clone = "Blobless",
+        clone = clone,
         is_evaluate_spaces_modules = False,
     )
 

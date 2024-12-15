@@ -20,7 +20,13 @@ def gh_add(name, version):
         platforms = packages[version],
     )
 
-def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "tar.xz"):
+def gh_add_publish_archive(
+        name,
+        input,
+        version,
+        deploy_repo,
+        deps,
+        suffix = "tar.xz"):
     """Creates an archive and publishes it to github.
 
     This can be run on multiple OS's and multiple arch's.
@@ -120,4 +126,3 @@ def gh_add_publish_archive(name, input, version, deploy_repo, deps, suffix = "ta
     )
 
     run_add_target(name, deps = [publish_binary_rule_name, publish_sha256_rule_name])
-
