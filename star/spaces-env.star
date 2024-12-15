@@ -21,4 +21,5 @@ def spaces_working_env():
         vars = {
             "SPACES_WORKSPACE": info.get_absolute_path_to_workspace(),
         } | ps1,
+        inherited_vars = ["HOME"],
     )
