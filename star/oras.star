@@ -9,10 +9,10 @@ load("checkout.star", "checkout_add_platform_archive")
 def _get_oras_command():
     return "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
 
-def _get_oras_label(url, artifact, version):
+def _get_oras_label(url, artifact, tag):
     platform = info.get_platform_name()
     oras_name = "{}-{}".format(artifact, platform)
-    return "{}/{}:{}".format(url, oras_name, version)
+    return "{}/{}:{}".format(url, oras_name, tag)
 
 
 def oras_add_publish_archive(
@@ -60,7 +60,7 @@ def oras_add_publish_archive(
         archive = archive_info,
     )
 
-    oras_label = _get_oras_label(url, artifact, version)
+    oras_label = _get_oras_label(url, artifact, tag)
 
     # split archive_output between parent folder and file name
     archive_output_folder = archive_output.rsplit("/", 1)[0]
@@ -106,7 +106,7 @@ def oras_add_platform_archive(
        
     """
 
-    url = "oras://{}".format(_get_oras_label(deploy_repo, name, version))
+    url = "oras://{}".format(_get_oras_label(deploy_repo, name, tag))
     platform = info.get_platform_name()
     effective_artifact = "{}-{}".format(artifact, platform)
 
