@@ -304,7 +304,7 @@ def gnu_capsule_define_dependency(
         version: The version of the repository
     """
     capsule_checkout_define_dependency(
-        "{}_info".format(capsule_name),
+        name,
         capsule = capsule,
         version = version,
     )
