@@ -141,6 +141,7 @@ def cmake_add_repo(
         build_artifact_globs = [],
         checkout_submodules = False,
         relative_source_directory = None,
+        clone = "Worktree",
         deps = []):
     """
     Add a CMake project to the build
@@ -155,6 +156,7 @@ def cmake_add_repo(
         build_artifact_globs: The globs to match when installing build artifacts
         checkout_submodules: Whether to checkout submodules
         relative_source_directory: The directory of the project (default is the name)
+        clone: The clone type (Worktree, Blobless, Shallow, Default)
         deps: The dependencies of the project
     """
 
@@ -163,7 +165,7 @@ def cmake_add_repo(
         checkout_rule,
         url = url,
         rev = rev,
-        clone = "Blobless",
+        clone = clone,
     )
 
     submodule_rule = "{}_submodules".format(name)
