@@ -599,7 +599,7 @@ def capsule_add_checkout_and_run(
             if oras_url != None or gh_deploy_repo != None:
                 capsule_relocate_and_publish(
                     capsule_publish_name,
-                    capsule_name = capsule_name,
+                    capsule = capsule,
                     deps = [capsule_from_source],
                     oras_url = oras_url,
                     gh_deploy_repo = gh_deploy_repo,
