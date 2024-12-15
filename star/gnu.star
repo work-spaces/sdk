@@ -348,7 +348,7 @@ def gnu_capsule_add_checkout_and_run(
         gh_deploy_repo = gh_deploy_repo,
         suffix = suffix,
         build_function = build_function,
-        build_args = {
+        build_function_args = {
             "owner": capsule["owner"],
             "repo": capsule["repo"],
             "version": version,
