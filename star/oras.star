@@ -10,9 +10,7 @@ def _get_oras_command():
     return "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
 
 def _get_oras_label(url, artifact, tag):
-    platform = info.get_platform_name()
-    oras_name = "{}-{}".format(artifact, platform)
-    return "{}/{}:{}".format(url, oras_name, tag)
+    return "{}/{}:{}".format(url, artifact, tag)
 
 
 def oras_add_publish_archive(
