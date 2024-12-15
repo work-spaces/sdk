@@ -278,49 +278,56 @@ def gnu_add_autotools_from_source(
         "{}_install".format(libtool_rule),
     ])
 
-def gnu_capsule_define_dependency(capsule_name, owner, repo, version, domain = "ftp.gnu.org"):
+def gnu_capsule(repo, owner = None, domain = "ftp.gnu.org"):
+    """
+    Get the capsule descriptor for the GNU source
+
+    Args:
+        repo: The repository name
+        owner: The owner of the repository
+        domain: The domain of the repository (Default is ftp.gnu.org)
+    """
+    effective_owner = owner if owner else repo
+    return capsule(domain, effective_owner, repo)
+
+def gnu_capsule_define_dependency(
+        name,
+        capsule,
+        version):
     """
     Define the dependency for the capsule
 
     Args:
-        capsule_name: The name of the capsule
-        owner: The owner of the repository
-        repo: The repository name
+        name: The rule name
+        capsule: return value of capsule()
         version: The version of the repository
-        domain: The domain of the repository
     """
     capsule_checkout_define_dependency(
         "{}_info".format(capsule_name),
-        capsule_name = capsule_name,
-        domain = domain,
-        owner = owner,
-        repo = repo,
+        capsule = capsule,
         version = version,
     )
 
 def gnu_capsule_add_checkout_and_run(
-        capsule_name,
+        name,
+        capsule,
         version,
-        owner = None,
-        repo = None,
-        deploy_repo = None,
+        oras_url = None,
+        gh_deploy_repo = None,
         suffix = "tar.gz",
         configure_args = []):
     """
     Add the checkout and run if the install path does not exist
 
     Args:
-        capsule_name: The name of the capsule
-        owner: The owner of the repository
-        repo: The repository name
+        name: The name of the capsule
+        capsule: The capsule descriptor
         version: The version of the repository
-        deploy_repo: The repository to deploy the capsule to
+        oras_url: The ORAS URL to deploy the capsule
+        gh_deploy_repo: The repository to deploy the capsule to
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
         configure_args: The arguments to pass to the configure script
     """
-
-    effective_repo = repo if repo != None else capsule_name
-    effective_owner = owner if owner != None else capsule_name
 
     def build_function(name, install_path, args):
         gnu_add_configure_make_install_from_source(
@@ -333,17 +340,16 @@ def gnu_capsule_add_checkout_and_run(
         )
 
     capsule_add_checkout_and_run(
-        capsule_name = capsule_name,
-        domain = "ftp.gnu.org",
-        owner = effective_owner,
-        repo = effective_repo,
+        name,
+        capsule = capsule,
         version = version,
-        deploy_repo = deploy_repo,
+        oras_url = oras_url,
+        gh_deploy_repo = gh_deploy_repo,
         suffix = suffix,
         build_function = build_function,
         build_args = {
-            "owner": effective_owner,
-            "repo": effective_repo,
+            "owner": capsule["owner"],
+            "repo": capsule["repo"],
             "version": version,
             "configure_args": configure_args,
         },

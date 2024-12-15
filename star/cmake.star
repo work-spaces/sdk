@@ -236,14 +236,13 @@ def cmake_add_source_archive(
     )
 
 def cmake_capsule_add_repo_checkout_and_run(
-        capsule_name,
-        domain,
-        owner,
-        repo,
+        name,
+        capsule,
         rev,
         version,
-        url = None,
-        deploy_repo = None,
+        source_url = None,
+        oras_url = None,
+        gh_deploy_repo = None,
         suffix = "tar.gz",
         configure_args = [],
         build_args = [],
@@ -252,21 +251,20 @@ def cmake_capsule_add_repo_checkout_and_run(
     Add the checkout and run if the install path does not exist
 
     Args:
-        capsule_name: The name of the capsule
-        domain: The domain of the repository
-        owner: The owner of the repository
-        repo: The repository name
+        name: The rule name
+        capsule: return value of capsule()
         rev: The commit/rev of the repository
         version: The version of the repository
-        url: The URL of the repository (built from domain, owner, and repo if not provided)
-        deploy_repo: The repository to deploy the capsule to
+        source_url: The URL of the repository (built from domain, owner, and repo if not provided)
+        oras_url: The URL of the oras repo to use for the capsule
+        gh_deploy_repo: The gh repository to deploy the capsule to
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
         configure_args: The arguments to pass to the configure script
         build_args: The arguments to pass to the build command
         relative_source_directory: The directory to set `-S<source_directory>` when configuraing CMake (default is where repo is checked out)
     """
 
-    effective_url = url if url != None else "https://{}/{}/{}".format(domain, owner, repo)
+    effective_url = source_url if source_url != None else "https://{}/{}/{}".format(domain, owner, repo)
 
     def build_function(name, install_path, args):
         cmake_add_repo(
@@ -280,13 +278,12 @@ def cmake_capsule_add_repo_checkout_and_run(
         )
 
     capsule_add_checkout_and_run(
-        capsule_name = capsule_name,
-        domain = domain,
-        owner = owner,
-        repo = repo,
+        name,
+        capsule = capsule,
         version = version,
-        deploy_repo = deploy_repo,
+        oras_url = oras_url,
         suffix = suffix,
+        gh_deploy_repo = gh_deploy_repo,
         build_function = build_function,
         build_function_args = {
             "url": effective_url,
@@ -299,16 +296,15 @@ def cmake_capsule_add_repo_checkout_and_run(
     )
 
 def cmake_capsule_add_archive_checkout_and_run(
-        capsule_name,
-        domain,
-        owner,
-        repo,
+        name,
+        capsule,
         version,
         url,
         sha256,
         source_directory,
         filename = None,
-        deploy_repo = None,
+        oras_url = None,
+        gh_deploy_repo = None,
         suffix = "tar.gz",
         configure_args = [],
         build_args = []):
@@ -316,16 +312,15 @@ def cmake_capsule_add_archive_checkout_and_run(
     Add the checkout and run if the install path does not exist
 
     Args:
-        capsule_name: The name of the capsule
-        domain: The domain of the repository
-        owner: The owner of the repository
-        repo: The repository name
+        name: The name of the capsule
+        capsule: The capsule descriptor
         version: The version of the repository
         url: The URL of the repository (built from domain, owner, and repo if not provided)
         sha256: The SHA256 of the archive
         source_directory: The directory of the project
         filename: The filename if the URL does not end in the filename
-        deploy_repo: The repository to deploy the capsule to
+        oras_url: The URL of the oras repo to use for the capsule
+        gh_deploy_repo: The repository to deploy the capsule to
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
         configure_args: The arguments to pass to the configure script
         build_args: The arguments to pass to the build command
@@ -344,14 +339,13 @@ def cmake_capsule_add_archive_checkout_and_run(
         )
 
     capsule_add_checkout_and_run(
-        capsule_name = capsule_name,
-        domain = domain,
-        owner = owner,
-        repo = repo,
+        name,
+        capsule = capsule,
         version = version,
-        deploy_repo = deploy_repo,
-        suffix = suffix,
+        oras_url = oras_url,
+        gh_deploy_repo = gh_deploy_repo,
         build_function = build_function,
+        suffix = suffix,
         build_function_args = {
             "url": url,
             "sha256": sha256,
