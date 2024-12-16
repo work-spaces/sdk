@@ -246,6 +246,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         suffix = "tar.gz",
         configure_args = [],
         build_args = [],
+        checkout_submodules = False,
         relative_source_directory = None):
     """
     Add the checkout and run if the install path does not exist
@@ -261,6 +262,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
         configure_args: The arguments to pass to the configure script
         build_args: The arguments to pass to the build command
+        checkout_submodules: Whether to checkout submodules
         relative_source_directory: The directory to set `-S<source_directory>` when configuraing CMake (default is where repo is checked out)
     """
 
@@ -275,6 +277,7 @@ def cmake_capsule_add_repo_checkout_and_run(
             configure_args = args["configure_args"],
             build_args = args["build_args"],
             relative_source_directory = args["relative_source_directory"],
+            checkout_submodules = args["checkout_submodules"]
         )
 
     capsule_add_checkout_and_run(
@@ -292,6 +295,7 @@ def cmake_capsule_add_repo_checkout_and_run(
             "relative_source_directory": relative_source_directory,
             "configure_args": configure_args,
             "build_args": build_args,
+            "checkout_submodules": checkout_submodules,
         },
     )
 
