@@ -240,6 +240,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         capsule,
         rev,
         version,
+        checkout_function = None,
         source_url = None,
         oras_url = None,
         gh_deploy_repo = None,
@@ -256,6 +257,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         capsule: return value of capsule()
         rev: The commit/rev of the repository
         version: The version of the repository
+        checkout_function: The function to call to checkout the repository
         source_url: The URL of the repository (built from domain, owner, and repo if not provided)
         oras_url: The URL of the oras repo to use for the capsule
         gh_deploy_repo: The gh repository to deploy the capsule to
@@ -269,6 +271,10 @@ def cmake_capsule_add_repo_checkout_and_run(
     effective_url = source_url if source_url != None else "https://{}/{}/{}".format(capsule["domain"], capsule["owner"], capsule["repo"])
 
     def build_function(name, install_path, args):
+
+        if args["checkout_function"] != None:
+            args["checkout_function"]()
+
         cmake_add_repo(
             name,
             url = args["url"],
@@ -296,6 +302,7 @@ def cmake_capsule_add_repo_checkout_and_run(
             "configure_args": configure_args,
             "build_args": build_args,
             "checkout_submodules": checkout_submodules,
+            "checkout_function": checkout_function,
         },
     )
 
