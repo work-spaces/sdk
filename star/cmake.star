@@ -257,7 +257,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         capsule: return value of capsule()
         rev: The commit/rev of the repository
         version: The version of the repository
-        checkout_function: The function to call to checkout the repository
+        checkout_function: Function is called to checkout build tools if a build is required
         source_url: The URL of the repository (built from domain, owner, and repo if not provided)
         oras_url: The URL of the oras repo to use for the capsule
         gh_deploy_repo: The gh repository to deploy the capsule to
