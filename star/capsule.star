@@ -61,7 +61,7 @@ def _descriptor_to_name(descriptor):
         str: The name of the capsule
     """
 
-    dev_mark = "-non-reproducible" if info.is_workspace_reproducible() else ""
+    dev_mark = "" if info.is_workspace_reproducible() else "-non-reproducible"
     return "{}-{}-{}{}".format(
         descriptor["domain"],
         descriptor["owner"],
