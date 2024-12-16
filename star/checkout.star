@@ -278,7 +278,6 @@ def checkout_add_capsule(
     checkout.add_capsule(
         rule = {"name": name, "deps": deps},
         capsule = {
-            "required": required,
             "scripts": scripts,
         } | prefix_option,
     )
