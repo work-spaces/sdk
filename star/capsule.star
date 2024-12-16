@@ -61,10 +61,12 @@ def _descriptor_to_name(descriptor):
         str: The name of the capsule
     """
 
-    return "{}-{}-{}".format(
+    dev_mark = "-non-reproducible" if info.is_workspace_reproducible() else ""
+    return "{}-{}-{}{}".format(
         descriptor["domain"],
         descriptor["owner"],
         descriptor["repo"],
+        dev_mark
     )
 
 def _descriptor_to_oras_artifact(capsule):
