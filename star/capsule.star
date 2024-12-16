@@ -321,7 +321,7 @@ def _gh_add(name, capsule, deploy_repo, suffix = "tar.xz"):
 
     return checkout_platform_rule
 
-def capsule_add_workflow_repo(
+def capsule_checkout_add_workflow_repo(
         name,
         url,
         rev,
@@ -329,7 +329,7 @@ def capsule_add_workflow_repo(
     """
     Adds a repository to the @capsules folder where `spaces checkout` is called.
 
-    The files in the repo will be available to capsule_add() scripts argument. The
+    The files in the repo will be available to _add_archive() scripts argument. The
     files will not be evaluated in the parent workspace.
 
     Args:
@@ -354,7 +354,7 @@ def capsule_add_workflow_repo(
 
     return checkout_rule_name
 
-def capsule_add_workflow_repo_as_soft_link(name):
+def capsule_checkout_add_workflow_repo_as_soft_link(name):
     """
     Soft link the parent workflow repo to the capsule.
 
@@ -379,7 +379,7 @@ def capsule_add_workflow_repo_as_soft_link(name):
 
 
 
-def capsule_checkout_define_dependency(
+def _checkout_define_dependency(
         name,
         capsule,
         version):
@@ -408,14 +408,14 @@ def capsule_checkout_define_dependency(
         }],
     )
 
-def capsule_add(
+def _add_archive(
         name,
         capsule,
         oras_url = None,
         gh_deploy_repo = None,
         suffix = "tar.xz"):
     """
-    Add the gh executable to the sysroot.
+    Add the the executable to the sysroot.
 
     If the release is not available None is returned. Otherwise, a platform archive dictionary is returned.
 
@@ -526,7 +526,7 @@ def capsule_add_checkout_and_run(
 
     capsule_name = _descriptor_to_name(capsule)
 
-    capsule_checkout_define_dependency(
+    _checkout_define_dependency(
         "{}_info".format(capsule_name),
         capsule = capsule,
         version = version,
@@ -538,7 +538,7 @@ def capsule_add_checkout_and_run(
 
         platform_archive_rule = None
         if oras_url != None or gh_deploy_repo != None:
-            platform_archive_rule = capsule_add(
+            platform_archive_rule = _add_archive(
                 capsule_publish_name,
                 capsule = capsule,
                 oras_url = oras_url,

@@ -15,7 +15,6 @@ load(
     "capsule.star",
     "capsule",
     "capsule_add_checkout_and_run",
-    "capsule_checkout_define_dependency",
 )
 load(
     "//@packages/star/github.com/packages.star",
