@@ -50,7 +50,7 @@ def capsule_github(
 
     return capsule("github.com", owner, repo)
 
-def capsule_descriptor_to_name(descriptor):
+def _descriptor_to_name(descriptor):
     """
     Convert a capsule descriptor to a name.
 
@@ -67,7 +67,7 @@ def capsule_descriptor_to_name(descriptor):
         descriptor["repo"],
     )
 
-def capsule_descriptor_to_oras_artifact(capsule):
+def _descriptor_to_oras_artifact(capsule):
     """
     Convert a capsule descriptor to an oras artifact.
 
@@ -78,10 +78,10 @@ def capsule_descriptor_to_oras_artifact(capsule):
         str: The oras artifact (excludes the digest)
     """
 
-    capsule_name = capsule_descriptor_to_name(capsule)
+    capsule_name = _descriptor_to_name(capsule)
     return "{}-{}".format(capsule_name, info.get_platform_name())
 
-def capsule_descriptor_to_oras_label(url, capsule):
+def _descriptor_to_oras_label(url, capsule):
     """
     Convert a capsule descriptor to an oras label.
 
@@ -93,36 +93,10 @@ def capsule_descriptor_to_oras_label(url, capsule):
         str: The oras label
     """
 
-    oras_artifact = capsule_descriptor_to_oras_artifact(capsule)
+    oras_artifact = _descriptor_to_oras_artifact(capsule)
     return "{}/{}".format(url, oras_artifact)
 
-def capsule_dependency(
-        domain,
-        owner,
-        repo,
-        semver,
-        dependency_type = "Build"):
-    """
-    Create a capsule dependency descriptor. This used with checkout_add_capsule().
-
-    Args:
-        domain (str): The domain of the dependency
-        owner (str): The owner of the dependency
-        repo (str): The repo of the dependency
-        semver (str): The semver of the dependency
-        dependency_type (str): The type of dependency (Build is the default)
-
-    Returns:
-        dict: The capsule dependency descriptor
-    """
-
-    return {
-        "descriptor": capsule(domain, owner, repo),
-        "semver": semver,
-        "dependency_type": dependency_type,
-    }
-
-def capsule_get_store_prefix(capsule):
+def _get_store_prefix(capsule):
     """
     Get the prefix of the capsule.
 
@@ -137,25 +111,10 @@ def capsule_get_store_prefix(capsule):
     """
     store = info.get_path_to_store()
     digest = info.get_workspace_digest()
-    capsule_name = capsule_descriptor_to_name(capsule)
+    capsule_name = _descriptor_to_name(capsule)
     return "{}/capsules/{}/{}".format(store, capsule_name, digest)
 
-def capsule_get_depedency_info(depedency):
-    """
-    Gets the information about the dependency.
-
-    The depedency is resolved from all the capsules available using sematic versioning. The
-    minimal version solutions algorithm is used.
-
-    Args:
-        depedency: The dependency descriptor
-
-    Returns:
-        dict: with relevant information about the dependency
-    """
-    return info.get_capsule_info(depedency)
-
-def capsule_get_install_path(capsule):
+def _get_install_path(capsule):
     """
     Check if the capsule is required to be checked out and run.
 
@@ -170,7 +129,7 @@ def capsule_get_install_path(capsule):
     """
 
     digest = info.get_workspace_digest()
-    install_path = capsule_get_store_prefix(capsule)
+    install_path = _get_store_prefix(capsule)
     capsule_info_path = "{}/{}.json".format(install_path, digest)
     if fs.exists(capsule_info_path):
         return None
@@ -189,12 +148,12 @@ def capsule_oras_publish(name, capsule, deps, url, suffix = "tar.xz"):
     """
 
     digest = info.get_workspace_digest()
-    install_path = capsule_get_store_prefix(capsule)
+    install_path = _get_store_prefix(capsule)
 
     oras_add_publish_archive(
         name,
         url = url,
-        artifact = capsule_descriptor_to_oras_artifact(capsule),
+        artifact = _descriptor_to_oras_artifact(capsule),
         tag = digest,
         input = install_path,
         deps = deps,
@@ -203,23 +162,21 @@ def capsule_oras_publish(name, capsule, deps, url, suffix = "tar.xz"):
 
 def capsule_checkout(
         name,
-        required,
         scripts,
-        prefix = None,
+        prefix,
         deps = []):
     """
-    Adds a capsule to the workspace.
+    Checks out a capsule and adds it to the workspace.
 
     Args:
         name (str): The name of the rule.
-        required (list): List of dependencies that the capsule is expected to provide. The items are the return value of capsule_dependency().
         scripts (list): List of scripts to run that define how to install the capsule on the local machine.
-        prefix (str): The workspace prefix where capsule artifacts should be hard-linked. Default is not hard-linking
+        prefix (str): The workspace prefix where capsule artifacts should be hard-linked. Use `sysroot` for build deps and `build/install` for runtime deps.
         deps (list): List of dependencies for creating the capsule.
     """
-    checkout_add_capsule(name, required, scripts, prefix = prefix, deps = deps)
+    checkout_add_capsule(name, scripts, prefix = prefix, deps = deps)
 
-def capsule_oras_add(name, capsule, url):
+def _oras_add(name, capsule, url):
     """
     Add the oras capsule to the sysroot.
 
@@ -236,7 +193,7 @@ def capsule_oras_add(name, capsule, url):
 
     digest = info.get_workspace_digest()
     oras_command = "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
-    oras_label = "{}:{}".format(capsule_descriptor_to_oras_label(url, capsule), digest)
+    oras_label = "{}:{}".format(_descriptor_to_oras_label(url, capsule), digest)
 
     # Check oras to see if the executable is available
     check_release = process.exec({
@@ -256,14 +213,14 @@ def capsule_oras_add(name, capsule, url):
     checkout_add_oras_archive(
         checkout_platform_rule,
         url = url,
-        artifact = capsule_descriptor_to_oras_artifact(capsule),
+        artifact = _descriptor_to_oras_artifact(capsule),
         tag = digest,
-        add_prefix = capsule_get_store_prefix(capsule),
+        add_prefix = _get_store_prefix(capsule),
     )
 
     return checkout_platform_rule
 
-def capsule_gh_publish(name, capsule, deps, deploy_repo, suffix = "tar.xz"):
+def _gh_publish(name, capsule, deps, deploy_repo, suffix = "tar.xz"):
     """
     Publish the capsule to github
 
@@ -276,8 +233,8 @@ def capsule_gh_publish(name, capsule, deps, deploy_repo, suffix = "tar.xz"):
     """
 
     digest = info.get_workspace_digest()
-    install_path = capsule_get_store_prefix(capsule)
-    capsule_name = capsule_descriptor_to_name(capsule)
+    install_path = _get_store_prefix(capsule)
+    capsule_name = _descriptor_to_name(capsule)
 
     gh_add_publish_archive(
         capsule_name,
@@ -289,14 +246,14 @@ def capsule_gh_publish(name, capsule, deps, deploy_repo, suffix = "tar.xz"):
     )
 
 
-def capsule_gh_add(name, capsule, deploy_repo, suffix = "tar.xz"):
+def _gh_add(name, capsule, deploy_repo, suffix = "tar.xz"):
     """
     Add the gh executable to the sysroot.
 
     If the release is not available None is returned. Otherwise, a platform archive dictionary is returned.
 
     Args:
-        name: same name used with capsule_gh_publish()
+        name: same name used with _gh_publish()
         capsule: return value of capsule()
         deploy_repo: The repository to deploy the capsule to
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
@@ -307,7 +264,7 @@ def capsule_gh_add(name, capsule, deploy_repo, suffix = "tar.xz"):
 
     # https://github.com/work-spaces/tools/releases/download/ninja-v1.12.1/ninja-v1.12.1-macos-x86_64.sha256.txt
     digest = info.get_workspace_digest()
-    capsule_name = capsule_descriptor_to_name(capsule)
+    capsule_name = _descriptor_to_name(capsule)
     release_name = "{}-v{}".format(capsule_name, digest)
     gh_command = "{}/sysroot/bin/gh".format(info.get_path_to_spaces_tools())
 
@@ -357,7 +314,7 @@ def capsule_gh_add(name, capsule, deploy_repo, suffix = "tar.xz"):
                 "url": platform_url,
                 "sha256": platform_sha256_url,
                 "link": "Hard",
-                "add_prefix": capsule_get_store_prefix(capsule_name),
+                "add_prefix": _get_store_prefix(capsule_name),
             },
         },
     )
@@ -439,7 +396,7 @@ def capsule_checkout_define_dependency(
         version: The version of the dependency
     """
 
-    capsule_prefix = capsule_get_store_prefix(capsule)
+    capsule_prefix = _get_store_prefix(capsule)
 
     checkout_update_asset(
         name,
@@ -463,7 +420,7 @@ def capsule_add(
     If the release is not available None is returned. Otherwise, a platform archive dictionary is returned.
 
     Args:
-        name: same name used with capsule_gh_publish()
+        name: same name used with _gh_publish()
         capsule: return value of capsule()
         oras_url: The oras URL to deploy the capsule to
         gh_deploy_repo: The repository to deploy the capsule to
@@ -477,13 +434,13 @@ def capsule_add(
         checkout.abort("Cannot specify both oras_url and gh_deploy_repo")
 
     if oras_url != None:
-        return capsule_oras_add(
+        return _oras_add(
             name,
             capsule = capsule,
             url = oras_url,
         )
     elif gh_deploy_repo != None:
-        return capsule_gh_add(
+        return _gh_add(
             name,
             capsule = capsule,
             deploy_repo = gh_deploy_repo,
@@ -513,7 +470,7 @@ def capsule_relocate_and_publish(
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
     """
 
-    capsule_name = capsule_descriptor_to_name(capsule)
+    capsule_name = _descriptor_to_name(capsule)
 
     relocate_rule_name = "{}_update_macos_install_dir".format(capsule_name)
     rpath_update_macos_install_dir(
@@ -531,7 +488,7 @@ def capsule_relocate_and_publish(
             suffix = suffix,
         )
     elif gh_deploy_repo != None:
-        capsule_gh_publish(
+        _gh_publish(
             name,
             capsule_name = capsule_name,
             deps = [relocate_rule_name],
@@ -567,7 +524,7 @@ def capsule_add_checkout_and_run(
     if oras_url != None and gh_deploy_repo != None:
         checkout.abort("Cannot specify both oras_url and gh_deploy_repo")
 
-    capsule_name = capsule_descriptor_to_name(capsule)
+    capsule_name = _descriptor_to_name(capsule)
 
     capsule_checkout_define_dependency(
         "{}_info".format(capsule_name),
@@ -575,7 +532,7 @@ def capsule_add_checkout_and_run(
         version = version,
     )
 
-    install_path = capsule_get_install_path(capsule)
+    install_path = _get_install_path(capsule)
     if install_path != None:
         capsule_publish_name = "{}_capsule".format(capsule_name)
 

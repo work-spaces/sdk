@@ -291,24 +291,6 @@ def gnu_capsule(repo, owner = None, domain = "ftp.gnu.org"):
     effective_owner = owner if owner else repo
     return capsule(domain, effective_owner, repo)
 
-def gnu_capsule_define_dependency(
-        name,
-        capsule,
-        version):
-    """
-    Define the dependency for the capsule
-
-    Args:
-        name: The rule name
-        capsule: return value of capsule()
-        version: The version of the repository
-    """
-    capsule_checkout_define_dependency(
-        name,
-        capsule = capsule,
-        version = version,
-    )
-
 def gnu_capsule_add_checkout_and_run(
         name,
         capsule,

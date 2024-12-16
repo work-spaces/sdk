@@ -260,7 +260,6 @@ def checkout_add_which_asset(
 
 def checkout_add_capsule(
         name,
-        required,
         scripts,
         prefix = None,
         deps = []):
@@ -269,7 +268,6 @@ def checkout_add_capsule(
 
     Args:
         name (str): The name of the rule.
-        required (list): List of dependencies that the capsule is expected to provide.
         scripts (list): List of scripts to run that define how to install the capsule on the local machine.
         prefix (str): The workspace prefix where capsule artifacts should be hard-linked. Default is not hard-linking
         deps (list): List of dependencies for creating the capsule.
