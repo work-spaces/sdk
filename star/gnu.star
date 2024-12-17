@@ -296,6 +296,7 @@ def gnu_capsule_add_checkout_and_run(
         version,
         oras_url = None,
         gh_deploy_repo = None,
+        checkout_function = None,
         suffix = "tar.gz",
         configure_args = []):
     """
@@ -307,11 +308,14 @@ def gnu_capsule_add_checkout_and_run(
         version: The version of the repository
         oras_url: The ORAS URL to deploy the capsule
         gh_deploy_repo: The repository to deploy the capsule to
+        checkout_function: The checkout function
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
         configure_args: The arguments to pass to the configure script
     """
 
     def build_function(name, install_path, args):
+        checkout_function()
+
         gnu_add_configure_make_install_from_source(
             name,
             owner = args["owner"],
