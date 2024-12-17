@@ -442,9 +442,6 @@ def _add_archive(
         str: the name of checkout rule for the platform archive
     """
 
-    if oras_url != None and gh_deploy_repo != None:
-        checkout.abort("Cannot specify both oras_url and gh_deploy_repo")
-
     if oras_url != None:
         return _oras_add(
             name,
@@ -533,9 +530,6 @@ def capsule_add_checkout_and_run(
         build_function: The function to build the capsule
         build_function_args: dict to pass to the build function
     """
-
-    if oras_url != None and gh_deploy_repo != None:
-        checkout.abort("Cannot specify both oras_url and gh_deploy_repo")
 
     capsule_name = _descriptor_to_name(capsule)
 
