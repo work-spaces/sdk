@@ -65,7 +65,7 @@ def oras_add_publish_archive(
 
     oras_command = _get_oras_command()
 
-    deploy_args = [] if deploy_repo == None else ['--annotation="org.opencontainers.image.source={}'.format(deploy_repo)]
+    deploy_args = [] if deploy_repo == None else ['--annotation="org.opencontainers.image.source={}"'.format(deploy_repo)]
 
     run_add_exec(
         oras_rule_push_name,
