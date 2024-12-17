@@ -66,7 +66,7 @@ def _descriptor_to_name(descriptor):
         descriptor["domain"],
         descriptor["owner"],
         descriptor["repo"],
-        dev_mark
+        dev_mark,
     )
 
 def _descriptor_to_oras_artifact(capsule):
@@ -137,7 +137,13 @@ def _get_install_path(capsule):
         return None
     return install_path
 
-def capsule_oras_publish(name, capsule, deps, url, suffix = "tar.xz"):
+def _oras_publish(
+        name,
+        capsule,
+        deps,
+        url,
+        deploy_repo,
+        suffix = "tar.xz"):
     """
     Publish the capsule to github
 
@@ -146,6 +152,7 @@ def capsule_oras_publish(name, capsule, deps, url, suffix = "tar.xz"):
         capsule: capsule()
         deps: The dependencies of the capsule
         url: Oras URL to publish the capsule
+        deploy_repo: The repository to associate the capsule with
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
     """
 
@@ -155,6 +162,7 @@ def capsule_oras_publish(name, capsule, deps, url, suffix = "tar.xz"):
     oras_add_publish_archive(
         name,
         url = url,
+        deploy_repo = deploy_repo,
         artifact = _descriptor_to_oras_artifact(capsule),
         tag = digest,
         input = install_path,
@@ -210,7 +218,7 @@ def _oras_add(name, capsule, url):
     if check_release["status"] != 0:
         # the release is not available
         return None
-    
+
     if not json.is_string_json(check_release["stdout"]):
         # manifest fetch doesn't return an error on failure
         # but is doesn't return a json string
@@ -251,7 +259,6 @@ def _gh_publish(name, capsule, deps, deploy_repo, suffix = "tar.xz"):
         deps = deps,
         suffix = suffix,
     )
-
 
 def _gh_add(name, capsule, deploy_repo, suffix = "tar.xz"):
     """
@@ -384,8 +391,6 @@ def capsule_checkout_add_workflow_repo_as_soft_link(name):
 
     return rule_name
 
-
-
 def _checkout_define_dependency(
         name,
         capsule,
@@ -453,7 +458,7 @@ def _add_archive(
             deploy_repo = gh_deploy_repo,
             suffix = suffix,
         )
-    
+
     return None
 
 def capsule_relocate_and_publish(
@@ -483,15 +488,16 @@ def capsule_relocate_and_publish(
     rpath_update_macos_install_dir(
         relocate_rule_name,
         install_path = install_path,
-        deps = deps
+        deps = deps,
     )
 
     if oras_url != None:
-        capsule_oras_publish(
+        _oras_publish(
             name,
             capsule = capsule,
             deps = [relocate_rule_name],
             url = oras_url,
+            deploy_repo = gh_deploy_repo,
             suffix = suffix,
         )
     elif gh_deploy_repo != None:
@@ -552,7 +558,6 @@ def capsule_add_checkout_and_run(
                 gh_deploy_repo = gh_deploy_repo,
                 suffix = suffix,
             )
-            
 
         if platform_archive_rule == None:
             # build from source and install

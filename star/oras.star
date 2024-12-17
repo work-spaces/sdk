@@ -5,13 +5,11 @@ Spaces starlark functions for publishing packages using oras
 load("run.star", "run_add_exec", "run_add_target")
 load("checkout.star", "checkout_add_oras_archive")
 
-
 def _get_oras_command():
     return "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
 
 def _get_oras_label(url, artifact, tag):
     return "{}/{}:{}".format(url, artifact, tag)
-
 
 def oras_add_publish_archive(
         name,
@@ -20,6 +18,7 @@ def oras_add_publish_archive(
         tag,
         input,
         deps,
+        deploy_repo = None,
         layer_info = "application/archive",
         suffix = "tar.xz"):
     """
@@ -32,6 +31,7 @@ def oras_add_publish_archive(
         tag: The tag of the oras archive.
         input: The workspace path to the folder/file to archive and publish.
         deps: Dependencies for the archive.
+        deploy_repo: The deploy repository to publish the archive to.
         layer_info: The layer info of the archive.
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip).
     """
@@ -64,12 +64,16 @@ def oras_add_publish_archive(
     artifact_type = "{}+{}".format(layer_info, suffix)
 
     oras_command = _get_oras_command()
+
+    deploy_args = [] if deploy_repo == None else ['--annotation="org.opencontainers.image.source={}'.format(deploy_repo)]
+
     run_add_exec(
         oras_rule_push_name,
         command = oras_command,
         args = [
             "push",
             "--artifact-type={}".format(artifact_type),
+        ] + deploy_args + [
             oras_url_label,
             archive_output_file,
         ],
@@ -100,7 +104,7 @@ def oras_add_platform_archive(
         add_prefix: The prefix to add to the archive.
         strip_prefix: The prefix to strip from the archive.
         globs: List of globs to include/exclude.
-       
+
     """
 
     url = "oras://{}".format(_get_oras_label(url, name, tag))
