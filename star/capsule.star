@@ -210,6 +210,11 @@ def _oras_add(name, capsule, url):
     if check_release["status"] != 0:
         # the release is not available
         return None
+    
+    if not json.is_string_json(check_release["stdout"]):
+        # manifest fetch doesn't return an error on failure
+        # but is doesn't return a json string
+        return None
 
     checkout_platform_rule = "{}_add_platform_archive".format(name)
     checkout_add_oras_archive(
