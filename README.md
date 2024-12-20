@@ -14,9 +14,9 @@ Then `load` code from this repository in your checkout script.
 
 ```python
 
-load("@packages/star/github.com/Kitware/CMake/v3.30.5.star", cmake3_platforms = "platforms")
-load("@sdk/star/cmake.star", "add_cmake")
-load("@packages/star/github.com/ninja-build/ninja/v1.12.1.star", ninja1_platforms = "platforms")
+load("//@star/packages/star/github.com/Kitware/CMake/v3.30.5.star", cmake3_platforms = "platforms")
+load("//@star/sdk/star/cmake.star", "add_cmake")
+load("//@star/packages/star/github.com/ninja-build/ninja/v1.12.1.star", ninja1_platforms = "platforms")
 
 checkout.add_platform_archive(
     rule = {"name": "ninja1"},
