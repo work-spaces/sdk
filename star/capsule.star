@@ -3,7 +3,7 @@ Spaces starlark functions for creating and working with capsules
 """
 
 load(
-    "checkout.sta",
+    "checkout.star",
     "checkout_add_capsule",
     "checkout_add_oras_archive",
     "checkout_add_platform_archive",
