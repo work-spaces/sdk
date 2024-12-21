@@ -10,7 +10,8 @@ def checkout_add_repo(
         clone = "Default",
         is_evaluate_spaces_modules = None,
         sparse_checkout_mode = None,
-        sparse_checkout_list = None):
+        sparse_checkout_list = None,
+        deps = []):
     """
     Clones a repository and checks it out at a specific revision.
 
@@ -23,6 +24,7 @@ def checkout_add_repo(
         is_evaluate_spaces_modules (bool): Whether to evaluate spaces.star files in the repo (default is True).
         sparse_checkout_mode (str): Cone | NoCone
         sparse_checkout_list (list): List of paths to include/exclude
+        deps (list): List of dependencies for the rule.
     """
 
     evaluate_spaces_modules = {
@@ -33,7 +35,7 @@ def checkout_add_repo(
     } if sparse_checkout_mode != None else {}
 
     checkout.add_repo(
-        rule = {"name": rule_name},
+        rule = {"name": rule_name, "deps": deps},
         repo = {
             "url": url,
             "rev": rev,
