@@ -8,7 +8,9 @@ def checkout_add_repo(
         rev,
         checkout_type = "Revision",
         clone = "Default",
-        is_evaluate_spaces_modules = None):
+        is_evaluate_spaces_modules = None,
+        sparse_checkout_mode = None,
+        sparse_checkout_list = None):
     """
     Clones a repository and checks it out at a specific revision.
 
@@ -19,9 +21,16 @@ def checkout_add_repo(
         checkout_type (str): Revision | NewBranch
         clone (str): Default | Worktree
         is_evaluate_spaces_modules (bool): Whether to evaluate spaces.star files in the repo (default is True).
+        sparse_checkout_mode (str): Cone | NoCone
+        sparse_checkout_list (list): List of paths to include/exclude
     """
 
-    evaluate_spaces_modules = {"is_evaluate_spaces_modules": is_evaluate_spaces_modules} if is_evaluate_spaces_modules != None else {}
+    evaluate_spaces_modules = {
+        "is_evaluate_spaces_modules": is_evaluate_spaces_modules,
+    } if is_evaluate_spaces_modules != None else {}
+    effective_sparse_checkout = {
+        "sparse_checkout": {"mode": sparse_checkout_mode, "list": sparse_checkout_list},
+    } if sparse_checkout_mode != None else {}
 
     checkout.add_repo(
         rule = {"name": rule_name},
@@ -30,7 +39,7 @@ def checkout_add_repo(
             "rev": rev,
             "checkout": checkout_type,
             "clone": clone,
-        } | evaluate_spaces_modules,
+        } | evaluate_spaces_modules | effective_sparse_checkout,
     )
 
 def checkout_add_archive(
@@ -226,7 +235,7 @@ def checkout_update_env(
         inherited_vars (list): List of environment variables to inherit from the calling environment.
     """
 
-    effective_inherited_vars = {"inherited_vars": inherited_vars } if inherited_vars != None else {}
+    effective_inherited_vars = {"inherited_vars": inherited_vars} if inherited_vars != None else {}
 
     checkout.update_env(
         rule = {"name": name},
@@ -304,16 +313,15 @@ def update_platforms_prefix(
 
     return updated_platforms
 
-
 def checkout_add_oras_archive(
-    name,
-    url,
-    artifact,
-    tag,
-    add_prefix,
-    manifest_digest_path = "/layers/0/digest",
-    manifest_artifact_path = "/layers/0/annotations/org.opencontainers.image.title",
-    globs = None):
+        name,
+        url,
+        artifact,
+        tag,
+        add_prefix,
+        manifest_digest_path = "/layers/0/digest",
+        manifest_artifact_path = "/layers/0/annotations/org.opencontainers.image.title",
+        globs = None):
     """
     Adds an oras archive to the workspace.
 
@@ -329,14 +337,14 @@ def checkout_add_oras_archive(
     """
 
     checkout.add_oras_archive(
-    rule = { "name": name },
-    oras_archive = {
-        "url": url,
-        "artifact": artifact,
-        "tag": tag,
-        "manifest_digest_path": manifest_digest_path,
-        "manifest_artifact_path": manifest_artifact_path,
-        "add_prefix": add_prefix,
-        "globs": globs,
-    }
-)
+        rule = {"name": name},
+        oras_archive = {
+            "url": url,
+            "artifact": artifact,
+            "tag": tag,
+            "manifest_digest_path": manifest_digest_path,
+            "manifest_artifact_path": manifest_artifact_path,
+            "add_prefix": add_prefix,
+            "globs": globs,
+        },
+    )
