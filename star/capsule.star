@@ -356,7 +356,7 @@ def capsule_checkout_add_workflow_repo(
         str: Name of the checkout rule
     """
 
-    checkout_rule_name = ".spaces/@capsules/{}".format(name)
+    checkout_rule_name = "{}/{}".format(info.get_path_to_workspace_capsules(), name)
 
     checkout_add_repo(
         checkout_rule_name,
