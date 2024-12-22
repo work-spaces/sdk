@@ -273,7 +273,7 @@ def cmake_capsule_add_repo_checkout_and_run(
     def build_function(name, install_path, args):
 
         if args["checkout_function"] != None:
-            args["checkout_function"]()
+            args["checkout_function"](install_path)
 
         cmake_add_repo(
             name,
