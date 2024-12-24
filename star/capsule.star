@@ -111,10 +111,10 @@ def _get_store_prefix(capsule):
     Returns:
         The prefix of the capsule
     """
-    store = info.get_path_to_store()
+    sysroot = info.get_path_to_capsule_sysroot()
     digest = info.get_workspace_digest()
     capsule_name = _descriptor_to_name(capsule)
-    return "{}/capsules/{}/{}".format(store, capsule_name, digest)
+    return "{}/{}/{}".format(sysroot, capsule_name, digest)
 
 def _get_install_path(capsule):
     """
@@ -356,7 +356,7 @@ def capsule_checkout_add_workflow_repo(
         str: Name of the checkout rule
     """
 
-    checkout_rule_name = "{}/{}".format(info.get_path_to_capsule_workspace(), name)
+    checkout_rule_name = "{}/{}".format(info.get_path_to_capsule_workflows(), name)
 
     checkout_add_repo(
         checkout_rule_name,

@@ -284,13 +284,15 @@ def checkout_add_capsule(
         deps (list): List of dependencies for creating the capsule.
     """
 
-    prefix_option = {"prefix": prefix} if prefix != None else {}
+    script_prefix = info.get_path_to_capsule_workflows()
+    effective_scripts = ["{}/{}".format(script_prefix, script) for script in scripts]
 
     checkout.add_capsule(
         rule = {"name": name, "deps": deps},
         capsule = {
-            "scripts": scripts,
-        } | prefix_option,
+            "scripts": effective_scripts,
+            "prefix": prefix
+        }
     )
 
 def update_platforms_prefix(
