@@ -122,7 +122,7 @@ def gnu_add_repo(
 
     checkout_rule = "{}_source".format(name)
     checkout_add_repo(
-        checkout_rule = name,
+        checkout_rule,
         url = url,
         rev = rev,
         clone = "Blobless",

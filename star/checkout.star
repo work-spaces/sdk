@@ -3,7 +3,7 @@ User friendly wrapper functions for the spaces checkout built-in functions.
 """
 
 def checkout_add_repo(
-        rule_name,
+        name,
         url,
         rev,
         checkout_type = "Revision",
@@ -16,7 +16,7 @@ def checkout_add_repo(
     Clones a repository and checks it out at a specific revision.
 
     Args:
-        rule_name (str): The name of the rule.
+        name (str): The name of the rule.
         url (str): The git repository URL to clone
         rev (str): The branch or commit hash to checkout
         checkout_type (str): Revision | NewBranch
@@ -35,7 +35,7 @@ def checkout_add_repo(
     } if sparse_mode != None else {}
 
     checkout.add_repo(
-        rule = {"name": rule_name, "deps": deps},
+        rule = {"name": name, "deps": deps},
         repo = {
             "url": url,
             "rev": rev,
