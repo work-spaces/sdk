@@ -365,8 +365,6 @@ def capsule_checkout_add_workflow_repo(
         is_evaluate_spaces_modules = False,
     )
 
-    return checkout_rule_name
-
 def capsule_checkout_add_workflow_repo_as_soft_link(name):
     """
     Soft link the parent workflow repo to the capsule.
