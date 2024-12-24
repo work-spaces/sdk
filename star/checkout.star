@@ -11,6 +11,7 @@ def checkout_add_repo(
         is_evaluate_spaces_modules = None,
         sparse_mode = None,
         sparse_list = None,
+        working_directory = None,
         deps = []):
     """
     Clones a repository and checks it out at a specific revision.
@@ -25,6 +26,7 @@ def checkout_add_repo(
         sparse_mode (str): Cone | NoCone
         sparse_list (list): List of paths to include/exclude
         deps (list): List of dependencies for the rule.
+        working_directory (str): The working directory to clone the repository into.
     """
 
     evaluate_spaces_modules = {
@@ -41,6 +43,7 @@ def checkout_add_repo(
             "rev": rev,
             "checkout": checkout_type,
             "clone": clone,
+            "working_directory": working_directory,
         } | evaluate_spaces_modules | effective_sparse_checkout,
     )
 
@@ -284,13 +287,10 @@ def checkout_add_capsule(
         deps (list): List of dependencies for creating the capsule.
     """
 
-    script_prefix = info.get_path_to_capsule_workflows()
-    effective_scripts = ["{}/{}".format(script_prefix, script) for script in scripts]
-
     checkout.add_capsule(
         rule = {"name": name, "deps": deps},
         capsule = {
-            "scripts": effective_scripts,
+            "scripts": scripts,
             "prefix": prefix
         }
     )

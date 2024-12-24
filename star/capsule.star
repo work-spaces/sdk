@@ -356,13 +356,12 @@ def capsule_checkout_add_workflow_repo(
         str: Name of the checkout rule
     """
 
-    checkout_rule_name = "{}/{}".format(info.get_path_to_capsule_workflows(), name)
-
     checkout_add_repo(
-        checkout_rule_name,
+        name,
         url = url,
         rev = rev,
         clone = clone,
+        working_directory = info.get_path_to_capsule_workflows(),
         is_evaluate_spaces_modules = False,
     )
 
