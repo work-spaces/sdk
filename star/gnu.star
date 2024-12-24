@@ -119,8 +119,10 @@ def gnu_add_repo(
         deps: The dependencies of the project
         install_path: The path to install the project
     """
+
+    checkout_rule = "{}_source".format(name)
     checkout_add_repo(
-        name,
+        checkout_rule = name,
         url = url,
         rev = rev,
         clone = "Blobless",
@@ -139,7 +141,7 @@ def gnu_add_repo(
 
     gnu_add_configure_make_install(
         name,
-        source_directory = name,
+        source_directory = checkout_rule,
         autoreconf_args = autoreconf_args,
         configure_args = configure_args,
         make_args = make_args,
