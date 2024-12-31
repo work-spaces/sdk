@@ -112,7 +112,7 @@ def _get_store_prefix(capsule):
         The prefix of the capsule
     """
     sysroot = info.get_path_to_capsule_sysroot()
-    digest = info.get_workspace_digest()
+    digest = info.get_workspace_short_digest()
     capsule_name = _descriptor_to_name(capsule)
     return "{}/{}/{}".format(sysroot, capsule_name, digest)
 
@@ -130,7 +130,7 @@ def _get_install_path(capsule):
         None if the capsule is already available, otherwise the path to install the capsule
     """
 
-    digest = info.get_workspace_digest()
+    digest = info.get_workspace_short_digest()
     install_path = _get_store_prefix(capsule)
     capsule_info_path = "{}/{}.json".format(install_path, digest)
     if fs.exists(capsule_info_path):
@@ -156,7 +156,7 @@ def _oras_publish(
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
     """
 
-    digest = info.get_workspace_digest()
+    digest = info.get_workspace_short_digest()
     install_path = _get_store_prefix(capsule)
 
     oras_add_publish_archive(
@@ -201,7 +201,7 @@ def _oras_add(name, capsule, url):
         dict: with the platform and the url to download the gh executable
     """
 
-    digest = info.get_workspace_digest()
+    digest = info.get_workspace_short_digest()
     oras_command = "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
     oras_label = "{}:{}".format(_descriptor_to_oras_label(url, capsule), digest)
 
@@ -247,7 +247,7 @@ def _gh_publish(name, capsule, deps, deploy_repo, suffix = "tar.xz"):
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
     """
 
-    digest = info.get_workspace_digest()
+    digest = info.get_workspace_short_digest()
     install_path = _get_store_prefix(capsule)
     capsule_name = _descriptor_to_name(capsule)
 
@@ -277,7 +277,7 @@ def _gh_add(name, capsule, deploy_repo, suffix = "tar.xz"):
     """
 
     # https://github.com/work-spaces/tools/releases/download/ninja-v1.12.1/ninja-v1.12.1-macos-x86_64.sha256.txt
-    digest = info.get_workspace_digest()
+    digest = info.get_workspace_short_digest()
     capsule_name = _descriptor_to_name(capsule)
     release_name = "{}-v{}".format(capsule_name, digest)
     gh_command = "{}/sysroot/bin/gh".format(info.get_path_to_spaces_tools())
