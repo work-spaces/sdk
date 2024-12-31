@@ -89,7 +89,7 @@ def cmake_add_configure_build_install(
 
     effective_install_path = install_path if install_path != None else "{}/build/install".format(workspace)
     install_prefix_arg = "-DCMAKE_INSTALL_PREFIX={}".format(effective_install_path)
-    prefix_arg = "-DCMAKE_PREFIX_PATH={};{}/sysroot".format(effective_install_path, workspace)
+    prefix_arg = "-DCMAKE_PREFIX_PATH={};{}/sysroot;{}/build/install".format(effective_install_path, workspace, workspace)
     working_directory = "build/{}".format(name)
 
     run_add_exec(
