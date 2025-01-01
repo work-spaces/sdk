@@ -52,6 +52,20 @@ def _update_rpaths(binary_path, install_path, new_base_path):
                     continue
                 script.print("{}: {} -> {}".format(file, change_old, change_new))
 
+        file_name = file.split("/")[-1]
+        
+        id_result = process.exec(
+            exec = {
+                "command": "install_name_tool",
+                "args": ["-id", "@loader_path/{}".format(file_name), file],
+            }
+        )
+
+        if id_result["status"] != 0:
+            script.print("Warning running install_name_tool for {}".format(file))
+            script.print(id_result["stderr"])
+            continue
+
 args = script.get_args()
 binary_path = args["named"]["--binary-path"]
 old_path = args["named"]["--old-path"]
