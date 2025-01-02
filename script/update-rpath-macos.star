@@ -57,7 +57,7 @@ def _update_rpaths(binary_path, install_path, new_base_path):
         id_result = process.exec(
             exec = {
                 "command": "install_name_tool",
-                "args": ["-id", "@loader_path/{}".format(file_name), file],
+                "args": ["-id", "@rpath/{}".format(file_name), file],
             }
         )
 
