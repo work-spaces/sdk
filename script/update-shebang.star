@@ -11,7 +11,7 @@ def _update_shebang(input_file, new_shebang):
         new_shebang (str): The new shebang line
     """
 
-    if not fs.is_text_file(input_file):
+    if not fs.is_file(input_file):
         return
 
     contents = fs.read_file_to_string(input_file)
