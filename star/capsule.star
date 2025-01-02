@@ -174,6 +174,7 @@ def capsule_checkout(
         name,
         scripts,
         prefix,
+        globs = None,
         deps = []):
     """
     Checks out a capsule and adds it to the workspace.
@@ -182,9 +183,10 @@ def capsule_checkout(
         name (str): The name of the rule.
         scripts (list): List of scripts to run that define how to install the capsule on the local machine.
         prefix (str): The workspace prefix where capsule artifacts should be hard-linked. Use `sysroot` for build deps and `build/install` for runtime deps.
+        globs (list): List of globs to install in the workspace.
         deps (list): List of dependencies for creating the capsule.
     """
-    checkout_add_capsule(name, scripts, prefix = prefix, deps = deps)
+    checkout_add_capsule(name, scripts, prefix = prefix, deps = deps, globs = globs)
 
 def _oras_add(name, capsule, url):
     """

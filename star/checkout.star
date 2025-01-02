@@ -276,6 +276,7 @@ def checkout_add_capsule(
         name,
         scripts,
         prefix = None,
+        globs = None,
         deps = []):
     """
     Adds a capsule dependency to the workspace.
@@ -284,6 +285,7 @@ def checkout_add_capsule(
         name (str): The name of the rule.
         scripts (list): List of scripts to run that define how to install the capsule on the local machine.
         prefix (str): The workspace prefix where capsule artifacts should be hard-linked. Default is not hard-linking
+        globs (list): List of globs to include/exclude.
         deps (list): List of dependencies for creating the capsule.
     """
 
@@ -291,7 +293,8 @@ def checkout_add_capsule(
         rule = {"name": name, "deps": deps},
         capsule = {
             "scripts": scripts,
-            "prefix": prefix
+            "prefix": prefix,
+            "globs": globs,
         }
     )
 
