@@ -140,6 +140,7 @@ def _get_install_path(capsule):
 def _oras_publish(
         name,
         capsule,
+        version,
         deps,
         url,
         deploy_repo,
@@ -150,6 +151,7 @@ def _oras_publish(
     Args:
         name: The name of the rule
         capsule: capsule()
+        version: The version of the capsule
         deps: The dependencies of the capsule
         url: Oras URL to publish the capsule
         deploy_repo: The repository to associate the capsule with
@@ -164,7 +166,7 @@ def _oras_publish(
         url = url,
         deploy_repo = deploy_repo,
         artifact = _descriptor_to_oras_artifact(capsule),
-        tag = digest,
+        tag = "{}-{}".format(version, digest),
         input = install_path,
         deps = deps,
         suffix = suffix,
@@ -237,7 +239,13 @@ def _oras_add(name, capsule, url):
 
     return checkout_platform_rule
 
-def _gh_publish(name, capsule, deps, deploy_repo, suffix = "tar.xz"):
+def _gh_publish(
+        name,
+        capsule,
+        deps,
+        deploy_repo,
+        version,
+        suffix = "tar.xz"):
     """
     Publish the capsule to github
 
@@ -246,6 +254,7 @@ def _gh_publish(name, capsule, deps, deploy_repo, suffix = "tar.xz"):
         capsule: return value of capsule()
         deps: The dependencies of the capsule
         deploy_repo: The repository to deploy the capsule to
+        version: The version of the capsule
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
     """
 
@@ -256,7 +265,7 @@ def _gh_publish(name, capsule, deps, deploy_repo, suffix = "tar.xz"):
     gh_add_publish_archive(
         capsule_name,
         input = install_path,
-        version = digest,
+        version = "{}-{}".format(version, digest),
         deploy_repo = deploy_repo,
         deps = deps,
         suffix = suffix,
@@ -462,6 +471,7 @@ def capsule_relocate_and_publish(
         capsule,
         deps,
         install_path,
+        version,
         oras_url = None,
         gh_deploy_repo = None,
         suffix = "tar.xz"):
@@ -471,6 +481,7 @@ def capsule_relocate_and_publish(
     Args:
         name: The name of the rule
         capsule: return value of capsule()
+        version: The version of the capsule
         deps: The dependencies of the capsule
         oras_url: oras URL for publishing the capsule
         gh_deploy_repo: The repository to deploy the capsule to
@@ -493,6 +504,7 @@ def capsule_relocate_and_publish(
             capsule = capsule,
             deps = [relocate_rule_name],
             url = oras_url,
+            version = version,
             deploy_repo = gh_deploy_repo,
             suffix = suffix,
         )
@@ -501,6 +513,7 @@ def capsule_relocate_and_publish(
             name,
             capsule_name = capsule_name,
             deps = [relocate_rule_name],
+            version = version,
             deploy_repo = gh_deploy_repo,
             suffix = suffix,
         )
