@@ -105,7 +105,6 @@ def oras_add_platform_archive(
 
     """
 
-    url = "oras://{}".format(_get_oras_label(url, artifact, tag))
     platform = info.get_platform_name()
     effective_artifact = "{}-{}".format(artifact, platform)
 
