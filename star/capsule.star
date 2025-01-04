@@ -575,6 +575,7 @@ def capsule_add_checkout_and_run(
                 capsule_relocate_and_publish(
                     capsule_publish_name,
                     capsule = capsule,
+                    version = version,
                     deps = [capsule_from_source],
                     oras_url = oras_url,
                     gh_deploy_repo = gh_deploy_repo,
