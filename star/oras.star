@@ -91,7 +91,6 @@ def oras_add_platform_archive(
         artifact,
         tag,
         add_prefix = "sysroot",
-        strip_prefix = None,
         globs = None):
     """
     Checks out an archive using oras.
@@ -102,7 +101,6 @@ def oras_add_platform_archive(
         artifact: The artifact name of the oras archive (platform will be appended to artifact name)
         tag: The tag of the oras archive.
         add_prefix: The prefix to add to the archive.
-        strip_prefix: The prefix to strip from the archive.
         globs: List of globs to include/exclude.
 
     """
@@ -117,6 +115,5 @@ def oras_add_platform_archive(
         artifact = effective_artifact,
         tag = tag,
         add_prefix = add_prefix,
-        strip_prefix = strip_prefix,
         globs = globs,
     )
