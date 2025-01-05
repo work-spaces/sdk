@@ -9,7 +9,7 @@ def _get_oras_command():
     return "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
 
 def _get_oras_label(url, artifact, tag):
-    return "{}/{}:{}".format(url, artifact, tag)
+    return "{}/{}:{}".format(url, artifact.lower(), tag)
 
 def oras_add_publish_archive(
         name,
