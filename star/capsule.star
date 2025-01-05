@@ -234,7 +234,7 @@ def _oras_add(name, capsule, url, version):
         checkout_platform_rule,
         url = url,
         artifact = _descriptor_to_oras_artifact(capsule),
-        tag = digest,
+        tag = "{}-{}".format(version, digest),
         add_prefix = _get_store_prefix(capsule),
     )
 
