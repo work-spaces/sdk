@@ -190,7 +190,7 @@ def capsule_checkout(
     """
     checkout_add_capsule(name, scripts, prefix = prefix, deps = deps, globs = globs)
 
-def _oras_add(name, capsule, url):
+def _oras_add(name, capsule, url, version):
     """
     Add the oras capsule to the sysroot.
 
@@ -199,6 +199,7 @@ def _oras_add(name, capsule, url):
     Args:
         name: rule name for checking out the capsule
         capsule: return value of capsule()
+        version: The version of the capsule
         url: The URL
 
     Returns:
@@ -207,7 +208,7 @@ def _oras_add(name, capsule, url):
 
     digest = info.get_workspace_short_digest()
     oras_command = "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
-    oras_label = "{}:{}".format(_descriptor_to_oras_label(url, capsule), digest)
+    oras_label = "{}:{}".format(_descriptor_to_oras_label(url, capsule), "{}-{}".format(version, digest))
 
     # Check oras to see if the executable is available
     check_release = process.exec({
@@ -431,6 +432,7 @@ def _checkout_define_dependency(
 def _add_archive(
         name,
         capsule,
+        version = None,
         oras_url = None,
         gh_deploy_repo = None,
         suffix = "tar.xz"):
@@ -445,6 +447,7 @@ def _add_archive(
         oras_url: The oras URL to deploy the capsule to
         gh_deploy_repo: The repository to deploy the capsule to
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
+        version: The version of the capsule
 
     Returns:
         str: the name of checkout rule for the platform archive
@@ -455,6 +458,7 @@ def _add_archive(
             name,
             capsule = capsule,
             url = oras_url,
+            version = version
         )
     elif gh_deploy_repo != None:
         return _gh_add(
@@ -560,6 +564,7 @@ def capsule_add_checkout_and_run(
             platform_archive_rule = _add_archive(
                 capsule_publish_name,
                 capsule = capsule,
+                version = version,
                 oras_url = oras_url,
                 gh_deploy_repo = gh_deploy_repo,
                 suffix = suffix,
