@@ -275,6 +275,7 @@ def checkout_add_which_asset(
 def checkout_add_capsule(
         name,
         scripts,
+        descriptor,
         prefix = None,
         globs = None,
         deps = []):
@@ -287,6 +288,7 @@ def checkout_add_capsule(
         prefix (str): The workspace prefix where capsule artifacts should be hard-linked. Default is not hard-linking
         globs (list): List of globs to include/exclude.
         deps (list): List of dependencies for creating the capsule.
+        descriptor (dict): domain, owner, repo
     """
 
     checkout.add_capsule(
@@ -295,6 +297,7 @@ def checkout_add_capsule(
             "scripts": scripts,
             "prefix": prefix,
             "globs": globs,
+            "descriptor": descriptor,
         }
     )
 
