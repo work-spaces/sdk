@@ -157,7 +157,8 @@ def checkout_add_cargo_bin(
 def checkout_add_hard_link_asset(
         name,
         source,
-        destination):
+        destination,
+        deps = []):
     """
     Adds a hard link asset to the workspace.
 
@@ -165,9 +166,10 @@ def checkout_add_hard_link_asset(
         name (str): The name of the rule.
         source (str): The source path of the asset.
         destination (str): The destination path for the asset.
+        deps (list): List of dependencies for the asset.
     """
     checkout.add_hard_link_asset(
-        rule = {"name": name},
+        rule = {"name": name, "deps": deps},
         asset = {
             "source": source,
             "destination": destination,
@@ -177,7 +179,8 @@ def checkout_add_hard_link_asset(
 def checkout_add_soft_link_asset(
         name,
         source,
-        destination):
+        destination,
+        deps = []):
     """
     Adds a hard link asset to the workspace.
 
@@ -185,9 +188,10 @@ def checkout_add_soft_link_asset(
         name (str): The name of the rule.
         source (str): The source path of the soft link.
         destination (str): The relative workspace path of the soft link destination.
+        deps (list): List of dependencies for the asset.
     """
     checkout.add_soft_link_asset(
-        rule = {"name": name},
+        rule = {"name": name, "deps": deps},
         asset = {
             "source": source,
             "destination": destination,
@@ -228,7 +232,8 @@ def checkout_update_env(
         vars = {},
         paths = [],
         system_paths = None,
-        inherited_vars = None):
+        inherited_vars = None,
+        deps = []):
     """
     Updates the environment with the given variables and paths.
 
@@ -238,12 +243,13 @@ def checkout_update_env(
         paths (list): List of paths to add to the PATH.
         system_paths (str): The path to add to the system PATH.
         inherited_vars (list): List of environment variables to inherit from the calling environment.
+        deps (list): List of dependencies for the rule.
     """
 
     effective_inherited_vars = {"inherited_vars": inherited_vars} if inherited_vars != None else {}
 
     checkout.update_env(
-        rule = {"name": name},
+        rule = {"name": name, "deps": deps},
         env = {
             "paths": paths,
             "vars": vars,
@@ -254,7 +260,8 @@ def checkout_update_env(
 def checkout_add_which_asset(
         name,
         which,
-        destination):
+        destination,
+        deps = []):
     """
     Adds an asset to the destintion based on the which command.
 
@@ -262,10 +269,11 @@ def checkout_add_which_asset(
         name (str): The name of the rule.
         which (str): The name of the asset to add.
         destination (str): The destination path for the asset.
+        deps (list): List of dependencies for the asset.
     """
 
     checkout.add_which_asset(
-        rule = {"name": name},
+        rule = {"name": name, "deps": deps},
         asset = {
             "which": which,
             "destination": destination,
