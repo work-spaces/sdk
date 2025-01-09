@@ -12,6 +12,7 @@ def checkout_add_repo(
         sparse_mode = None,
         sparse_list = None,
         working_directory = None,
+        platforms = None,
         deps = []):
     """
     Clones a repository and checks it out at a specific revision.
@@ -26,6 +27,7 @@ def checkout_add_repo(
         sparse_mode (str): Cone | NoCone
         sparse_list (list): List of paths to include/exclude
         deps (list): List of dependencies for the rule.
+        platforms (list): List of platforms to add the archive to.
         working_directory (str): The working directory to clone the repository into.
     """
 
@@ -37,7 +39,7 @@ def checkout_add_repo(
     } if sparse_mode != None else {}
 
     checkout.add_repo(
-        rule = {"name": name, "deps": deps},
+        rule = {"name": name, "deps": deps, "platforms": platforms},
         repo = {
             "url": url,
             "rev": rev,
@@ -56,7 +58,9 @@ def checkout_add_archive(
         excludes = None,
         strip_prefix = None,
         add_prefix = "./",
-        filename = None):
+        filename = None,
+        platforms = None,
+        deps = []):
     """
     Adds an archive to the workspace.
 
@@ -70,9 +74,11 @@ def checkout_add_archive(
         strip_prefix (str): Prefix to strip from the archive.
         add_prefix (str): Prefix to add to the archive.
         filename (str): The filename if it isn't the last part of the URL
+        platforms (list): List of platforms to add the archive to.
+        deps (list): List of dependencies for the rule.
     """
     checkout.add_archive(
-        rule = {"name": name},
+        rule = {"name": name, "deps": deps, "platforms": platforms},
         archive = {
             "url": url,
             "sha256": sha256,
@@ -88,7 +94,9 @@ def checkout_add_archive(
 def checkout_add_asset(
         name,
         content,
-        destination):
+        destination,
+        deps = [],
+        platforms = None):
     """
     Adds an asset to the workspace.
 
@@ -96,9 +104,11 @@ def checkout_add_asset(
         name (str): The name of the rule.
         content (str): The content of the asset.
         destination (str): The destination path for the asset.
+        deps (list): List of dependencies for the asset.
+        platforms (list): List of platforms to add the archive to.
     """
     checkout.add_asset(
-        rule = {"name": name},
+        rule = {"name": name, "deps": deps, "platforms": platforms},
         asset = {
             "content": content,
             "destination": destination,
@@ -109,7 +119,9 @@ def checkout_update_asset(
         name,
         destination,
         value,
-        format = None):
+        format = None,
+        deps = [],
+        platforms = None):
     """
     Updates an asset in the workspace.
 
@@ -118,12 +130,14 @@ def checkout_update_asset(
         destination (str): The destination path for the asset.
         format (str): The format of the asset (json | toml | yaml). Default will get extension from destination.
         value (str): The value of the asset.
+        deps (list): List of dependencies for the asset.
+        platforms (list): List of platforms to add the archive to.
     """
 
     effective_format = format if format != None else destination.split(".")[-1]
 
     checkout.update_asset(
-        rule = {"name": name},
+        rule = {"name": name, "deps": deps, "platforms": platforms},
         asset = {
             "destination": destination,
             "format": effective_format,
@@ -135,7 +149,9 @@ def checkout_add_cargo_bin(
         name,
         crate,
         version,
-        bins):
+        bins,
+        deps = [],
+        platforms = None):
     """
     Adds a cargo binary to the workspace.
 
@@ -144,9 +160,11 @@ def checkout_add_cargo_bin(
         crate (str): The name of the crate.
         version (str): The version of the crate.
         bins (list): List of binaries to add.
+        deps (list): List of dependencies for the rule.
+        platforms (list): List of platforms to add the archive to.
     """
     checkout.add_cargo_bin(
-        rule = {"name": name},
+        rule = {"name": name, "deps": deps, "platforms": platforms},
         cargo_bin = {
             "crate": crate,
             "version": version,
@@ -158,7 +176,8 @@ def checkout_add_hard_link_asset(
         name,
         source,
         destination,
-        deps = []):
+        deps = [],
+        platforms = None):
     """
     Adds a hard link asset to the workspace.
 
@@ -167,9 +186,10 @@ def checkout_add_hard_link_asset(
         source (str): The source path of the asset.
         destination (str): The destination path for the asset.
         deps (list): List of dependencies for the asset.
+        platforms (list): List of platforms to add the archive to.
     """
     checkout.add_hard_link_asset(
-        rule = {"name": name, "deps": deps},
+        rule = {"name": name, "deps": deps, "platforms": platforms},
         asset = {
             "source": source,
             "destination": destination,
@@ -180,7 +200,8 @@ def checkout_add_soft_link_asset(
         name,
         source,
         destination,
-        deps = []):
+        deps = [],
+        platforms = None):
     """
     Adds a hard link asset to the workspace.
 
@@ -189,9 +210,10 @@ def checkout_add_soft_link_asset(
         source (str): The source path of the soft link.
         destination (str): The relative workspace path of the soft link destination.
         deps (list): List of dependencies for the asset.
+        platforms (list): List of platforms to add the archive to.
     """
     checkout.add_soft_link_asset(
-        rule = {"name": name, "deps": deps},
+        rule = {"name": name, "deps": deps, "platforms": platforms},
         asset = {
             "source": source,
             "destination": destination,
@@ -200,16 +222,18 @@ def checkout_add_soft_link_asset(
 
 def checkout_add_target(
         name,
-        deps):
+        deps,
+        platforms = None):
     """
     Adds a target to the workspace.
 
     Args:
         name (str): The name of the rule.
         deps (list): List of dependencies for the target.
+        platforms (list): List of platforms to build the target for (default is all).
     """
     checkout.add_target(
-        rule = {"name": name, "deps": deps},
+        rule = {"name": name, "deps": deps, "platforms": platforms},
     )
 
 def checkout_add_platform_archive(
@@ -233,7 +257,8 @@ def checkout_update_env(
         paths = [],
         system_paths = None,
         inherited_vars = None,
-        deps = []):
+        deps = [],
+        platforms = None):
     """
     Updates the environment with the given variables and paths.
 
@@ -244,12 +269,13 @@ def checkout_update_env(
         system_paths (str): The path to add to the system PATH.
         inherited_vars (list): List of environment variables to inherit from the calling environment.
         deps (list): List of dependencies for the rule.
+        platforms (list): List of platforms to add the archive to.
     """
 
     effective_inherited_vars = {"inherited_vars": inherited_vars} if inherited_vars != None else {}
 
     checkout.update_env(
-        rule = {"name": name, "deps": deps},
+        rule = {"name": name, "deps": deps, "platforms": platforms},
         env = {
             "paths": paths,
             "vars": vars,
@@ -261,7 +287,8 @@ def checkout_add_which_asset(
         name,
         which,
         destination,
-        deps = []):
+        deps = [],
+        platforms = None):
     """
     Adds an asset to the destintion based on the which command.
 
@@ -270,10 +297,11 @@ def checkout_add_which_asset(
         which (str): The name of the asset to add.
         destination (str): The destination path for the asset.
         deps (list): List of dependencies for the asset.
+        platforms (list): List of platforms to add the archive to.
     """
 
     checkout.add_which_asset(
-        rule = {"name": name, "deps": deps},
+        rule = {"name": name, "deps": deps, "platforms": platforms},
         asset = {
             "which": which,
             "destination": destination,
@@ -286,7 +314,8 @@ def checkout_add_capsule(
         descriptor,
         prefix = None,
         globs = None,
-        deps = []):
+        deps = [],
+        platforms = None):
     """
     Adds a capsule dependency to the workspace.
 
@@ -297,16 +326,17 @@ def checkout_add_capsule(
         globs (list): List of globs to include/exclude.
         deps (list): List of dependencies for creating the capsule.
         descriptor (dict): domain, owner, repo
+        platforms (list): List of platforms to add the archive to.
     """
 
     checkout.add_capsule(
-        rule = {"name": name, "deps": deps},
+        rule = {"name": name, "deps": deps, "platforms": platforms},
         capsule = {
             "scripts": scripts,
             "prefix": prefix,
             "globs": globs,
             "descriptor": descriptor,
-        }
+        },
     )
 
 def update_platforms_prefix(
@@ -339,7 +369,9 @@ def checkout_add_oras_archive(
         add_prefix,
         manifest_digest_path = "/layers/0/digest",
         manifest_artifact_path = "/layers/0/annotations/org.opencontainers.image.title",
-        globs = None):
+        globs = None,
+        deps = [],
+        platforms = None):
     """
     Adds an oras archive to the workspace.
 
@@ -352,10 +384,12 @@ def checkout_add_oras_archive(
         manifest_digest_path (str): The path to the manifest digest in the oras archive.
         manifest_artifact_path (str): The path to the manifest artifact in the oras archive.
         globs (list): List of globs to include/exclude.
+        deps (list): List of dependencies for the rule.
+        platforms (list): List of platforms to add the archive to.
     """
 
     checkout.add_oras_archive(
-        rule = {"name": name},
+        rule = {"name": name, "deps": deps, "platforms": platforms},
         oras_archive = {
             "url": url,
             "artifact": artifact,
