@@ -11,7 +11,6 @@ def cp(
         options = [],
         deps = [],
         type = None,
-        inputs = None,
         expect = "Success"):
     """
     Copy a file or directory from source to destination.
@@ -23,7 +22,6 @@ def cp(
         options (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
-        inputs (list): The inputs for the command.
         expect (str): Success | Failure
     """
 
@@ -33,7 +31,7 @@ def cp(
         args = options + [source, destination],
         deps = deps,
         type = type,
-        inputs = inputs,
+        inputs = ["{}".format(source)],
         expect = expect,
     )
 
@@ -43,7 +41,6 @@ def mv(
         destination,
         options = [],
         deps = [],
-        inputs = None,
         type = None,
         expect = "Success"):
     """
@@ -56,7 +53,6 @@ def mv(
         options (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
-        inputs (list): The inputs for the command.
         expect (str): Success | Failure
     """
 
@@ -66,7 +62,6 @@ def mv(
         args = options + [source, destination],
         deps = deps,
         type = type,
-        inputs = inputs,
         expect = expect,
     )
 
@@ -162,7 +157,6 @@ def chmod(
         path,
         deps = [],
         type = None,
-        inputs = None,
         expect = "Success"):
     """
     Changes the mode of a file or directory.
