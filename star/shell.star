@@ -27,7 +27,7 @@ def cp(
         expect (str): Success | Failure
     """
 
-    effective_inputs = inputs or ["+{}".format(source)]
+    effective_inputs = inputs if inputs != None else ["+{}".format(source)]
 
     run_add_exec(
         name,
