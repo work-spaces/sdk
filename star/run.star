@@ -13,6 +13,7 @@ def run_add_exec(
         type = None,
         working_directory = None,
         platforms = None,
+        log_level = None,
         expect = "Success"):
     """
     Adds a command to the run dependency graph
@@ -28,6 +29,7 @@ def run_add_exec(
         env (dict): key value pairs of environment variables
         working_directory (str): The branch or commit hash to checkout
         platforms (list): The branch or commit hash to checkout
+        log_level (str): The log level to use (default is None - error|warning|info|message|debug|trace)
         expect (str): The expected result of the command Success|Failure|Any. (default is Success)
     """
     run.add_exec(
@@ -45,6 +47,7 @@ def run_add_exec(
             "working_directory": working_directory,
             "env": env,
             "expect": expect,
+            "log_level": log_level,
         },
     )
 
