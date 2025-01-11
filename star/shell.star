@@ -10,7 +10,8 @@ def cp(
         destination,
         options = [],
         deps = [],
-        type = None):
+        type = None,
+        expect = "Success"):
     """
     Copy a file or directory from source to destination.
 
@@ -21,6 +22,7 @@ def cp(
         options (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
+        expect (str): Success | Failure
     """
 
     run_add_exec(
@@ -29,6 +31,7 @@ def cp(
         args = options + [source, destination],
         deps = deps,
         type = type,
+        expect = expect,
     )
 
 def mv(
@@ -37,7 +40,8 @@ def mv(
         destination,
         options = [],
         deps = [],
-        type = None):
+        type = None,
+        expect = "Success"):
     """
     Rename a file or directory from source to destination.
 
@@ -48,6 +52,7 @@ def mv(
         options (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
+        expect (str): Success | Failure
     """
 
     run_add_exec(
@@ -56,6 +61,7 @@ def mv(
         args = options + [source, destination],
         deps = deps,
         type = type,
+        expect = expect,
     )
 
 def ln(
@@ -64,7 +70,8 @@ def ln(
         destination,
         options = [],
         deps = [],
-        type = None):
+        type = None,
+        expect = "Success"):
     """
     Create a link from source to destination.
 
@@ -75,6 +82,7 @@ def ln(
         options (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
+        expect (str): Success | Failure
     """
 
     run_add_exec(
@@ -83,6 +91,7 @@ def ln(
         args = options + [source, destination],
         deps = deps,
         type = type,
+        expect = expect,
     )
 
 def ls(
@@ -90,7 +99,8 @@ def ls(
         path,
         options = [],
         deps = [],
-        type = None):
+        type = None,
+        expect = "Success"):
     """
     Run ls (this can be handy for checking if something exists).
 
@@ -100,6 +110,7 @@ def ls(
         options (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
+        expect (str): Success | Failure
     """
 
     run_add_exec(
@@ -108,6 +119,7 @@ def ls(
         args = options + [path],
         deps = deps,
         type = type,
+        expect = expect,
     )
 
 def mkdir(
@@ -115,7 +127,8 @@ def mkdir(
         path,
         options = [],
         deps = [],
-        type = None):
+        type = None,
+        expect = "Success"):
     """
     Create a new directory.
 
@@ -125,6 +138,7 @@ def mkdir(
         options (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
+        expect (str): Success | Failure
     """
 
     run_add_exec(
@@ -133,6 +147,7 @@ def mkdir(
         args = options + [path],
         deps = deps,
         type = type,
+        expect = expect,
     )
 
 def chmod(
@@ -140,7 +155,8 @@ def chmod(
         permissions,
         source,
         deps = [],
-        type = None):
+        type = None,
+        expect = "Success"):
     """
     Changes the permissions of a file or directory.
 
@@ -150,6 +166,7 @@ def chmod(
         source (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
+        expect (str): Success | Failure
     """
 
     run_add_exec(
@@ -158,4 +175,5 @@ def chmod(
         args = [permissions, source],
         deps = deps,
         type = type,
+        expect = expect,
     )
