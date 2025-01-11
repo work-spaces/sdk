@@ -11,6 +11,7 @@ def cp(
         options = [],
         deps = [],
         type = None,
+        inputs = None,
         expect = "Success"):
     """
     Copy a file or directory from source to destination.
@@ -22,8 +23,11 @@ def cp(
         options (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
+        inputs (list): The inputs for the command.
         expect (str): Success | Failure
     """
+
+    effective_inputs = inputs or ["+{}".format(source)]
 
     run_add_exec(
         name,
@@ -31,7 +35,7 @@ def cp(
         args = options + [source, destination],
         deps = deps,
         type = type,
-        inputs = ["{}".format(source)],
+        inputs = effective_inputs,
         expect = expect,
     )
 
