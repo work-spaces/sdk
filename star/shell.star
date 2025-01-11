@@ -167,7 +167,6 @@ def chmod(
         path (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
-        inputs (list): The inputs for the command.
         expect (str): Success | Failure
     """
 
@@ -177,6 +176,5 @@ def chmod(
         args = [mode, path],
         deps = deps,
         type = type,
-        inputs = inputs,
         expect = expect,
     )
