@@ -112,7 +112,7 @@ def ls(
 
 def mkdir(
         name,
-        directory,
+        path,
         options = [],
         deps = [],
         type = None):
@@ -121,7 +121,7 @@ def mkdir(
 
     Args:
         name (str): The name of the function.
-        directory (str): The source file or directory.
+        path (str): The source file or directory.
         options (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
