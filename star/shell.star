@@ -152,17 +152,17 @@ def mkdir(
 
 def chmod(
         name,
-        permissions,
+        mode,
         source,
         deps = [],
         type = None,
         expect = "Success"):
     """
-    Changes the permissions of a file or directory.
+    Changes the mode of a file or directory.
 
     Args:
         name (str): The name of the function.
-        permissions (str): The source file or directory.
+        mode (str): The source file or directory.
         source (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
@@ -172,7 +172,7 @@ def chmod(
     run_add_exec(
         name,
         "chmod",
-        args = [permissions, source],
+        args = [mode, source],
         deps = deps,
         type = type,
         expect = expect,
