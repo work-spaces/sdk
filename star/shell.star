@@ -130,7 +130,7 @@ def mkdir(
     run_add_exec(
         name,
         "mkdir",
-        args = options + [directory],
+        args = options + [path],
         deps = deps,
         type = type,
     )
