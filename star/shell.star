@@ -153,7 +153,7 @@ def mkdir(
 def chmod(
         name,
         mode,
-        source,
+        path,
         deps = [],
         type = None,
         expect = "Success"):
@@ -163,7 +163,7 @@ def chmod(
     Args:
         name (str): The name of the function.
         mode (str): The source file or directory.
-        source (list): The options for the copy command.
+        path (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
         expect (str): Success | Failure
@@ -172,7 +172,7 @@ def chmod(
     run_add_exec(
         name,
         "chmod",
-        args = [mode, source],
+        args = [mode, path],
         deps = deps,
         type = type,
         expect = expect,
