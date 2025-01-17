@@ -11,7 +11,7 @@ def gnu_add_configure_make_install(
         autoreconf_args = None,
         configure_args = [],
         make_args = [],
-        build_artifact_globs = [],
+        build_artifact_globs = None,
         deps = [],
         install_path = None):
     """

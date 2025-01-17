@@ -18,7 +18,7 @@ def cmake_add_configure_build_install(
         source_directory,
         configure_args = [],
         build_args = [],
-        build_artifact_globs = [],
+        build_artifact_globs = None,
         deps = [],
         install_path = None,
         type = None,

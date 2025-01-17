@@ -29,7 +29,7 @@ def run_add_exec(
         env (dict): key value pairs of environment variables
         working_directory (str): The branch or commit hash to checkout
         platforms (list): The branch or commit hash to checkout
-        log_level (str): The log level to use (default is None - error|warning|info|message|debug|trace)
+        log_level (str): The log level to use None|App
         expect (str): The expected result of the command Success|Failure|Any. (default is Success)
     """
     run.add_exec(
