@@ -168,7 +168,7 @@ def cmake_add_source_archive(
         install_path = None,
         configure_args = [],
         build_args = [],
-        build_artifact_globs = [],
+        build_artifact_globs = None,
         deps = [],
         type = None,
         skip_install = False):
