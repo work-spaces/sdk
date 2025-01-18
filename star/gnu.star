@@ -13,7 +13,8 @@ def gnu_add_configure_make_install(
         make_args = [],
         build_artifact_globs = None,
         deps = [],
-        install_path = None):
+        install_path = None,
+        skip_install = False):
     """
     Add an autotools project to the build
 
@@ -82,6 +83,10 @@ def gnu_add_configure_make_install(
         help = "Build {}".format(name),
     )
 
+    if skip_install:
+        run_add_target(name, deps = [build_rule_name])
+        return
+        
     run_add_exec(
         install_rule_name,
         deps = [build_rule_name],
