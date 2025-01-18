@@ -25,7 +25,7 @@ def run_add_exec_setup(
         deps (str): The branch or commit hash to checkout
         env (dict): key value pairs of environment variables
         working_directory (str): The branch or commit hash to checkout
-        platforms (list): The branch or commit hash to checkout
+        platforms (list): Platforms to run on (default is all).
         log_level (str): The log level to use None|App
         expect (str): The expected result of the command Success|Failure|Any. (default is Success)
     """
@@ -75,7 +75,7 @@ def run_add_exec(
         inputs (list): List of globs to specify the inputs
         env (dict): key value pairs of environment variables
         working_directory (str): The branch or commit hash to checkout
-        platforms (list): The branch or commit hash to checkout
+        platforms (list): Platforms to run on (default is all).
         log_level (str): The log level to use None|App
         expect (str): The expected result of the command Success|Failure|Any. (default is Success)
     """
