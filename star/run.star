@@ -2,6 +2,9 @@
 User friendly wrapper functions for the spaces run built-in functions.
 """
 
+RUN_INPUTS_ONCE = []
+RUN_INPUTS_ALWAYS = None
+
 def run_add_exec_setup(
         name,
         command,
@@ -37,7 +40,7 @@ def run_add_exec_setup(
             "platforms": platforms,
             "help": help,
             "type": "Setup",
-            "inputs": [],
+            "inputs": RUN_INPUTS_ONCE,
         },
         exec = {
             "command": command,
@@ -56,7 +59,7 @@ def run_add_exec(
         args = [],
         env = {},
         deps = [],
-        inputs = None,
+        inputs = RUN_INPUTS_ALWAYS,
         type = None,
         working_directory = None,
         platforms = None,
