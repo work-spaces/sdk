@@ -24,7 +24,7 @@ checkout.add_platform_archive(
 )
 
 add_cmake(
-    rule_name = "cmake3",
+    "cmake3"
     platforms = cmake3_platforms
 )
 ```

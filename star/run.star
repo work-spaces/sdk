@@ -3,7 +3,7 @@ User friendly wrapper functions for the spaces run built-in functions.
 """
 
 def run_add_exec_setup(
-        rule_name,
+        name,
         command,
         help = None,
         args = [],
@@ -17,7 +17,7 @@ def run_add_exec_setup(
     Adds a command as a setup rule. It will run only once and all run rules will depend on it.
 
     Args:
-        rule_name (str): The name of the rule.
+        name (str): The name of the rule.
         command (str): The name of the rule.
         help (str): The help message for the rule.
         args (str): The git repository URL to clone
@@ -32,7 +32,7 @@ def run_add_exec_setup(
 
     run.add_exec(
         rule = {
-            "name": rule_name,
+            "name": name,
             "deps": deps,
             "platforms": platforms,
             "help": help,
@@ -50,7 +50,7 @@ def run_add_exec_setup(
     )
 
 def run_add_exec(
-        rule_name,
+        name,
         command,
         help = None,
         args = [],
@@ -66,7 +66,7 @@ def run_add_exec(
     Adds a command to the run dependency graph
 
     Args:
-        rule_name (str): The name of the rule.
+        name (str): The name of the rule.
         command (str): The name of the rule.
         help (str): The help message for the rule.
         args (str): The git repository URL to clone
@@ -82,7 +82,7 @@ def run_add_exec(
 
     run.add_exec(
         rule = {
-            "name": rule_name,
+            "name": name,
             "deps": deps,
             "platforms": platforms,
             "help": help,
@@ -100,7 +100,7 @@ def run_add_exec(
     )
 
 def run_add_kill_exec(
-        rule_name,
+        name,
         target,
         signal = "Kill",
         help = None,
@@ -112,7 +112,7 @@ def run_add_kill_exec(
     Adds a command to the run dependency graph
 
     Args:
-        rule_name (str): The name of the rule.
+        name (str): The name of the rule.
         target (str): The name of the rule to kill.
         signal (str): The signal to send to the target.
         help (str): The help message for the rule.
@@ -123,7 +123,7 @@ def run_add_kill_exec(
     """
     run.add_kill_exec(
         rule = {
-            "name": rule_name,
+            "name": name,
             "deps": deps,
             "platforms": platforms,
             "help": help,
