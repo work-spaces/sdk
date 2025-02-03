@@ -36,7 +36,16 @@ def info_get_checkout_path():
     Returns:
         The path to the checked out repo or archive
     """
-    return info.get_checkout_path()
+    return info.get_path_to_checkout()
+
+def info_get_path_to_checkout():
+    """
+    Get the path in the workspace where the currently module is located
+
+    Returns:
+        The path to the checked out repo or archive
+    """
+    return info.get_path_to_checkout()
 
 def info_get_cpu_count():
     """
