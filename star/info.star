@@ -29,6 +29,15 @@ def info_get_absolute_path_to_workspace():
     """
     return info.get_absolute_path_to_workspace()
 
+def info_get_checkout_path():
+    """
+    Get the path in the workspace where the currently module is located
+
+    Returns:
+        The path to the checked out repo or archive
+    """
+    return info.get_checkout_path()
+
 def info_get_cpu_count():
     """
     Get the number of CPUs available
