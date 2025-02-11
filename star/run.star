@@ -187,4 +187,4 @@ def run_add_to_all(
         deps (list): List of dependencies to run with `spaces run`
     """
 
-    run_add_target(name, deps, types = RUN_TYPE_ALL)
+    run_add_target(name, deps, type = RUN_TYPE_ALL)
