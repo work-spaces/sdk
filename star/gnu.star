@@ -27,6 +27,7 @@ def gnu_add_configure_make_install(
         build_artifact_globs: The globs to match the build artifacts
         deps: The dependencies of the project
         install_path: The path to install the project
+        skip_install: Whether to skip the install step
     """
 
     build_dir = "build/{}".format(name)

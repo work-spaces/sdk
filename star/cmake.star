@@ -21,7 +21,6 @@ def cmake_add_configure_build_install(
         build_artifact_globs = None,
         deps = [],
         install_path = None,
-        type = None,
         skip_install = False):
     """
     Add a CMake project to the build
@@ -52,7 +51,6 @@ def cmake_add_configure_build_install(
         configure_rule_name,
         command = "cmake",
         deps = deps,
-        type = type,
         inputs = [
             "+{}/**/CMakeLists.txt".format(source_directory),
             "+{}/**/*.cmake".format(source_directory),
@@ -71,7 +69,6 @@ def cmake_add_configure_build_install(
     run_add_exec(
         build_rule_name,
         command = "cmake",
-        type = type,
         inputs = ["+{}/**".format(source_directory)],
         deps = [configure_rule_name],
         args = ["--build", working_directory] + build_args,
@@ -82,7 +79,6 @@ def cmake_add_configure_build_install(
         run_add_exec(
             install_rule_name,
             inputs = build_artifact_globs,
-            type = type,
             command = "cmake",
             deps = [build_rule_name],
             args = ["--build", working_directory, "--target", "install"],
@@ -97,7 +93,6 @@ def cmake_add_repo(
         url,
         rev,
         install_path = None,
-        type = None,
         configure_args = [],
         build_args = [],
         build_artifact_globs = [],
@@ -138,7 +133,6 @@ def cmake_add_repo(
     if checkout_submodules:
         run_add_exec(
             submodule_rule,
-            type = type,
             command = "git",
             args = ["submodule", "update", "--init", "--recursive"],
             working_directory = checkout_rule,
@@ -156,7 +150,6 @@ def cmake_add_repo(
         deps = deps + submodule_deps,
         install_path = install_path,
         skip_install = skip_install,
-        type = type
     )
 
 def cmake_add_source_archive(
@@ -170,7 +163,6 @@ def cmake_add_source_archive(
         build_args = [],
         build_artifact_globs = None,
         deps = [],
-        type = None,
         skip_install = False):
     """
     Add a CMake project to the build
@@ -205,7 +197,6 @@ def cmake_add_source_archive(
         install_path = install_path,
         deps = deps,
         build_artifact_globs = build_artifact_globs,
-        type = type,
         skip_install = skip_install
     )
 
