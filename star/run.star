@@ -4,6 +4,7 @@ User friendly wrapper functions for the spaces run built-in functions.
 
 RUN_INPUTS_ONCE = []
 RUN_INPUTS_ALWAYS = None
+RUN_TYPE_ALL = "Run"
 
 def run_add_exec_setup(
         name,
@@ -83,13 +84,15 @@ def run_add_exec(
         expect (str): The expected result of the command Success|Failure|Any. (default is Success)
     """
 
+    effective_type = type if type != None else "Optional"
+
     run.add_exec(
         rule = {
             "name": name,
             "deps": deps,
             "platforms": platforms,
             "help": help,
-            "type": type,
+            "type": effective_type,
             "inputs": inputs,
         },
         exec = {
