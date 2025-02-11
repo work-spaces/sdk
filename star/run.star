@@ -6,6 +6,9 @@ RUN_INPUTS_ONCE = []
 RUN_INPUTS_ALWAYS = None
 RUN_TYPE_ALL = "Run"
 
+
+
+
 def run_add_exec_setup(
         name,
         command,
@@ -170,3 +173,18 @@ def run_add_target(
             "help": help,
         },
     )
+
+def run_add_to_all(
+    name,
+    deps):
+    """
+    Adds the dependencies to name and to the phantom all target.
+
+    Targets will run with `spaces run`.
+
+    Args:
+        name (str): The name of the rule.
+        deps (list): List of dependencies to run with `spaces run`
+    """
+
+    run_add_target(name, deps, types = RUN_TYPE_ALL)
