@@ -16,6 +16,8 @@ def run_add_exec_setup(
         working_directory = None,
         platforms = None,
         log_level = None,
+        redirect_stdout = None,
+        timeout = None,
         expect = "Success"):
     """
     Adds a command as a setup rule. It will run only once and all run rules will depend on it.
@@ -25,14 +27,17 @@ def run_add_exec_setup(
         command (str): The name of the rule.
         help (str): The help message for the rule.
         args (str): The git repository URL to clone
-        type (str): The exec type ("Run"| "Setup" | "Optional")
         deps (str): The branch or commit hash to checkout
         env (dict): key value pairs of environment variables
         working_directory (str): The branch or commit hash to checkout
         platforms (list): Platforms to run on (default is all).
         log_level (str): The log level to use None|App
+        redirect_stdout: The file to redirect stdout to.
+        timeout: Number of seconds to run before sending a kill signal.
         expect (str): The expected result of the command Success|Failure|Any. (default is Success)
     """
+
+    EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
 
     run.add_exec(
         rule = {
@@ -50,7 +55,8 @@ def run_add_exec_setup(
             "env": env,
             "expect": expect,
             "log_level": log_level,
-        },
+            "redirect_stdout": redirect_stdout,
+        } | EFFECTIVE_TIMEOUT,
     )
 
 def run_add_exec(
@@ -66,6 +72,7 @@ def run_add_exec(
         platforms = None,
         log_level = None,
         redirect_stdout = None,
+        timeout = None,
         expect = "Success"):
     """
     Adds a command to the run dependency graph
@@ -84,9 +91,11 @@ def run_add_exec(
         log_level (str): The log level to use None|App
         expect (str): The expected result of the command Success|Failure|Any. (default is Success)
         redirect_stdout: The file to redirect stdout to.
+        timeout: Number of seconds to run before sending a kill signal.
     """
 
-    effective_type = type if type != None else "Optional"
+    EFFECTIVE_TYPE = type if type != None else "Optional"
+    EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
 
     run.add_exec(
         rule = {
@@ -94,7 +103,7 @@ def run_add_exec(
             "deps": deps,
             "platforms": platforms,
             "help": help,
-            "type": effective_type,
+            "type": EFFECTIVE_TYPE,
             "inputs": inputs,
         },
         exec = {
@@ -105,7 +114,7 @@ def run_add_exec(
             "expect": expect,
             "log_level": log_level,
             "redirect_stdout": redirect_stdout,
-        },
+        } | EFFECTIVE_TIMEOUT,
     )
 
 def run_add_kill_exec(
@@ -118,7 +127,7 @@ def run_add_kill_exec(
         type = None,
         platforms = None):
     """
-    Adds a command to the run dependency graph
+    Adds a target that will send a signal to another target.
 
     Args:
         name (str): The name of the rule.
@@ -130,13 +139,16 @@ def run_add_kill_exec(
         type (str): The exec type ("Run"| "Setup" | "Optional")
         platforms (list): Platforms to run on (default is all).
     """
+
+    EFFECTIVE_TYPE = type if type != None else "Optional"
+
     run.add_kill_exec(
         rule = {
             "name": name,
             "deps": deps,
             "platforms": platforms,
             "help": help,
-            "type": type,
+            "type": EFFECTIVE_TYPE,
             "inputs": None,
         },
         kill = {

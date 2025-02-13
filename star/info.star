@@ -38,6 +38,21 @@ def info_get_path_to_checkout():
     """
     return info.get_path_to_checkout()
 
+def info_get_path_to_log_file(name):
+    """
+    Gets the path to the log file for a given target.
+
+    The log file location changes on every run.
+
+    Args:
+        name: The name of the rule
+
+    Returns:
+        The relative workspace path to the log file
+    """
+
+    return info.get_path_to_log_file(name)
+
 def info_get_cpu_count():
     """
     Get the number of CPUs available
