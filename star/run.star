@@ -6,9 +6,6 @@ RUN_INPUTS_ONCE = []
 RUN_INPUTS_ALWAYS = None
 RUN_TYPE_ALL = "Run"
 
-
-
-
 def run_add_exec_setup(
         name,
         command,
@@ -68,6 +65,7 @@ def run_add_exec(
         working_directory = None,
         platforms = None,
         log_level = None,
+        redirect_stdout = None,
         expect = "Success"):
     """
     Adds a command to the run dependency graph
@@ -85,6 +83,7 @@ def run_add_exec(
         platforms (list): Platforms to run on (default is all).
         log_level (str): The log level to use None|App
         expect (str): The expected result of the command Success|Failure|Any. (default is Success)
+        redirect_stdout: The file to redirect stdout to.
     """
 
     effective_type = type if type != None else "Optional"
@@ -105,6 +104,7 @@ def run_add_exec(
             "env": env,
             "expect": expect,
             "log_level": log_level,
+            "redirect_stdout": redirect_stdout,
         },
     )
 
@@ -175,8 +175,8 @@ def run_add_target(
     )
 
 def run_add_to_all(
-    name,
-    deps):
+        name,
+        deps):
     """
     Adds the dependencies to name and to the phantom all target.
 
