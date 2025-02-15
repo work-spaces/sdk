@@ -237,7 +237,7 @@ def info_get_path_to_member_with_rev(
         rev = rev,
     )
 
-def info_check_member_minimum_version(url, semver):
+def info_check_member_semver(url, semver):
     """
     Checks if the workspace satifies a requirement
 
@@ -250,6 +250,38 @@ def info_check_member_minimum_version(url, semver):
     """
 
     return _is_path_to_workspace_member_available(url, rev = None, semver = semver)
+
+def info_assert_member_semver(url, semver):
+    """
+    Fails if the workspace does not satifies a requirement
+
+    Args:
+        url: The url of the workspace member
+        semver: The semver requiement assuming the member has a version
+
+    Returns:
+        True if the workspace member is found satisfying semver, False otherwise
+    """
+
+    IS_AVAILABLE = _is_path_to_workspace_member_available(url, semver = semver)
+    if not IS_AVAILABLE:
+        info.abort("The workspace member at {} does not satisfy the semver requirement {}".format(url, semver))
+
+def info_assert_member_revision(url, rev):
+    """
+    Checks if the workspace satifies a requirement
+
+    Args:
+        url: The url of the workspace member
+        rev: git/sha256 hash
+
+    Returns:
+        Aborts if the requirement is not satisfied
+    """
+
+    IS_AVAILABLE = _is_path_to_workspace_member_available(url, rev = rev)
+    if not IS_AVAILABLE:
+        info.abort("The workspace member at {} does not satisfy the revision requirement {}".format(url, rev))
 
 def info_check_member_revision(url, rev):
     """
