@@ -1,17 +1,22 @@
+# Changes
 
-# v0.1.0
+## v0.1.2
 
-- Initial release
+- Fix `>` in info rules
 
-# v0.1.1
+## v0.1.1
 
 - Add `info_assert_...()` for workspace versions
 
+## v0.1.0
 
-# Developer Notes
+- Initial release
+
+
+## Developer Notes
 
 ```sh
-export VERSION=0.1.1
+export VERSION=0.1.2
 git tag -a v$VERSION -m "Update version"
 git push origin tag v$VERSION
 ```

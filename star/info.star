@@ -181,7 +181,7 @@ def _is_path_to_workspace_member_available(
         url,
         rev = None,
         semver = None):
-    info_set_minimum_version(">0.12.6")
+    info_set_minimum_version("0.12.6")
     return info.is_path_to_workspace_member_available(
         member = _get_member_requirement(url, rev, semver),
     )
@@ -190,7 +190,7 @@ def _get_path_to_workspace_member(
         url,
         rev = None,
         semver = None):
-    info_set_minimum_version(">0.12.6")
+    info_set_minimum_version("0.12.6")
     return info.get_path_to_workspace_member(
         member = _get_member_requirement(url, rev, semver),
     )
