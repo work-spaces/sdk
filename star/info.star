@@ -166,3 +166,101 @@ def info_get_supported_platforms():
         The supported platforms
     """
     return info.get_supported_platforms()
+
+def _get_member_requirement(url, rev = None, semver = None):
+    version_requirment = {}
+    if rev != None:
+        version_requirment = {"required": {"Revision": rev}}
+    elif semver != None:
+        version_requirment = {"required": {"SemVer": semver}}
+    return {
+        "url": url,
+    } | version_requirment
+
+def _is_path_to_workspace_member_available(
+        url,
+        rev = None,
+        semver = None):
+    info_set_minimum_version(">0.12.6")
+    return info.is_path_to_workspace_member_available(
+        member = _get_member_requirement(url, rev, semver),
+    )
+
+def _get_path_to_workspace_member(
+        url,
+        rev = None,
+        semver = None):
+    info_set_minimum_version(">0.12.6")
+    return info.get_path_to_workspace_member(
+        member = _get_member_requirement(url, rev, semver),
+    )
+
+def info_get_path_to_member_with_semver(
+        url,
+        semver):
+    """
+    Get the path to a workspace member.
+
+    If the the specified requirement is not found, the program will exit with an error.
+    Not all workspace members have versions. The version is set manually during checkout
+    or pulled from the git rev (tag).
+
+    Args:
+        url: The url of the workspace member
+        semver: The semver requiement assuming the member has a version
+
+    Returns:
+        The path to the workspace member.
+    """
+    return _get_path_to_workspace_member(
+        url = url,
+        semver = semver,
+    )
+
+def info_get_path_to_member_with_rev(
+        url,
+        rev):
+    """
+    Gets the path to a workspace member with the specified revision.
+
+    If the the specified requirement is not found, the program will exit with an error.
+
+    Args:
+        url: The url of the workspace member
+        rev: the git or sha256 hash
+
+    Returns:
+        The path to the workspace member.
+    """
+    return _get_path_to_workspace_member(
+        url = url,
+        rev = rev,
+    )
+
+def info_check_member_minimum_version(url, semver):
+    """
+    Checks if the workspace satifies a requirement
+
+    Args:
+        url: The url of the workspace member
+        semver: The semver requiement assuming the member has a version
+
+    Returns:
+        True if the workspace member is found satisfying semver, False otherwise
+    """
+
+    return _is_path_to_workspace_member_available(url, rev = None, semver = semver)
+
+def info_check_member_revision(url, rev):
+    """
+    Checks if the workspace satifies a requirement
+
+    Args:
+        url: The url of the workspace member
+        rev: git/sha256 hash
+
+    Returns:
+        True if the workspace member is found at the specified rev, False otherwise
+    """
+
+    return _is_path_to_workspace_member_available(url, rev = rev)
