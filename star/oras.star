@@ -50,8 +50,6 @@ def oras_add_publish_archive(
         "platform": platform,
     }
 
-    script.print("archive {}".format(archive_info))
-
     archive_output_info = info.get_build_archive_info(rule_name = ARCHIVE_RULE_NAME, archive = archive_info)
     archive_output = archive_output_info["archive_path"]
     run.add_archive(
