@@ -41,7 +41,6 @@ def oras_add_publish_archive(
     ARCHIVE_RULE_NAME = "{}_archive".format(name)
     ORAS_RULE_PUSH_NAME = "{}_oras_push".format(name)
 
-
     archive_info = {
         "input": input,
         "name": artifact,
@@ -66,7 +65,7 @@ def oras_add_publish_archive(
 
     oras_command = _get_oras_command()
 
-    deploy_args = [] if deploy_repo == None else ['--annotation=org.opencontainers.image.source={}'.format(deploy_repo)]
+    deploy_args = [] if deploy_repo == None else ["--annotation=org.opencontainers.image.source={}".format(deploy_repo)]
 
     run_add_exec(
         ORAS_RULE_PUSH_NAME,
@@ -84,7 +83,11 @@ def oras_add_publish_archive(
         working_directory = archive_output_folder,
     )
 
-    run_add_target(name, deps = [ORAS_RULE_PUSH_NAME])
+    run_add_target(
+        name,
+        deps = [ORAS_RULE_PUSH_NAME],
+        help = "Publish {} using oras".format(name)
+    )
 
 def oras_add_platform_archive(
         name,

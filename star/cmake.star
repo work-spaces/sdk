@@ -4,9 +4,9 @@ Add CMake to your sysroot.
 
 load(
     "checkout.star",
+    "CHECKOUT_TYPE_OPTIONAL",
     "checkout_add_archive",
     "checkout_add_repo",
-    "CHECKOUT_TYPE_OPTIONAL"
 )
 load("run.star", "run_add_exec", "run_add_target")
 
@@ -80,9 +80,17 @@ def cmake_add_configure_build_install(
             args = ["--build", working_directory, "--target", "install"],
             help = "CMake install:{}".format(name),
         )
-        run_add_target(name, deps = [install_rule_name])
+        run_add_target(
+            name,
+            deps = [install_rule_name],
+            help = "CMake configure/build/install",
+        )
     else:
-        run_add_target(name, deps = [build_rule_name])    
+        run_add_target(
+            name,
+            deps = [build_rule_name],
+            help = "CMake configure/build"
+        )
 
 def cmake_add_repo(
         name,
@@ -187,7 +195,7 @@ def cmake_add_source_archive(
         url = url,
         sha256 = sha256,
         filename = filename,
-        type = checkout_type
+        type = checkout_type,
     )
 
     if not checkout_type == CHECKOUT_TYPE_OPTIONAL:
@@ -199,5 +207,5 @@ def cmake_add_source_archive(
             install_path = install_path,
             deps = deps,
             build_artifact_globs = build_artifact_globs,
-            skip_install = skip_install
+            skip_install = skip_install,
         )
