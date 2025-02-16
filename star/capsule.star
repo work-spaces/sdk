@@ -10,6 +10,7 @@ load(
     "checkout_add_repo",
     "checkout_add_soft_link_asset",
     "checkout_update_asset",
+    "CHECKOUT_TYPE_OPTIONAL"
 )
 load(
     "oras.star",
@@ -633,7 +634,7 @@ def capsule_add_repo(
         working_directory: The working directory
         platforms: The platforms
         deps: The dependencies
-        
+
     Returns:
         str: The name of the checkout rule (source directory)
     """
