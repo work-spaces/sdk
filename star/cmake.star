@@ -6,6 +6,7 @@ load(
     "checkout.star",
     "checkout_add_archive",
     "checkout_add_repo",
+    "CHECKOUT_TYPE_OPTIONAL"
 )
 load(
     "capsule.star",
@@ -98,6 +99,7 @@ def cmake_add_repo(
         checkout_submodules = False,
         relative_source_directory = None,
         clone = "Worktree",
+        checkout_type = None,
         skip_install = False,
         deps = []):
     """
@@ -114,41 +116,44 @@ def cmake_add_repo(
         checkout_submodules: Whether to checkout submodules
         relative_source_directory: The directory of the project (default is the name)
         clone: The clone type (Worktree, Blobless, Shallow, Default)
+        checkout_type: Use CHECKOUT_TYPE_OPTIONAL to make the checkout optional
         skip_install: Skip the install step
         deps: The dependencies of the project
     """
 
-    checkout_rule = "{}_source".format(name)
+    CHECKOUT_RULE = "{}_source".format(name)
     checkout_add_repo(
-        checkout_rule,
+        CHECKOUT_RULE,
         url = url,
         rev = rev,
         clone = clone,
+        type = checkout_type,
     )
 
-    submodule_rule = "{}_submodules".format(name)
-    submodule_deps = []
-    if checkout_submodules:
-        run_add_exec(
-            submodule_rule,
-            command = "git",
-            args = ["submodule", "update", "--init", "--recursive"],
-            working_directory = checkout_rule,
+    if not checkout_type == CHECKOUT_TYPE_OPTIONAL:
+        SUBMODULE_RULE = "{}_submodules".format(name)
+        SUBMODULE_DEPS = []
+        if checkout_submodules:
+            run_add_exec(
+                SUBMODULE_RULE,
+                command = "git",
+                args = ["submodule", "update", "--init", "--recursive"],
+                working_directory = CHECKOUT_RULE,
+            )
+            SUBMODULE_DEPS = [SUBMODULE_RULE]
+
+        source_directory = "{}/{}".format(checkout_rule, relative_source_directory) if relative_source_directory != None else checkout_rule
+
+        cmake_add_configure_build_install(
+            name,
+            source_directory = source_directory,
+            configure_args = configure_args,
+            build_args = build_args,
+            build_artifact_globs = build_artifact_globs,
+            deps = deps + SUBMODULE_DEPS,
+            install_path = install_path,
+            skip_install = skip_install,
         )
-        submodule_deps = [submodule_rule]
-
-    source_directory = "{}/{}".format(checkout_rule, relative_source_directory) if relative_source_directory != None else checkout_rule
-
-    cmake_add_configure_build_install(
-        name,
-        source_directory = source_directory,
-        configure_args = configure_args,
-        build_args = build_args,
-        build_artifact_globs = build_artifact_globs,
-        deps = deps + submodule_deps,
-        install_path = install_path,
-        skip_install = skip_install,
-    )
 
 def cmake_add_source_archive(
         name,
@@ -161,6 +166,7 @@ def cmake_add_source_archive(
         build_args = [],
         build_artifact_globs = None,
         deps = [],
+        checkout_type = None,
         skip_install = False):
     """
     Add a CMake project to the build
@@ -176,6 +182,7 @@ def cmake_add_source_archive(
         build_args: The arguments to pass to the build command
         build_artifact_globs: The globs to match when installing build artifacts
         deps: The dependencies of the project
+        checkout_type: Use CHECKOUT_TYPE_OPTIONAL to make the checkout optional
         skip_install: Skip the install step
     """
 
@@ -184,18 +191,20 @@ def cmake_add_source_archive(
         url = url,
         sha256 = sha256,
         filename = filename,
+        type = checkout_type
     )
 
-    cmake_add_configure_build_install(
-        name,
-        source_directory,
-        configure_args = configure_args,
-        build_args = build_args,
-        install_path = install_path,
-        deps = deps,
-        build_artifact_globs = build_artifact_globs,
-        skip_install = skip_install
-    )
+    if not checkout_type == CHECKOUT_TYPE_OPTIONAL:
+        cmake_add_configure_build_install(
+            name,
+            source_directory,
+            configure_args = configure_args,
+            build_args = build_args,
+            install_path = install_path,
+            deps = deps,
+            build_artifact_globs = build_artifact_globs,
+            skip_install = skip_install
+        )
 
 def cmake_capsule_add_repo_checkout_and_run(
         name,
@@ -267,6 +276,8 @@ def cmake_capsule_add_repo_checkout_and_run(
             "checkout_function": checkout_function,
         },
     )
+
+
 
 def cmake_capsule_add_archive_checkout_and_run(
         name,
