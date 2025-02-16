@@ -1,5 +1,9 @@
 # Changes
 
+## v0.1.3
+
+- Add `type` arguments to `checkout` rules
+
 ## v0.1.2
 
 - Fix `>` in info rules

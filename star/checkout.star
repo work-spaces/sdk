@@ -13,6 +13,7 @@ def checkout_add_repo(
         sparse_list = None,
         working_directory = None,
         platforms = None,
+        type = None,
         deps = []):
     """
     Clones a repository and checks it out at a specific revision.
@@ -27,26 +28,32 @@ def checkout_add_repo(
         sparse_mode (str): Cone | NoCone
         sparse_list (list): List of paths to include/exclude
         deps (list): List of dependencies for the rule.
+        type: "Optional" to make the rule optional (must be trigger by another rule to execute).
         platforms (list): List of platforms to add the archive to.
         working_directory (str): The working directory to clone the repository into.
     """
 
-    evaluate_spaces_modules = {
+    EVALUATE_SPACES_MODULES = {
         "is_evaluate_spaces_modules": is_evaluate_spaces_modules,
     } if is_evaluate_spaces_modules != None else {}
-    effective_sparse_checkout = {
+    EFFECTIVE_SPARSE_CHECKOUT = {
         "sparse_checkout": {"mode": sparse_mode, "list": sparse_list},
     } if sparse_mode != None else {}
 
     checkout.add_repo(
-        rule = {"name": name, "deps": deps, "platforms": platforms},
+        rule = {
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "type": type,
+        },
         repo = {
             "url": url,
             "rev": rev,
             "checkout": checkout_type,
             "clone": clone,
             "working_directory": working_directory,
-        } | evaluate_spaces_modules | effective_sparse_checkout,
+        } | EVALUATE_SPACES_MODULES | EFFECTIVE_SPARSE_CHECKOUT,
     )
 
 def checkout_add_archive(

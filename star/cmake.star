@@ -33,7 +33,6 @@ def cmake_add_configure_build_install(
         build_artifact_globs: The globs to match when installing build artifacts
         deps: The dependencies of the project
         install_path: The path to install the project
-        type: rule type (Use Optional or none to include with all)
         skip_install: Skip the install step
     """
 
@@ -111,7 +110,6 @@ def cmake_add_repo(
         install_path: The path to install the project
         configure_args: The arguments to pass to the configure script
         build_args: The arguments to pass to the build command
-        type: rule type (Use Optional or none to include with all)
         build_artifact_globs: The globs to match when installing build artifacts
         checkout_submodules: Whether to checkout submodules
         relative_source_directory: The directory of the project (default is the name)
@@ -178,7 +176,6 @@ def cmake_add_source_archive(
         build_args: The arguments to pass to the build command
         build_artifact_globs: The globs to match when installing build artifacts
         deps: The dependencies of the project
-        type: rule type (Use Optional or none to include with all)
         skip_install: Skip the install step
     """
 
@@ -233,7 +230,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         relative_source_directory: The directory to set `-S<source_directory>` when configuraing CMake (default is where repo is checked out)
     """
 
-    effective_url = source_url if source_url != None else "https://{}/{}/{}".format(capsule["domain"], capsule["owner"], capsule["repo"])
+    EFFECTIVE_URL = source_url if source_url != None else "https://{}/{}/{}".format(capsule["domain"], capsule["owner"], capsule["repo"])
 
     def build_function(name, install_path, args):
 
@@ -260,7 +257,7 @@ def cmake_capsule_add_repo_checkout_and_run(
         gh_deploy_repo = gh_deploy_repo,
         build_function = build_function,
         build_function_args = {
-            "url": effective_url,
+            "url": EFFECTIVE_URL,
             "version": version,
             "rev": rev,
             "relative_source_directory": relative_source_directory,
