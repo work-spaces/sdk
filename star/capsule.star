@@ -7,13 +7,112 @@ load(
     "CHECKOUT_TYPE_OPTIONAL",
     "checkout_add_oras_archive",
     "checkout_add_platform_archive",
+    "checkout_add_repo"
 )
-load(
-    "internal/capsule.star",
-    "internal_capsule_create_descriptor",
-    "internal_capsule_create_options",
-)
+
 load("run.star", "run_add_target")
+load("oras.star", "oras_add_publish_archive")
+load("gh.star", "gh_add_publish_archive")
+load("rpath.star", "rpath_update_macos_install_dir")
+
+_DOMAIN = "domain"
+_OWNER = "owner"
+_REPO = "repo"
+
+_DESCRIPTOR = "descriptor"
+_OPTIONS = "options"
+
+_OPTION_INSTALL_PATH = "install_path"
+_OPTION_IS_USE_SOURCE = "is_use_source"
+_OPTION_ORAS_URL = "oras_url"
+_OPTION_GH_DEPLOY_REPO = "gh_deploy_repo"
+_OPTION_RELEASE_VERSION = "release_version"
+_OPTION_SOURCE_REVISION = "source_revision"
+_OPTION_ARCHIVE_SUFFIX = "archive_suffix"
+
+_DEFAULT_INSTALL_PATH = "build/install"
+
+def _create_descriptor(
+        domain,
+        owner,
+        repo):
+    return {
+        _DOMAIN: domain,
+        _OWNER: owner,
+        _REPO: repo,
+    }
+
+def _create_options(
+        version,
+        source_revision = None,
+        archive_suffix = "tar.xz",
+        install_path = _DEFAULT_INSTALL_PATH,
+        oras_url = None,
+        gh_deploy_repo = None,
+        is_use_source = False):
+    EFFECTIVE_SOURCE_REVISION = source_revision if source_revision != None else "v{}".format(version)
+    return {
+        _OPTION_RELEASE_VERSION: version,
+        _OPTION_SOURCE_REVISION: EFFECTIVE_SOURCE_REVISION,
+        _OPTION_IS_USE_SOURCE: is_use_source,
+        _OPTION_INSTALL_PATH: install_path,
+        _OPTION_ORAS_URL: oras_url,
+        _OPTION_GH_DEPLOY_REPO: gh_deploy_repo,
+        _OPTION_ARCHIVE_SUFFIX: archive_suffix,
+    }
+
+def _create(
+        capsule,
+        options):
+    return {
+        _DESCRIPTOR: capsule,
+        _OPTIONS: options,
+    }
+
+def _get_option(
+        capsule,
+        option):
+    return capsule[_OPTIONS][option]
+
+
+def _to_url(capsule):
+    DESCRIPTOR = capsule[_DESCRIPTOR]
+    return "https://{}/{}/{}".format(
+        DESCRIPTOR[_DOMAIN],
+        DESCRIPTOR[_OWNER],
+        DESCRIPTOR[_REPO],
+    )
+
+def _to_worspace_path(capsule):
+    DESCRIPTOR = capsule[_DESCRIPTOR]
+    return "{}/{}/{}".format(
+        DESCRIPTOR[_DOMAIN],
+        DESCRIPTOR[_OWNER],
+        DESCRIPTOR[_REPO],
+    )
+
+def _to_name(capsule):
+    DEV_MARK = "" if info.is_workspace_reproducible() else "-non-reproducible"
+    DESCRIPTOR = capsule[_DESCRIPTOR]
+    return "{}-{}-{}{}".format(
+        DESCRIPTOR[_DOMAIN],
+        DESCRIPTOR[_OWNER],
+        DESCRIPTOR[_REPO],
+        DEV_MARK,
+    )
+
+def _to_rule_name(capsule, suffix):
+    return "{}_{}".format(_to_name(capsule), suffix)
+
+def _to_oras_artifact(capsule):
+    capsule_name = _to_name(capsule)
+    return "{}-{}".format(capsule_name, info.get_platform_name())
+
+def _to_oras_label(capsule):
+    ORAS_ARTIFACT = _to_oras_artifact(capsule)
+    URL = _get_option(capsule, _OPTION_ORAS_URL)
+    #oras_label = "{}:{}".format(_descriptor_to_oras_label(url, capsule), "{}-{}".format(version, digest))
+    return "{}/{}".format(URL, ORAS_ARTIFACT)
 
 def capsule_declare(
         domain,
@@ -22,21 +121,21 @@ def capsule_declare(
         version,
         source_revision = None,
         archive_suffix = "tar.xz",
-        install_path = None,
-        oras_deploy_repo = None,
+        install_path = _DEFAULT_INSTALL_PATH,
+        oras_url = None,
         gh_deploy_repo = None,
         is_use_source = False):
-    DESCRIPTOR = internal_capsule_create_descriptor(domain, owner, repo)
-    OPTIONS = internal_capsule_create_options(
+    DESCRIPTOR = _create_descriptor(domain, owner, repo)
+    OPTIONS = _create_options(
         version,
         source_revision,
         archive_suffix = archive_suffix,
         install_path = install_path,
-        oras_deploy_repo = oras_deploy_repo,
+        oras_url = oras_url,
         gh_deploy_repo = gh_deploy_repo,
         is_use_source = is_use_source,
     )
-    return internal_capsule_create(DESCRIPTOR, OPTIONS)
+    return _create(DESCRIPTOR, OPTIONS)
 
 def _add_checkout_oras(capsule):
     """
@@ -51,9 +150,8 @@ def _add_checkout_oras(capsule):
         dict: with the platform and the url to download the gh executable
     """
 
-    digest = info.get_workspace_short_digest()
     ORAS_COMMAND = "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
-    ORAS_LABEL = internal_capsule_to_oras_label(capsule)
+    ORAS_LABEL = _to_oras_label(capsule)
 
     # Check oras to see if the executable is available
     check_release = process.exec({
@@ -74,13 +172,13 @@ def _add_checkout_oras(capsule):
         # but is doesn't return a json string
         return None
 
-    PUBLISH_NAME = internal_capsule_to_rule_name(capsule, "publish")
+    PUBLISH_NAME = _to_rule_name(capsule, "publish")
     checkout_add_oras_archive(
         PUBLISH_NAME,
-        url = url,
-        artifact = _descriptor_to_oras_artifact(capsule),
-        tag = "{}-{}".format(version, digest),
-        add_prefix = _get_store_prefix(capsule),
+        url = _get_option(capsule, _OPTION_ORAS_URL),
+        artifact = _to_oras_artifact(capsule),
+        tag = _get_option(capsule, _OPTION_RELEASE_VERSION),
+        add_prefix = _get_option(capsule, _OPTION_INSTALL_PATH),
     )
 
     return PUBLISH_NAME
@@ -100,9 +198,11 @@ def _add_checkout_gh(capsule):
 
     # https://github.com/work-spaces/tools/releases/download/ninja-v1.12.1/ninja-v1.12.1-macos-x86_64.sha256.txt
     digest = info.get_workspace_short_digest()
-    capsule_name = _descriptor_to_name(capsule)
+    capsule_name = _to_name(capsule)
     release_name = "{}-v{}".format(capsule_name, digest)
     gh_command = "{}/sysroot/bin/gh".format(info.get_path_to_spaces_tools())
+
+    GH_DEPLOY_REPO = _get_option(capsule, _OPTION_GH_DEPLOY_REPO)
 
     # Check gh to see if the executable is available
     check_release = process.exec({
@@ -111,7 +211,7 @@ def _add_checkout_gh(capsule):
             "release",
             "view",
             release_name,
-            "--repo={}".format(deploy_repo),
+            "--repo={}".format(GH_DEPLOY_REPO),
             "--json=assets",
         ],
     })
@@ -122,9 +222,10 @@ def _add_checkout_gh(capsule):
 
     # check to see if the release is available for the platform
     platform = info.get_platform_name()
-    url = "{}/releases/download/{}/{}-{}".format(deploy_repo, release_name, release_name, platform)
+    url = "{}/releases/download/{}/{}-{}".format(GH_DEPLOY_REPO, release_name, release_name, platform)
 
-    platform_url = "{}.{}".format(url, suffix)
+    SUFFIX = _get_option(capsule, _OPTION_ARCHIVE_SUFFIX)
+    platform_url = "{}.{}".format(url, SUFFIX)
     platform_sha256_url = "{}.sha256.txt".format(url)
 
     assets_root = json.string_to_dict(check_release["stdout"])
@@ -142,7 +243,7 @@ def _add_checkout_gh(capsule):
     if not platform_url_is_found or not platform_sha256_url_is_found:
         return None
 
-    PUBLISH_NAME = internal_capsule_to_rule_name(capsule, "publish")
+    PUBLISH_NAME = _to_rule_name(capsule, "publish")
     checkout_add_platform_archive(
         PUBLISH_NAME,
         platforms = {
@@ -150,7 +251,7 @@ def _add_checkout_gh(capsule):
                 "url": platform_url,
                 "sha256": platform_sha256_url,
                 "link": "Hard",
-                "add_prefix": _get_store_prefix(capsule_name),
+                "add_prefix": _get_option(capsule, _OPTION_INSTALL_PATH),
             },
         },
     )
@@ -158,8 +259,8 @@ def _add_checkout_gh(capsule):
     return PUBLISH_NAME
 
 def _add_archive(capsule):
-    ORAS_URL = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_ORAS_URL)
-    GH_DEPLOY_REPO = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_GH_DEPLOY_REPO)
+    ORAS_URL = _get_option(capsule, _OPTION_ORAS_URL)
+    GH_DEPLOY_REPO = _get_option(capsule, _OPTION_GH_DEPLOY_REPO)
     if ORAS_URL != None:
         return _add_checkout_oras(capsule)
     elif GH_DEPLOY_REPO != None:
@@ -178,7 +279,7 @@ def capsule_get_run_name(capsule):
     Returns:
         str: the name of the run rule
     """
-    return internal_capsule_to_rule_name(capsule, "run")
+    return _to_rule_name(capsule, "run")
 
 def capsule_get_publish_name(capsule):
     """
@@ -191,7 +292,7 @@ def capsule_get_publish_name(capsule):
     Returns:
         str: the name of the run rule
     """
-    return internal_capsule_to_rule_name(capsule, "publish")
+    return _to_rule_name(capsule, "publish")
 
 def capsule_get_workspace_path(capsule):
     """
@@ -204,7 +305,7 @@ def capsule_get_workspace_path(capsule):
     Returns:
         str: the name of the run rule
     """
-    return internal_capsule_to_worspace_path(capsule)
+    return _to_worspace_path(capsule)
 
 def capsule_get_checkout_type(capsule, run_name):
     """
@@ -218,9 +319,9 @@ def capsule_get_checkout_type(capsule, run_name):
         The name of the run target that dependents should use to build from source or use the pre-built binaries
     """
 
-    ORAL_URL = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_ORAS_URL)
-    GH_DEPLOY_REPO = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_GH_DEPLOY_REPO)
-    IS_USE_SOURCE = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_IS_USE_SOURCE)
+    ORAL_URL = _get_option(capsule, _OPTION_ORAS_URL)
+    GH_DEPLOY_REPO = _get_option(capsule, _OPTION_GH_DEPLOY_REPO)
+    IS_USE_SOURCE = _get_option(capsule, _OPTION_IS_USE_SOURCE)
 
     is_activate_checkout = False
     platform_archive_rule = None
@@ -232,7 +333,7 @@ def capsule_get_checkout_type(capsule, run_name):
         is_activate_checkout = True
 
     run_add_target(
-        capsule_checktou_get_run_name(capsule),
+        capsule_get_run_name(capsule),
         deps = [run_name] if is_activate_checkout else [],
     )
 
@@ -243,12 +344,12 @@ def capsule_checkout_add_repo(
     run_name,
     clone = "Blobless",
     ):
-    GIT_URL = internal_capsule_to_url(capsule)
+    GIT_URL = _to_url(capsule)
     checkout_add_repo(
-        capsule_get_path(capsule),
+        capsule_get_workspace_path(capsule),
         url = GIT_URL,
         type = capsule_get_checkout_type(capsule, run_name),
-        rev = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_SOURCE_REVISION),
+        rev = _get_option(capsule, _OPTION_SOURCE_REVISION),
         clone = clone,
     )
 
@@ -258,13 +359,13 @@ def _oras_publish(
         deps):
     oras_add_publish_archive(
         capsule_get_publish_name(capsule),
-        url = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_ORAS_URL),
-        deploy_repo = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_GH_DEPLOY_REPO),
-        artifact = internal_capsule_to_oras_artifact(capsule),
-        tag = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_RELEASE_VERSION),
-        input = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_INSTALL_PATH),
+        url = _get_option(capsule, _OPTION_ORAS_URL),
+        deploy_repo = _get_option(capsule, _OPTION_GH_DEPLOY_REPO),
+        artifact = _to_oras_artifact(capsule),
+        tag = _get_option(capsule, _OPTION_RELEASE_VERSION),
+        input = _get_option(capsule, _OPTION_INSTALL_PATH),
         deps = deps,
-        suffix = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_ARCHIVE_SUFFIX),
+        suffix = _get_option(capsule, _OPTION_ARCHIVE_SUFFIX),
     )
 
 def _gh_publish(
@@ -272,10 +373,10 @@ def _gh_publish(
         deps):
     gh_add_publish_archive(
         capsule_get_publish_name(capsule),
-        input = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_INSTALL_PATH),
-        version = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_RELEASE_VERSION),
-        deploy_repo = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_GH_DEPLOY_REPO),
-        suffix = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_ARCHIVE_SUFFIX),
+        input = _get_option(capsule, _OPTION_INSTALL_PATH),
+        version = _get_option(capsule, _OPTION_RELEASE_VERSION),
+        deploy_repo = _get_option(capsule, _OPTION_GH_DEPLOY_REPO),
+        suffix = _get_option(capsule, _OPTION_ARCHIVE_SUFFIX),
         deps = deps,
     )
 
@@ -290,19 +391,19 @@ def capsule_publish(
         deps: The dependencies of the capsule
     """
 
-    RELOCATE_RULE_NAME = internal_capsule_to_rule_name(capsule, "relocate")
+    RELOCATE_RULE_NAME = _to_rule_name(capsule, "relocate")
     rpath_update_macos_install_dir(
         RELOCATE_RULE_NAME,
-        install_path = install_path,
+        install_path = _get_option(capsule, _OPTION_INSTALL_PATH),
         deps = deps,
     )
 
-    if internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_ORAS_URL) != None:
+    if _get_option(capsule, _OPTION_ORAS_URL) != None:
         _oras_publish(
             capsule,
             deps = [RELOCATE_RULE_NAME],
         )
-    elif internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_GH_DEPLOY_REPO) != None:
+    elif _get_option(capsule, _OPTION_GH_DEPLOY_REPO) != None:
         _gh_publish(
             capsule,
             deps = [RELOCATE_RULE_NAME],
@@ -319,7 +420,7 @@ def capsule_publish_add_run_target(capsule, run_name):
         run_name: The run rule that will build and install (not publish) the target
     """
 
-    NAME = internal_capsule_to_name(capsule)
+    NAME = _to_name(capsule)
     run_add_target(
         "{}_run".format(NAME),
         deps = [run_name],
