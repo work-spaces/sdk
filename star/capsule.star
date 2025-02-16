@@ -4,234 +4,64 @@ Spaces starlark functions for creating and working with capsules
 
 load(
     "checkout.star",
-    "checkout_add_capsule",
+    "CHECKOUT_TYPE_OPTIONAL",
     "checkout_add_oras_archive",
     "checkout_add_platform_archive",
-    "checkout_add_repo",
-    "checkout_add_soft_link_asset",
-    "checkout_update_asset",
-    "CHECKOUT_TYPE_OPTIONAL"
 )
 load(
-    "oras.star",
-    "oras_add_publish_archive",
+    "internal/capsule.star",
+    "internal_capsule_create_descriptor",
+    "internal_capsule_create_options",
 )
 load("run.star", "run_add_target")
-load("gh.star", "gh_add_publish_archive")
-load("rpath.star", "rpath_update_macos_install_dir")
 
-def capsule(
+def capsule_declare(
         domain,
         owner,
-        repo):
-    """
-    Create a capsule descriptor. This is used with checkout_add_capsule().
-
-    Args:
-        domain (str): The domain of the repository
-        owner (str): The owner of the repository
-        repo (str): The repository name
-    """
-
-    return {
-        "domain": domain,
-        "owner": owner,
-        "repo": repo,
-    }
-
-def capsule_github(
-        owner,
-        repo):
-    """
-    Create a capsule descriptor for github. This is used with checkout_add_capsule().
-
-    Args:
-        owner (str): The owner of the repository
-        repo (str): The repository name
-    """
-
-    return capsule("github.com", owner, repo)
-
-def _descriptor_to_url(descriptor):
-    return "https://{}/{}/{}".format(descriptor["domain"], descriptor["owner"], descriptor["repo"])
-
-
-def _descriptor_to_name(descriptor):
-    """
-    Convert a capsule descriptor to a name.
-
-    Args:
-        descriptor: The capsule descriptor
-
-    Returns:
-        str: The name of the capsule
-    """
-
-    DEV_MARK = "" if info.is_workspace_reproducible() else "-non-reproducible"
-    return "{}-{}-{}{}".format(
-        descriptor["domain"],
-        descriptor["owner"],
-        descriptor["repo"],
-        DEV_MARK,
-    )
-
-def _descriptor_to_oras_artifact(capsule):
-    """
-    Convert a capsule descriptor to an oras artifact.
-
-    Args:
-        capsule: The capsule descriptor
-
-    Returns:
-        str: The oras artifact (excludes the digest)
-    """
-
-    capsule_name = _descriptor_to_name(capsule)
-    return "{}-{}".format(capsule_name, info.get_platform_name())
-
-def _descriptor_to_oras_label(url, capsule):
-    """
-    Convert a capsule descriptor to an oras label.
-
-    Args:
-        url: The URL of the oras archive
-        capsule: The capsule descriptor
-
-    Returns:
-        str: The oras label
-    """
-
-    oras_artifact = _descriptor_to_oras_artifact(capsule)
-    return "{}/{}".format(url, oras_artifact)
-
-def _get_store_prefix(capsule):
-    """
-    Get the prefix of the capsule.
-
-    This is where the capsule is available on the machine. This is used
-    when creating capsules.
-
-    Args:
-        capsule: return value of capsule()
-
-    Returns:
-        The prefix of the capsule
-    """
-    sysroot = info.get_path_to_capsule_sysroot()
-    digest = info.get_workspace_short_digest()
-    capsule_name = _descriptor_to_name(capsule)
-    return "{}/{}/{}".format(sysroot, capsule_name, digest)
-
-def _get_install_path(capsule):
-    """
-    Check if the capsule is required to be checked out and run.
-
-    This is used when writing workflows that create capsules. If the return value
-    is None, the capsure is already available on the machine.
-
-    Args:
-        capsule: return value of capsule()
-
-    Returns:
-        None if the capsule is already available, otherwise the path to install the capsule
-    """
-
-    digest = info.get_workspace_short_digest()
-    install_path = _get_store_prefix(capsule)
-    capsule_info_path = "{}/{}.json".format(install_path, digest)
-    if fs.exists(capsule_info_path):
-        return None
-    return install_path
-
-def _oras_publish(
-        name,
-        capsule,
+        repo,
         version,
-        deps,
-        url,
-        deploy_repo,
-        suffix = "tar.xz"):
-    """
-    Publish the capsule to github
-
-    Args:
-        name: The name of the rule
-        capsule: capsule()
-        version: The version of the capsule
-        deps: The dependencies of the capsule
-        url: Oras URL to publish the capsule
-        deploy_repo: The repository to associate the capsule with
-        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
-    """
-
-    digest = info.get_workspace_short_digest()
-    install_path = _get_store_prefix(capsule)
-
-    oras_add_publish_archive(
-        name,
-        url = url,
-        deploy_repo = deploy_repo,
-        artifact = _descriptor_to_oras_artifact(capsule),
-        tag = "{}-{}".format(version, digest),
-        input = install_path,
-        deps = deps,
-        suffix = suffix,
+        source_revision = None,
+        archive_suffix = "tar.xz",
+        install_path = None,
+        oras_deploy_repo = None,
+        gh_deploy_repo = None,
+        is_use_source = False):
+    DESCRIPTOR = internal_capsule_create_descriptor(domain, owner, repo)
+    OPTIONS = internal_capsule_create_options(
+        version,
+        source_revision,
+        archive_suffix = archive_suffix,
+        install_path = install_path,
+        oras_deploy_repo = oras_deploy_repo,
+        gh_deploy_repo = gh_deploy_repo,
+        is_use_source = is_use_source,
     )
+    return internal_capsule_create(DESCRIPTOR, OPTIONS)
 
-def capsule_checkout(
-        name,
-        descriptor,
-        scripts,
-        prefix,
-        globs = None,
-        deps = []):
-    """
-    Checks out a capsule and adds it to the workspace.
-
-    Args:
-        name (str): The name of the rule.
-        descriptor (dict): The capsule descriptor.
-        scripts (list): List of scripts to run that define how to install the capsule on the local machine.
-        prefix (str): The workspace prefix where capsule artifacts should be hard-linked. Use `sysroot` for build deps and `build/install` for runtime deps.
-        globs (list): List of globs to install in the workspace.
-        deps (list): List of dependencies for creating the capsule.
-    """
-    checkout_add_capsule(
-        name,
-        scripts,
-        descriptor = descriptor,
-        prefix = prefix,
-        deps = deps,
-        globs = globs,
-    )
-
-def _oras_add(name, capsule, url, version):
+def _add_checkout_oras(capsule):
     """
     Add the oras capsule to the sysroot.
 
     If the release is not available None is returned. Otherwise, a platform archive dictionary is returned.
 
     Args:
-        name: rule name for checking out the capsule
         capsule: return value of capsule()
-        version: The version of the capsule
-        url: The URL
 
     Returns:
         dict: with the platform and the url to download the gh executable
     """
 
     digest = info.get_workspace_short_digest()
-    oras_command = "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
-    oras_label = "{}:{}".format(_descriptor_to_oras_label(url, capsule), "{}-{}".format(version, digest))
+    ORAS_COMMAND = "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
+    ORAS_LABEL = internal_capsule_to_oras_label(capsule)
 
     # Check oras to see if the executable is available
     check_release = process.exec({
-        "command": oras_command,
+        "command": ORAS_COMMAND,
         "args": [
             "manifest",
             "fetch",
-            oras_label,
+            ORAS_LABEL,
         ],
     })
 
@@ -244,60 +74,25 @@ def _oras_add(name, capsule, url, version):
         # but is doesn't return a json string
         return None
 
-    checkout_platform_rule = "{}_add_platform_archive".format(name)
+    PUBLISH_NAME = internal_capsule_to_rule_name(capsule, "publish")
     checkout_add_oras_archive(
-        checkout_platform_rule,
+        PUBLISH_NAME,
         url = url,
         artifact = _descriptor_to_oras_artifact(capsule),
         tag = "{}-{}".format(version, digest),
         add_prefix = _get_store_prefix(capsule),
     )
 
-    return checkout_platform_rule
+    return PUBLISH_NAME
 
-def _gh_publish(
-        name,
-        capsule,
-        deps,
-        deploy_repo,
-        version,
-        suffix = "tar.xz"):
-    """
-    Publish the capsule to github
-
-    Args:
-        name: The name of the rule
-        capsule: return value of capsule()
-        deps: The dependencies of the capsule
-        deploy_repo: The repository to deploy the capsule to
-        version: The version of the capsule
-        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
-    """
-
-    digest = info.get_workspace_short_digest()
-    install_path = _get_store_prefix(capsule)
-    capsule_name = _descriptor_to_name(capsule)
-
-    gh_add_publish_archive(
-        capsule_name,
-        input = install_path,
-        version = "{}-{}".format(version, digest),
-        deploy_repo = deploy_repo,
-        deps = deps,
-        suffix = suffix,
-    )
-
-def _gh_add(name, capsule, deploy_repo, suffix = "tar.xz"):
+def _add_checkout_gh(capsule):
     """
     Add the gh executable to the sysroot.
 
     If the release is not available None is returned. Otherwise, a platform archive dictionary is returned.
 
     Args:
-        name: same name used with _gh_publish()
         capsule: return value of capsule()
-        deploy_repo: The repository to deploy the capsule to
-        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
 
     Returns:
         str: the name of checkout rule for the platform archive
@@ -347,9 +142,9 @@ def _gh_add(name, capsule, deploy_repo, suffix = "tar.xz"):
     if not platform_url_is_found or not platform_sha256_url_is_found:
         return None
 
-    checkout_platform_rule = "{}_add_platform_archive".format(capsule_name)
+    PUBLISH_NAME = internal_capsule_to_rule_name(capsule, "publish")
     checkout_add_platform_archive(
-        checkout_platform_rule,
+        PUBLISH_NAME,
         platforms = {
             platform: {
                 "url": platform_url,
@@ -360,374 +155,172 @@ def _gh_add(name, capsule, deploy_repo, suffix = "tar.xz"):
         },
     )
 
-    return checkout_platform_rule
+    return PUBLISH_NAME
 
-def capsule_checkout_add_workflow_repo(
-        name,
-        url,
-        rev,
-        clone = "Worktree"):
-    """
-    Adds a repository to the @capsules folder where `spaces checkout` is called.
-
-    The files in the repo will be available to _add_archive() scripts argument. The
-    files will not be evaluated in the parent workspace.
-
-    Args:
-        name: The name of the rule
-        url: The url of the repository
-        rev: The revision of the repository
-        clone: Default is Worktree
-
-    Returns:
-        str: Name of the checkout rule
-    """
-
-    checkout_add_repo(
-        name,
-        url = url,
-        rev = rev,
-        clone = clone,
-        working_directory = info.get_path_to_capsule_workflows(),
-        is_evaluate_spaces_modules = False,
-    )
-
-def capsule_checkout_add_workflow_repo_as_soft_link(name):
-    """
-    Soft link the parent workflow repo to the capsule.
-
-    Args:
-        name: The name of the rule
-
-    Returns:
-        str: Name of the checkout rule to add the soft link
-    """
-
-    rule_name = "{}_soft_link_parent".format(name)
-    workspace = info.get_absolute_path_to_workspace()
-    source = "{}/../{}".format(workspace, name)
-
-    checkout_add_soft_link_asset(
-        rule_name,
-        destination = "@capsules/{}".format(name),
-        source = source,
-    )
-
-    return rule_name
-
-def _checkout_define_dependency(
-        name,
-        capsule,
-        version):
-    """
-    Define a capsule dependency.
-
-    This used when creating capsules. It is used to tell the capsule consumer
-    information about what dependencies are available when this workflow is
-    added as a capsule dependency.
-
-    Args:
-        name: The name of the rule
-        capsule: return value of capsule()
-        version: The version of the dependency
-    """
-
-    CAPSULE_PREFIX = _get_store_prefix(capsule)
-
-    checkout_update_asset(
-        name,
-        destination = "capsules.spaces.json",
-        value = [{
-            "descriptor": capsule,
-            "version": version,
-            "prefix": CAPSULE_PREFIX,
-        }],
-    )
-
-def _add_archive(
-        name,
-        capsule,
-        version = None,
-        oras_url = None,
-        gh_deploy_repo = None,
-        suffix = "tar.xz"):
-    """
-    Add the the executable to the sysroot.
-
-    If the release is not available None is returned. Otherwise, a platform archive dictionary is returned.
-
-    Args:
-        name: same name used with _gh_publish()
-        capsule: return value of capsule()
-        oras_url: The oras URL to deploy the capsule to
-        gh_deploy_repo: The repository to deploy the capsule to
-        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
-        version: The version of the capsule
-
-    Returns:
-        str: the name of checkout rule for the platform archive
-    """
-
-    if oras_url != None:
-        return _oras_add(
-            name,
-            capsule = capsule,
-            url = oras_url,
-            version = version,
-        )
-    elif gh_deploy_repo != None:
-        return _gh_add(
-            name,
-            capsule = capsule,
-            deploy_repo = gh_deploy_repo,
-            suffix = suffix,
-        )
+def _add_archive(capsule):
+    ORAS_URL = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_ORAS_URL)
+    GH_DEPLOY_REPO = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_GH_DEPLOY_REPO)
+    if ORAS_URL != None:
+        return _add_checkout_oras(capsule)
+    elif GH_DEPLOY_REPO != None:
+        return _add_checkout_gh(capsule)
 
     return None
 
-def capsule_relocate_and_publish(
-        name,
+def capsule_get_run_name(capsule):
+    """
+    Gets the name of the run rule associated with this capsule.
+
+    Dependents should depend on this rule to build the capsule.
+
+    Args:
+        capsule: return value of capsule()
+    Returns:
+        str: the name of the run rule
+    """
+    return internal_capsule_to_rule_name(capsule, "run")
+
+def capsule_get_publish_name(capsule):
+    """
+    Gets the name of the run rule associated with this capsule.
+
+    Dependents should depend on this rule to build the capsule.
+
+    Args:
+        capsule: return value of capsule()
+    Returns:
+        str: the name of the run rule
+    """
+    return internal_capsule_to_rule_name(capsule, "publish")
+
+def capsule_get_workspace_path(capsule):
+    """
+    Gets the name of the run rule associated with this capsule.
+
+    Dependents should depend on this rule to build the capsule.
+
+    Args:
+        capsule: return value of capsule()
+    Returns:
+        str: the name of the run rule
+    """
+    return internal_capsule_to_worspace_path(capsule)
+
+def capsule_get_checkout_type(capsule, run_name):
+    """
+    This will either download pre-built binaries matching the capsule or checkout the source to build the capsule.
+
+    Args:
+        capsule: return value of capsule()
+        run_name: the name of the optional run target to activate if pre-built binaries are not available
+
+    Returns:
+        The name of the run target that dependents should use to build from source or use the pre-built binaries
+    """
+
+    ORAL_URL = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_ORAS_URL)
+    GH_DEPLOY_REPO = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_GH_DEPLOY_REPO)
+    IS_USE_SOURCE = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_IS_USE_SOURCE)
+
+    is_activate_checkout = False
+    platform_archive_rule = None
+    if not IS_USE_SOURCE and (ORAL_URL != None or GH_DEPLOY_REPO != None):
+        platform_archive_rule = _add_archive(capsule)
+
+    # no platform archive ready -- need to checkout the source repo
+    if platform_archive_rule == None:
+        is_activate_checkout = True
+
+    run_add_target(
+        capsule_checktou_get_run_name(capsule),
+        deps = [run_name] if is_activate_checkout else [],
+    )
+
+    return None if is_activate_checkout else CHECKOUT_TYPE_OPTIONAL
+
+def capsule_checkout_add_repo(
+    capsule,
+    run_name,
+    clone = "Blobless",
+    ):
+    GIT_URL = internal_capsule_to_url(capsule)
+    checkout_add_repo(
+        capsule_get_path(capsule),
+        url = GIT_URL,
+        type = capsule_get_checkout_type(capsule, run_name),
+        rev = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_SOURCE_REVISION),
+        clone = clone,
+    )
+
+
+def _oras_publish(
         capsule,
-        deps,
-        install_path,
-        version,
-        oras_url = None,
-        gh_deploy_repo = None,
-        suffix = "tar.xz"):
+        deps):
+    oras_add_publish_archive(
+        capsule_get_publish_name(capsule),
+        url = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_ORAS_URL),
+        deploy_repo = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_GH_DEPLOY_REPO),
+        artifact = internal_capsule_to_oras_artifact(capsule),
+        tag = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_RELEASE_VERSION),
+        input = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_INSTALL_PATH),
+        deps = deps,
+        suffix = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_ARCHIVE_SUFFIX),
+    )
+
+def _gh_publish(
+        capsule,
+        deps):
+    gh_add_publish_archive(
+        capsule_get_publish_name(capsule),
+        input = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_INSTALL_PATH),
+        version = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_RELEASE_VERSION),
+        deploy_repo = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_GH_DEPLOY_REPO),
+        suffix = internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_ARCHIVE_SUFFIX),
+        deps = deps,
+    )
+
+def capsule_publish(
+        capsule,
+        deps):
     """
     Relocate the capsule and publish to github.
 
     Args:
-        name: The name of the rule
         capsule: return value of capsule()
-        version: The version of the capsule
         deps: The dependencies of the capsule
-        oras_url: oras URL for publishing the capsule
-        gh_deploy_repo: The repository to deploy the capsule to
-        install_path: The path to install the capsule
-        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
     """
 
-    capsule_name = _descriptor_to_name(capsule)
-
-    relocate_rule_name = "{}_update_macos_install_dir".format(capsule_name)
+    RELOCATE_RULE_NAME = internal_capsule_to_rule_name(capsule, "relocate")
     rpath_update_macos_install_dir(
-        relocate_rule_name,
+        RELOCATE_RULE_NAME,
         install_path = install_path,
         deps = deps,
     )
 
-    if oras_url != None:
+    if internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_ORAS_URL) != None:
         _oras_publish(
-            name,
-            capsule = capsule,
-            deps = [relocate_rule_name],
-            url = oras_url,
-            version = version,
-            deploy_repo = gh_deploy_repo,
-            suffix = suffix,
+            capsule,
+            deps = [RELOCATE_RULE_NAME],
         )
-    elif gh_deploy_repo != None:
+    elif internal_capsule_get_option(capsule, INTERNAL_CAPSULE_OPTION_GH_DEPLOY_REPO) != None:
         _gh_publish(
-            name,
-            capsule_name = capsule_name,
-            deps = [relocate_rule_name],
-            version = version,
-            deploy_repo = gh_deploy_repo,
-            suffix = suffix,
+            capsule,
+            deps = [RELOCATE_RULE_NAME],
         )
     else:
         checkout.abort("Must specify either `oras_url` or `gh_deploy_repo`")
 
-def capsule_add_checkout_and_run(
-        name,
-        capsule,
-        version,
-        build_function,
-        build_function_args,
-        oras_url = None,
-        gh_deploy_repo = None,
-        suffix = "tar.gz"):
+def capsule_publish_add_run_target(capsule, run_name):
     """
     Add the checkout and run if the install path does not exist
 
     Args:
-        name: The name of the rule
         capsule: return value of capsule()
-        version: The version of the repository
-        oras_url: The oral URL to deploy the capsule to
-        gh_deploy_repo: The gh repository to deploy the capsule to
-        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
-        build_function: The function to build the capsule
-        build_function_args: dict to pass to the build function
+        run_name: The run rule that will build and install (not publish) the target
     """
 
-    capsule_name = _descriptor_to_name(capsule)
-
-    _checkout_define_dependency(
-        "{}_info".format(capsule_name),
-        capsule = capsule,
-        version = version,
-    )
-
-    install_path = _get_install_path(capsule)
-    if install_path != None:
-        PUBLISH_NAME = "{}_capsule".format(capsule_name)
-
-        platform_archive_rule = None
-        if oras_url != None or gh_deploy_repo != None:
-            platform_archive_rule = _add_archive(
-                PUBLISH_NAME,
-                capsule = capsule,
-                version = version,
-                oras_url = oras_url,
-                gh_deploy_repo = gh_deploy_repo,
-                suffix = suffix,
-            )
-
-        if platform_archive_rule == None:
-            # build from source and install
-            capsule_from_source = "{}_source".format(capsule_name)
-
-            build_function(capsule_from_source, install_path, build_function_args)
-
-            if oras_url != None or gh_deploy_repo != None:
-                capsule_relocate_and_publish(
-                    PUBLISH_NAME,
-                    capsule = capsule,
-                    version = version,
-                    deps = [capsule_from_source],
-                    oras_url = oras_url,
-                    gh_deploy_repo = gh_deploy_repo,
-                    install_path = install_path,
-                    suffix = suffix,
-                )
-
-    # If neither oras_url or gh_deploy_repo is specified, the capsule is not published
-
-def capsule_add_repo(
-        capsule,
-        version,
-        url = None,
-        rev = None,
-        checkout_type = "Revision",
-        clone = "Default",
-        is_evaluate_spaces_modules = None,
-        sparse_mode = None,
-        sparse_list = None,
-        working_directory = None,
-        platforms = None,
-        deps = []):
-    """
-    Add a repository to the capsule workspace (not the normal workspace).
-
-    Args:
-        capsule: The capsule descriptor
-        version: The version of the repository
-        url: The URL of the repository
-        rev: The revision of the repository
-        checkout_type: The checkout type
-        clone: The clone type
-        is_evaluate_spaces_modules: Evaluate the spaces modules
-        sparse_mode: The sparse mode
-        sparse_list: The sparse list
-        working_directory: The working directory
-        platforms: The platforms
-        deps: The dependencies
-
-    Returns:
-        str: The name of the checkout rule (source directory)
-    """
-
-
-    EFFECTIVE_REV = rev if rev else "v{}".format(version)
-    CAPSULE_NAME = _descriptor_to_name(capsule)
-    EFFECTIVE_SOURCE_URL = url if url != None else _descriptor_to_url(capsule)
-    checkout_add_repo(
-        CAPSULE_NAME,
-        url = EFFECTIVE_SOURCE_URL,
-        rev = EFFECTIVE_REV,
-        checkout = checkout_type,
-        clone = clone,
-        is_evaluate_spaces_modules = is_evaluate_spaces_modules,
-        sparse_mode = sparse_mode,
-        sparse_list = sparse_list,
-        working_directory = working_directory,
-        platforms = platforms,
-        deps = deps,
-        type = CHECKOUT_TYPE_OPTIONAL,
-    )
-    return CAPSULE_NAME
-
-def capsule_add_checkout_and_run_targets(
-        name,
-        capsule,
-        version,
-        checkout_name,
-        run_name,
-        oras_url = None,
-        gh_deploy_repo = None,
-        suffix = "tar.gz"):
-    """
-    Add the checkout and run if the install path does not exist
-
-    Args:
-        name: The name of the rule
-        capsule: return value of capsule()
-        version: The version of the repository
-        oras_url: The oral URL to deploy the capsule to
-        gh_deploy_repo: The gh repository to deploy the capsule to
-        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
-        checkout_name: The name of the checkout rule
-        run_name: The name of the build rule
-    """
-
-    capsule_name = _descriptor_to_name(capsule)
-
-    _checkout_define_dependency(
-        "{}_info".format(capsule_name),
-        capsule = capsule,
-        version = version,
-    )
-
-    install_path = _get_install_path(capsule)
-
-    checkout_target_deps = []
-    run_target_deps = []
-
-    if install_path != None:
-        PUBLISH_NAME = "{}_capsule".format(capsule_name)
-
-        platform_archive_rule = None
-        if oras_url != None or gh_deploy_repo != None:
-            platform_archive_rule = _add_archive(
-                PUBLISH_NAME,
-                capsule = capsule,
-                version = version,
-                oras_url = oras_url,
-                gh_deploy_repo = gh_deploy_repo,
-                suffix = suffix,
-            )
-
-        if platform_archive_rule == None:
-            # build from source and install
-            checkout_target_deps.append(checkout_name)
-            run_target_deps.append(run_name)
-
-            if oras_url != None or gh_deploy_repo != None:
-                capsule_relocate_and_publish(
-                    PUBLISH_NAME,
-                    capsule = capsule,
-                    version = version,
-                    deps = run_target_deps,
-                    oras_url = oras_url,
-                    gh_deploy_repo = gh_deploy_repo,
-                    install_path = install_path,
-                    suffix = suffix,
-                )
-
+    NAME = internal_capsule_to_name(capsule)
     run_add_target(
-        "{}_run".format(capsule_name),
-        deps = run_target_deps,
+        "{}_run".format(NAME),
+        deps = [run_name],
     )
-    # If neither oras_url or gh_deploy_repo is specified, the capsule is not published
