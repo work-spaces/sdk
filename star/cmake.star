@@ -142,7 +142,7 @@ def cmake_add_repo(
             )
             SUBMODULE_DEPS = [SUBMODULE_RULE]
 
-        source_directory = "{}/{}".format(checkout_rule, relative_source_directory) if relative_source_directory != None else checkout_rule
+        source_directory = "{}/{}".format(CHECKOUT_RULE, relative_source_directory) if relative_source_directory != None else CHECKOUT_RULE
 
         cmake_add_configure_build_install(
             name,
