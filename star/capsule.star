@@ -32,6 +32,7 @@ _OPTION_REV = "rev"
 _OPTION_ARCHIVE_SUFFIX = "archive_suffix"
 _OPTION_SOURCE_DIRECTORY = "source_directory"
 _OPTION_PLATFORM_NAME = "platform_name"
+_OPTION_CAPSULE_DEPS = "capsule_deps"
 
 def _create_descriptor(
         domain,
@@ -52,6 +53,7 @@ def _create_options(
         oras_url,
         platform_name,
         gh_deploy_repo,
+        capsule_deps,
         is_use_source):
     return {
         _OPTION_VERSION: version,
@@ -62,7 +64,8 @@ def _create_options(
         _OPTION_GH_DEPLOY_REPO: gh_deploy_repo,
         _OPTION_ARCHIVE_SUFFIX: archive_suffix,
         _OPTION_SOURCE_DIRECTORY: source_directory,
-        _OPTION_PLATFORM_NAME: platform_name
+        _OPTION_PLATFORM_NAME: platform_name,
+        _OPTION_CAPSULE_DEPS: capsule_deps,
     }
 
 def _create(
@@ -140,6 +143,7 @@ def capsule_declare(
         owner,
         repo,
         version,
+        capsule_deps = [],
         source_directory = None,
         rev = None,
         archive_suffix = "tar.xz",
@@ -156,6 +160,7 @@ def capsule_declare(
         owner: The owner of the capsule
         repo: The repo of the capsule
         version: The version of the capsule
+        capsule_deps: The dependencies of the capsule (as returned by capsule_declare())
         source_directory: location of the source directory (default is infer from domain/org/repo)
         rev: The revision of the source code
         archive_suffix: The suffix of the archive
@@ -182,7 +187,8 @@ def capsule_declare(
         gh_deploy_repo = gh_deploy_repo,
         is_use_source = is_use_source,
         source_directory = source_directory,
-        platform_name = EFFECTIVE_PLATFORM
+        platform_name = EFFECTIVE_PLATFORM,
+        capsule_deps = capsule_deps,
     )
     capsule = _create(DESCRIPTOR, OPTIONS)
     if install_path == None:
@@ -216,8 +222,6 @@ def _add_checkout_oras(capsule):
             ORAS_LABEL,
         ],
     })
-
-    script.print("{} manifest fetch {}".format(ORAS_COMMAND, ORAS_LABEL))
 
     if check_release["status"] != 0:
         # the release is not available
@@ -501,8 +505,38 @@ def capsule_publish_add_run_target(capsule, run_name):
         deps = [run_name],
     )
 
-def capsule_get_deps(capsule_deps):
+def capsule_get_deps(capsule):
+    """
+    Get the dependencies of the capsule.
+
+    The deps must all be declared in the same spaces file.
+
+    Args:
+        capsule: return value of capsule()
+
+    Returns:
+        list: The dependencies of the capsule
+    """
+
+    DEPS = _get_option(capsule, _OPTION_CAPSULE_DEPS)
     return [
         capsule_get_run_name(dep)
-        for dep in capsule_deps
+        for dep in DEPS
+    ]
+
+def capsule_get_prefix_paths(capsule):
+    """
+    Get the prefix paths of the capsule dependencies.
+
+    Args:
+        capsule: return value of capsule()
+
+    Returns:
+        list: The prefix paths of the capsule dependencies. This can be used by cmake targets to find the dependencies.
+    """
+
+    DEPS = _get_option(capsule, _OPTION_CAPSULE_DEPS)
+    return [
+        capsule_get_install_path(dep)
+        for dep in DEPS
     ]

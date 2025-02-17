@@ -9,10 +9,30 @@ load(
     "checkout_add_repo",
 )
 load("run.star", "run_add_exec", "run_add_target")
+load("info.star", "info_get_absolute_path_to_workspace")
+
+def cmake_get_default_prefix_paths(install_path = None):
+    """
+    Get the default prefix paths for CMake
+
+    Args:
+        install_path: The path to install the project
+
+    Returns:
+        A list of the default prefix paths
+    """
+    WORKSPACE = info_get_absolute_path_to_workspace()
+    locations = [install_path] if install_path != None else ["{}/build/install".format(WORKSPACE)]
+    locations.append("{}/sysroot".format(WORKSPACE))
+    return locations
 
 def cmake_add_configure_build_install(
         name,
         source_directory,
+        build_directory = None,
+        prefix_paths = None,
+        configure_inputs = None,
+        build_inputs = None,
         configure_args = [],
         build_args = [],
         build_artifact_globs = None,
@@ -24,7 +44,11 @@ def cmake_add_configure_build_install(
 
     Args:
         name: The name of the project
+        build_directory: The directory to build the project in (default is build/<name>)
         source_directory: The directory of the project
+        configure_inputs: The inputs for the configure step
+        build_inputs: The inputs for the build step
+        prefix_paths: The paths to add to the CMAKE_PREFIX_PATH: default is sysroot;build/install
         configure_args: The arguments to pass to the configure script
         build_args: The arguments to pass to the build command
         build_artifact_globs: The globs to match when installing build artifacts
@@ -33,64 +57,74 @@ def cmake_add_configure_build_install(
         skip_install: Skip the install step
     """
 
-    configure_rule_name = "{}_configure".format(name)
-    build_rule_name = "{}_build".format(name)
-    install_rule_name = "{}_install".format(name)
-    workspace = info.get_absolute_path_to_workspace()
+    CONFIGURE_RULE_NAME = "{}_configure".format(name)
+    BUILD_RULE_NAME = "{}_build".format(name)
+    INSTALL_RULE_NAME = "{}_install".format(name)
 
-    effective_install_path = install_path if install_path != None else "{}/build/install".format(workspace)
-    install_prefix_arg = "-DCMAKE_INSTALL_PREFIX={}".format(effective_install_path)
-    prefix_arg = "-DCMAKE_PREFIX_PATH={};{}/sysroot;{}/build/install".format(effective_install_path, workspace, workspace)
-    working_directory = "build/{}".format(name)
+    INSTALL_PREFIX_ARG = "-DCMAKE_INSTALL_PREFIX={}".format(EFFECTIVE_INSTALL_PATH)
+    DEFAULT_PREFIX_PATHS = cmake_get_default_prefix_paths(install_path)
+    effective_prefix_paths = DEFAULT_PREFIX_PATHS
+    if prefix_paths != None:
+        effective_prefix_paths = ";".join(prefix_paths)
+
+    prefix_arg = "-DCMAKE_PREFIX_PATH={}".format(effective_prefix_paths)
+    EFFECTIVE_BUILD_DIRECTORY = build_directory if build_directory != None else "build/{}".format(name)
+
+    DEFAULT_CONFIGURE_INPUTS = [
+        "+{}/**/CMakeLists.txt".format(source_directory),
+        "+{}/**/*.cmake".format(source_directory),
+        "-{}/.git/**".format(source_directory),
+    ]
+
+    EFFECTIVE_CONFIGURE_INPUTS = configure_inputs if configure_inputs != None else DEFAULT_CONFIGURE_INPUTS
+
+    DEFAULT_BUILD_INPUTS = [
+        "+{}/**".format(source_directory),
+        "-{}/.git/**".format(source_directory),
+    ]
+    EFFECTIVE_BUILD_INPUTS = build_inputs if build_inputs != None else DEFAULT_BUILD_INPUTS
 
     run_add_exec(
-        configure_rule_name,
+        CONFIGURE_RULE_NAME,
         command = "cmake",
         deps = deps,
-        inputs = [
-            "+{}/**/CMakeLists.txt".format(source_directory),
-            "+{}/**/*.cmake".format(source_directory),
-            "-{}/.git/**".format(source_directory),
-        ],
+        inputs = EFFECTIVE_CONFIGURE_INPUTS,
         args = [
-            install_prefix_arg,
+            INSTALL_PREFIX_ARG,
             prefix_arg,
             "-DCMAKE_FIND_USE_CMAKE_SYSTEM_PATH=FALSE",
-            "-B{}".format(working_directory),
+            "-B{}".format(EFFECTIVE_BUILD_DIRECTORY),
             "-S{}".format(source_directory),
         ] + configure_args,
         help = "CMake Configure:{}".format(name),
     )
 
     run_add_exec(
-        build_rule_name,
+        BUILD_RULE_NAME,
         command = "cmake",
-        inputs = ["+{}/**".format(source_directory)],
-        deps = [configure_rule_name],
-        args = ["--build", working_directory] + build_args,
+        inputs = EFFECTIVE_BUILD_INPUTS,
+        deps = [CONFIGURE_RULE_NAME],
+        args = ["--build", EFFECTIVE_BUILD_DIRECTORY] + build_args,
         help = "CMake build:{}".format(name),
     )
 
+    name_dep = BUILD_RULE_NAME
     if not skip_install:
         run_add_exec(
-            install_rule_name,
+            INSTALL_RULE_NAME,
             inputs = build_artifact_globs,
             command = "cmake",
-            deps = [build_rule_name],
-            args = ["--build", working_directory, "--target", "install"],
+            deps = [BUILD_RULE_NAME],
+            args = ["--build", EFFECTIVE_BUILD_DIRECTORY, "--target", "install"],
             help = "CMake install:{}".format(name),
         )
-        run_add_target(
-            name,
-            deps = [install_rule_name],
-            help = "CMake configure/build/install",
-        )
-    else:
-        run_add_target(
-            name,
-            deps = [build_rule_name],
-            help = "CMake configure/build"
-        )
+        name_dep = INSTALL_RULE_NAME
+
+    run_add_target(
+        name,
+        deps = [name_dep],
+        help = "CMake configure/build/install",
+    )
 
 def cmake_add_repo(
         name,
