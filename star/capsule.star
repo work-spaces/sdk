@@ -7,9 +7,8 @@ load(
     "CHECKOUT_TYPE_OPTIONAL",
     "checkout_add_oras_archive",
     "checkout_add_platform_archive",
-    "checkout_add_repo"
+    "checkout_add_repo",
 )
-
 load("run.star", "run_add_target")
 load("oras.star", "oras_add_publish_archive")
 load("gh.star", "gh_add_publish_archive")
@@ -72,7 +71,6 @@ def _get_option(
         option):
     return capsule[_OPTIONS][option]
 
-
 def _to_url(capsule):
     DESCRIPTOR = capsule[_DESCRIPTOR]
     return "https://{}/{}/{}".format(
@@ -81,7 +79,7 @@ def _to_url(capsule):
         DESCRIPTOR[_REPO],
     )
 
-def _to_worspace_path(capsule):
+def _to_workspace_path(capsule):
     DESCRIPTOR = capsule[_DESCRIPTOR]
     return "{}/{}/{}".format(
         DESCRIPTOR[_DOMAIN],
@@ -109,6 +107,7 @@ def _to_oras_artifact(capsule):
 def _to_oras_label(capsule):
     ORAS_ARTIFACT = _to_oras_artifact(capsule)
     URL = _get_option(capsule, _OPTION_ORAS_URL)
+
     #oras_label = "{}:{}".format(_descriptor_to_oras_label(url, capsule), "{}-{}".format(version, digest))
     return "{}/{}".format(URL, ORAS_ARTIFACT)
 
@@ -122,7 +121,7 @@ def capsule_get_repo(capsule):
     return capsule[_DESCRIPTOR][_REPO]
 
 def capsule_get_version(capsule):
-    return capsule[_DESCRIPTOR][_OPTION_VERSION]
+    return capsule[_OPTIONS][_OPTION_VERSION]
 
 def capsule_get_install_path(capsule):
     return capsule[_DESCRIPTOR][_OPTION_INSTALL_PATH]
@@ -174,7 +173,6 @@ def capsule_declare(
     if install_path == None:
         capsule[_OPTIONS][_OPTION_INSTALL_PATH] = "build/{}/install".format(_to_workspace_path(capsule))
     return capsule
-
 
 def _add_checkout_oras(capsule):
     """
@@ -344,7 +342,7 @@ def capsule_get_workspace_path(capsule):
     Returns:
         str: the name of the run rule
     """
-    return _to_worspace_path(capsule)
+    return _to_workspace_path(capsule)
 
 def capsule_get_install_path(capsule):
     """
@@ -392,10 +390,9 @@ def capsule_get_checkout_type(capsule, run_name):
     return None if is_activate_checkout else CHECKOUT_TYPE_OPTIONAL
 
 def capsule_checkout_add_repo(
-    capsule,
-    run_name,
-    clone = "Blobless",
-    ):
+        capsule,
+        run_name,
+        clone = "Blobless"):
     GIT_URL = _to_url(capsule)
     checkout_add_repo(
         capsule_get_workspace_path(capsule),
@@ -404,7 +401,6 @@ def capsule_checkout_add_repo(
         rev = _get_option(capsule, _OPTION_REV),
         clone = clone,
     )
-
 
 def _oras_publish(
         capsule,
@@ -477,3 +473,9 @@ def capsule_publish_add_run_target(capsule, run_name):
         "{}_run".format(NAME),
         deps = [run_name],
     )
+
+def capsule_get_deps(capsule_deps):
+    return [
+        capsule_get_run_name(dep)
+        for dep in capsule_deps
+    ]
