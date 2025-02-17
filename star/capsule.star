@@ -130,10 +130,13 @@ def capsule_get_repo(capsule):
     return capsule[_DESCRIPTOR][_REPO]
 
 def capsule_get_version(capsule):
-    return capsule[_OPTIONS][_OPTION_VERSION]
+    return _get_option(capsule, _OPTION_VERSION)
 
 def capsule_get_install_path(capsule):
-    return capsule[_DESCRIPTOR][_OPTION_INSTALL_PATH]
+    return _get_option(capsule, _OPTION_INSTALL_PATH)
+
+def capsule_get_build_path(capsule):
+    return "build/{}".format(_to_name(capsule))
 
 def capsule_can_publish(capsule):
     return _get_option(capsule, _OPTION_ORAS_URL) != None or _get_option(capsule, _OPTION_GH_DEPLOY_REPO) != None
@@ -192,7 +195,7 @@ def capsule_declare(
     )
     capsule = _create(DESCRIPTOR, OPTIONS)
     if install_path == None:
-        capsule[_OPTIONS][_OPTION_INSTALL_PATH] = "build/{}/install".format(_to_name(capsule))
+        capsule[_OPTIONS][_OPTION_INSTALL_PATH] = "build/install/{}".format(_to_name(capsule))
     if source_directory == None:
         capsule[_OPTIONS][_OPTION_SOURCE_DIRECTORY] = _to_workspace_path(capsule)
     return capsule
@@ -366,19 +369,6 @@ def capsule_get_workspace_path(capsule):
         str: the name of the run rule
     """
     return _get_option(capsule, _OPTION_SOURCE_DIRECTORY)
-
-def capsule_get_install_path(capsule):
-    """
-    Gets the name of the run rule associated with this capsule.
-
-    Dependents should depend on this rule to build the capsule.
-
-    Args:
-        capsule: return value of capsule()
-    Returns:
-        str: the name of the run rule
-    """
-    return _get_option(capsule, _OPTION_INSTALL_PATH)
 
 def capsule_get_checkout_type(capsule, run_name):
     """
