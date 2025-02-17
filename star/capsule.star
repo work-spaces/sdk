@@ -89,13 +89,12 @@ def _to_workspace_path(capsule):
     )
 
 def _to_name(capsule):
-    DEV_MARK = "" if info.is_workspace_reproducible() else "-non-reproducible"
     DESCRIPTOR = capsule[_DESCRIPTOR]
     return "{}-{}-{}{}".format(
         DESCRIPTOR[_DOMAIN],
         DESCRIPTOR[_OWNER],
         DESCRIPTOR[_REPO],
-        DEV_MARK,
+        "-exp",
     )
 
 def capsule_get_rule_name(capsule, suffix):
@@ -172,7 +171,7 @@ def capsule_declare(
     )
     capsule = _create(DESCRIPTOR, OPTIONS)
     if install_path == None:
-        capsule[_OPTIONS][_OPTION_INSTALL_PATH] = "build/{}/install".format(_to_workspace_path(capsule))
+        capsule[_OPTIONS][_OPTION_INSTALL_PATH] = "build/{}/install".format(_to_name(capsule))
     return capsule
 
 def _add_checkout_oras(capsule):
