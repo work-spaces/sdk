@@ -70,6 +70,7 @@ def checkout_add_archive(
         add_prefix = "./",
         filename = None,
         platforms = None,
+        type = None,
         deps = []):
     """
     Adds an archive to the workspace.
@@ -85,10 +86,16 @@ def checkout_add_archive(
         add_prefix (str): Prefix to add to the archive.
         filename (str): The filename if it isn't the last part of the URL
         platforms (list): List of platforms to add the archive to.
+        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
         deps (list): List of dependencies for the rule.
     """
     checkout.add_archive(
-        rule = {"name": name, "deps": deps, "platforms": platforms},
+        rule = {
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "type": type,
+        },
         archive = {
             "url": url,
             "sha256": sha256,
@@ -106,6 +113,7 @@ def checkout_add_asset(
         content,
         destination,
         deps = [],
+        type = None,
         platforms = None):
     """
     Adds an asset to the workspace.
@@ -115,10 +123,16 @@ def checkout_add_asset(
         content (str): The content of the asset.
         destination (str): The destination path for the asset.
         deps (list): List of dependencies for the asset.
+        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
         platforms (list): List of platforms to add the archive to.
     """
     checkout.add_asset(
-        rule = {"name": name, "deps": deps, "platforms": platforms},
+        rule = {
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "type": type,
+        },
         asset = {
             "content": content,
             "destination": destination,
@@ -131,6 +145,7 @@ def checkout_update_asset(
         value,
         format = None,
         deps = [],
+        type = None,
         platforms = None):
     """
     Updates an asset in the workspace.
@@ -141,13 +156,15 @@ def checkout_update_asset(
         format (str): The format of the asset (json | toml | yaml). Default will get extension from destination.
         value (str): The value of the asset.
         deps (list): List of dependencies for the asset.
+        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
         platforms (list): List of platforms to add the archive to.
     """
 
     effective_format = format if format != None else destination.split(".")[-1]
 
     checkout.update_asset(
-        rule = {"name": name, "deps": deps, "platforms": platforms},
+        rule = {
+            "name": name, "deps": deps, "platforms": platforms, "type": type},
         asset = {
             "destination": destination,
             "format": effective_format,
@@ -161,6 +178,7 @@ def checkout_add_cargo_bin(
         version,
         bins,
         deps = [],
+        type = None,
         platforms = None):
     """
     Adds a cargo binary to the workspace.
@@ -171,10 +189,12 @@ def checkout_add_cargo_bin(
         version (str): The version of the crate.
         bins (list): List of binaries to add.
         deps (list): List of dependencies for the rule.
+        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
         platforms (list): List of platforms to add the archive to.
     """
     checkout.add_cargo_bin(
-        rule = {"name": name, "deps": deps, "platforms": platforms},
+        rule = {
+            "name": name, "deps": deps, "platforms": platforms, "type": type},
         cargo_bin = {
             "crate": crate,
             "version": version,
@@ -187,6 +207,7 @@ def checkout_add_hard_link_asset(
         source,
         destination,
         deps = [],
+        type = None,
         platforms = None):
     """
     Adds a hard link asset to the workspace.
@@ -196,10 +217,12 @@ def checkout_add_hard_link_asset(
         source (str): The source path of the asset.
         destination (str): The destination path for the asset.
         deps (list): List of dependencies for the asset.
+        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
         platforms (list): List of platforms to add the archive to.
     """
     checkout.add_hard_link_asset(
-        rule = {"name": name, "deps": deps, "platforms": platforms},
+        rule = {
+            "name": name, "deps": deps, "platforms": platforms, "type": type},
         asset = {
             "source": source,
             "destination": destination,
@@ -211,6 +234,7 @@ def checkout_add_soft_link_asset(
         source,
         destination,
         deps = [],
+        type = None,
         platforms = None):
     """
     Adds a hard link asset to the workspace.
@@ -220,10 +244,12 @@ def checkout_add_soft_link_asset(
         source (str): The source path of the soft link.
         destination (str): The relative workspace path of the soft link destination.
         deps (list): List of dependencies for the asset.
+        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
         platforms (list): List of platforms to add the archive to.
     """
     checkout.add_soft_link_asset(
-        rule = {"name": name, "deps": deps, "platforms": platforms},
+        rule = {
+            "name": name, "deps": deps, "platforms": platforms, "type": type},
         asset = {
             "source": source,
             "destination": destination,
@@ -437,7 +463,7 @@ def checkout_add_oras_archive(
             "name": name,
             "deps": deps,
             "platforms": platforms,
-            "type": type
+            "type": type,
         },
         oras_archive = {
             "url": url,
