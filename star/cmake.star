@@ -60,7 +60,8 @@ def cmake_add_configure_build_install(
     CONFIGURE_RULE_NAME = "{}_configure".format(name)
     BUILD_RULE_NAME = "{}_build".format(name)
     INSTALL_RULE_NAME = "{}_install".format(name)
-
+    WORKSPACE = info_get_absolute_path_to_workspace()
+    EFFECTIVE_INSTALL_PATH = install_path if install_path != None else "{}/build/install".format(WORKSPACE)
     INSTALL_PREFIX_ARG = "-DCMAKE_INSTALL_PREFIX={}".format(EFFECTIVE_INSTALL_PATH)
     DEFAULT_PREFIX_PATHS = cmake_get_default_prefix_paths(install_path)
     effective_prefix_paths = DEFAULT_PREFIX_PATHS
