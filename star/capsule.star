@@ -382,8 +382,9 @@ def capsule_get_checkout_type(capsule, run_name):
 
     # Check the platform install location to see if this has already been downloaded
     IS_DOWNLOADED = False
+    IS_CHECK_PLATFORM = not IS_USE_SOURCE and not IS_CHECKED_OUT and not IS_DOWNLOADED
 
-    if not IS_USE_SOURCE and not IS_CHECKED_OUT and not IS_DOWNLOADED (ORAL_URL != None or GH_DEPLOY_REPO != None):
+    if IS_CHECK_PLATFORM and (ORAL_URL != None or GH_DEPLOY_REPO != None):
         platform_archive_rule = _add_archive(capsule)
 
     # no platform archive ready -- need to checkout the source repo
