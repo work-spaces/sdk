@@ -1,6 +1,6 @@
 # Changes
 
-## v0.1.3
+## v0.2.0
 
 - Add `type` arguments to `checkout` rules - allows for Optional checkout rules that are skipped
 - Refactor `capsules` to just use starlark rules
