@@ -10,6 +10,7 @@ load(
     "checkout_add_repo",
 )
 load("run.star", "run_add_target")
+load("std/fs.star", "fs_exists")
 load("oras.star", "oras_add_publish_archive")
 load("gh.star", "gh_add_publish_archive")
 load("rpath.star", "rpath_update_macos_install_dir")
@@ -375,7 +376,14 @@ def capsule_get_checkout_type(capsule, run_name):
 
     is_activate_checkout = False
     platform_archive_rule = None
-    if not IS_USE_SOURCE and (ORAL_URL != None or GH_DEPLOY_REPO != None):
+
+    # Has the source already been checked out?
+    IS_CHECKED_OUT = fs_exists(capsule_get_workspace_path(capsule))
+
+    # Check the platform install location to see if this has already been downloaded
+    IS_DOWNLOADED = False
+
+    if not IS_USE_SOURCE and not IS_CHECKED_OUT and not IS_DOWNLOADED (ORAL_URL != None or GH_DEPLOY_REPO != None):
         platform_archive_rule = _add_archive(capsule)
 
     # no platform archive ready -- need to checkout the source repo
