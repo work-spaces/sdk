@@ -415,13 +415,15 @@ def capsule_checkout_add_repo(
         run_name,
         clone = "Blobless"):
     GIT_URL = _to_url(capsule)
+    CHECKOUT_RULE_TYPE = capsule_get_checkout_type(capsule, run_name)
     checkout_add_repo(
         capsule_get_workspace_path(capsule),
         url = GIT_URL,
-        type = capsule_get_checkout_type(capsule, run_name),
+        type = CHECKOUT_RULE_TYPE,
         rev = _get_option(capsule, _OPTION_REV),
         clone = clone,
     )
+    return CHECKOUT_RULE_TYPE
 
 def _oras_publish(
         capsule,
