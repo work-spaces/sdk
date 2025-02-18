@@ -400,23 +400,23 @@ def capsule_get_checkout_type(capsule, run_name):
     elif fs_exists(_STATUS_JSON):
         STATUS = fs_read_json(_STATUS_JSON)
         CAPSULE_STATUS = STATUS[CAPSULES_KEY][CAPSULE_NAME]
-        is_activate_checkout = CAPSULE_STATUS == _STATUS_DOWNLOADED
+        is_activate_checkout = CAPSULE_STATUS == _STATUS_SOURCE
 
-    if is_activate_checkout == None and (ORAL_URL != None or GH_DEPLOY_REPO != None):
-        is_activate_checkout = _add_archive(capsule) == None
-    else:
-        is_activate_checkout = True
+    if is_activate_checkout == None:
+        if ORAL_URL != None or GH_DEPLOY_REPO != None:
+            is_activate_checkout = _add_archive(capsule) == None
+        else:
+            is_activate_checkout = True
         
-    if not fs_exists(_STATUS_JSON):
-        checkout_update_asset(
-            capsule_get_rule_name(capsule, "checkout_status"),
-            destination = _STATUS_JSON,
-            value = {
-                CAPSULES_KEY: {
-                    _to_name(capsule): _STATUS_DOWNLOADED if not is_activate_checkout else _STATUS_SOURCE
-                }
+    checkout_update_asset(
+        capsule_get_rule_name(capsule, "checkout_status"),
+        destination = _STATUS_JSON,
+        value = {
+            CAPSULES_KEY: {
+                _to_name(capsule): _STATUS_DOWNLOADED if not is_activate_checkout else _STATUS_SOURCE
             }
-        )
+        }
+    )
 
     run_add_target(
         capsule_get_run_name(capsule),
