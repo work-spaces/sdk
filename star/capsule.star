@@ -11,7 +11,7 @@ load(
     "checkout_update_asset"
 )
 load("run.star", "run_add_target")
-load("info.star", "info_get_platform_name")
+load("info.star", "info_get_platform_name", "info_get_absolute_path_to_workspace")
 load("std/fs.star", "fs_exists", "fs_read_json")
 load("oras.star", "oras_add_publish_archive")
 load("gh.star", "gh_add_publish_archive")
@@ -482,9 +482,10 @@ def capsule_publish(
     """
 
     RELOCATE_RULE_NAME = capsule_get_rule_name(capsule, "relocate")
+    WORKSPACE = info_get_absolute_path_to_workspace()
     rpath_update_macos_install_dir(
         RELOCATE_RULE_NAME,
-        install_path = _get_option(capsule, _OPTION_INSTALL_PATH),
+        install_path = "{}/{}".format(WORKSPACE, _get_option(capsule, _OPTION_INSTALL_PATH)),
         deps = deps,
     )
 
