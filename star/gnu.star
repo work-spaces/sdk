@@ -3,6 +3,7 @@ GNU Build Functions
 """
 
 load("run.star", "run_add_exec", "run_add_target")
+load("info.star", "info_get_absolute_path_to_workspace", "info_get_cpu_count")
 load("checkout.star", "checkout_add_repo")
 
 def gnu_add_configure_make_install(
@@ -30,75 +31,75 @@ def gnu_add_configure_make_install(
         skip_install: Whether to skip the install step
     """
 
-    build_dir = "build/{}".format(name)
-    prepare_rule_name = "{}_prepare".format(name)
-    autoreconf_rule_name = "{}_autoreconf".format(name)
-    configure_rule_name = "{}_configure".format(name)
-    build_rule_name = "{}_build".format(name)
-    install_rule_name = "{}_install".format(name)
-    workspace = info.get_absolute_path_to_workspace()
-    install_path = "{}/build/install".format(workspace) if install_path == None else install_path
-    prefix_arg = "--prefix={}".format(install_path)
-    num_cpus = info.get_cpu_count()
+    BUILD_DIR = "build/{}".format(name)
+    PREPARE_RULE_NAME = "{}_prepare".format(name)
+    AUTORECONF_RULE_NAME = "{}_autoreconf".format(name)
+    CONFIGURE_RULE_NAME = "{}_configure".format(name)
+    BUILD_RULE_NAME = "{}_build".format(name)
+    INSTALL_RULE_NAME = "{}_install".format(name)
+    WORKSPACE = info_get_absolute_path_to_workspace()
+    EFFECTIVE_INSTALL_PATH = install_path if install_path != None else "build/install"
+    PREFIX_ARG = "--prefix={}/{}".format(WORKSPACE, EFFECTIVE_INSTALL_PATH)
+    NUM_CPUS = info_get_cpu_count()
 
     run_add_exec(
-        prepare_rule_name,
+        PREPARE_RULE_NAME,
         command = "mkdir",
-        args = ["-p", build_dir],
+        args = ["-p", BUILD_DIR],
     )
 
-    autoreconf_deps = [prepare_rule_name]
+    autoreconf_deps = [PREPARE_RULE_NAME]
     if autoreconf_args:
         run_add_exec(
-            autoreconf_rule_name,
-            deps = [prepare_rule_name] + deps,
+            AUTORECONF_RULE_NAME,
+            deps = [PREPARE_RULE_NAME] + deps,
             inputs = ["+{}/configure.ac".format(source_directory)],
             command = "autoreconf",
             args = autoreconf_args,
             working_directory = source_directory,
             help = "autoreconf {}".format(name),
         )
-        autoreconf_deps = [autoreconf_rule_name]
+        autoreconf_deps = [AUTORECONF_RULE_NAME]
 
     run_add_exec(
-        configure_rule_name,
+        CONFIGURE_RULE_NAME,
         deps = autoreconf_deps + deps,
         inputs = ["+{}/configure".format(source_directory)],
         command = "../../{}/configure".format(source_directory),
-        args = [prefix_arg] + configure_args,
-        working_directory = build_dir,
+        args = [PREFIX_ARG] + configure_args,
+        working_directory = BUILD_DIR,
         help = "Configure {}".format(name),
     )
 
     run_add_exec(
-        build_rule_name,
-        deps = [configure_rule_name],
+        BUILD_RULE_NAME,
+        deps = [CONFIGURE_RULE_NAME],
         inputs = [
-            "+{}/Makefile".format(build_dir),
+            "+{}/Makefile".format(BUILD_DIR),
             "+{}/**".format(source_directory),
             "-{}/.git/**".format(source_directory),
         ],
         command = "make",
-        args = ["-j{}".format(num_cpus)] + make_args,
-        working_directory = build_dir,
+        args = ["-j{}".format(NUM_CPUS)] + make_args,
+        working_directory = BUILD_DIR,
         help = "Build {}".format(name),
     )
 
     if skip_install:
-        run_add_target(name, deps = [build_rule_name])
+        run_add_target(name, deps = [BUILD_RULE_NAME])
         return
         
     run_add_exec(
-        install_rule_name,
-        deps = [build_rule_name],
+        INSTALL_RULE_NAME,
+        deps = [BUILD_RULE_NAME],
         inputs = build_artifact_globs,
         command = "make",
         args = ["install"],
-        working_directory = build_dir,
+        working_directory = BUILD_DIR,
         help = "Install {}".format(name),
     )
 
-    run_add_target(name, deps = [install_rule_name])
+    run_add_target(name, deps = [INSTALL_RULE_NAME])
 
 
 def gnu_add_repo(
@@ -134,8 +135,8 @@ def gnu_add_repo(
         clone = "Blobless",
     )
 
-    submodule_rule = "{}_submodules".format(name)
-    submodule_deps = []
+    SUBMODULE_RULE = "{}_submodules".format(name)
+    SUBMODULE_DEPS = []
     if checkout_submodules:
         run_add_exec(
             "{}_submodules".format(name),
@@ -143,7 +144,7 @@ def gnu_add_repo(
             args = ["submodule", "update", "--init", "--recursive"],
             working_directory = name,
         )
-        submodule_deps = [submodule_rule]
+        SUBMODULE_DEPS = [SUBMODULE_RULE]
 
     gnu_add_configure_make_install(
         name,
@@ -151,6 +152,6 @@ def gnu_add_repo(
         autoreconf_args = autoreconf_args,
         configure_args = configure_args,
         make_args = make_args,
-        deps = deps + submodule_deps,
+        deps = deps + SUBMODULE_DEPS,
         install_path = install_path,
     )

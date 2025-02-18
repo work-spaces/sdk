@@ -393,7 +393,7 @@ def capsule_get_checkout_type(capsule, run_name):
     IS_CHECKED_OUT = fs_exists(capsule_get_workspace_path(capsule))
 
     # Check the platform install location to see if this has already been downloaded
-    IS_DOWNLOADED = False
+    IS_DOWNLOADED = fs_exists(capsule_get_install_path(capsule))
     IS_CHECK_PLATFORM = not IS_USE_SOURCE and not IS_CHECKED_OUT and not IS_DOWNLOADED
 
     if IS_CHECK_PLATFORM and (ORAL_URL != None or GH_DEPLOY_REPO != None):
