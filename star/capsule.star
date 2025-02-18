@@ -12,7 +12,7 @@ load(
 )
 load("run.star", "run_add_target")
 load("info.star", "info_get_platform_name")
-load("std/fs.star", "fs_exists")
+load("std/fs.star", "fs_exists", "fs_read_json")
 load("oras.star", "oras_add_publish_archive")
 load("gh.star", "gh_add_publish_archive")
 load("rpath.star", "rpath_update_macos_install_dir")
