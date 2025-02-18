@@ -66,9 +66,11 @@ def cmake_add_configure_build_install(
     DEFAULT_PREFIX_PATHS = cmake_get_default_prefix_paths(install_path)
     effective_prefix_paths = DEFAULT_PREFIX_PATHS
     if prefix_paths != None:
-        effective_prefix_paths = ";".join(prefix_paths)
+        effective_prefix_paths = prefix_paths
 
-    prefix_arg = "-DCMAKE_PREFIX_PATH={}".format(effective_prefix_paths)
+    ABSOLUTE_PREFIX_PATHS = ["{}/{}".format(WORKSPACE, path) for path in effective_prefix_paths]
+
+    prefix_arg = "-DCMAKE_PREFIX_PATH={}".format(";".join(ABSOLUTE_PREFIX_PATHS))
     EFFECTIVE_BUILD_DIRECTORY = build_directory if build_directory != None else "build/{}".format(name)
 
     DEFAULT_CONFIGURE_INPUTS = [
