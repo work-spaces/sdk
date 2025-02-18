@@ -8,6 +8,7 @@ load(
     "checkout_add_oras_archive",
     "checkout_add_platform_archive",
     "checkout_add_repo",
+    "checkout_update_asset"
 )
 load("run.star", "run_add_target")
 load("info.star", "info_get_platform_name")
@@ -33,6 +34,10 @@ _OPTION_ARCHIVE_SUFFIX = "archive_suffix"
 _OPTION_SOURCE_DIRECTORY = "source_directory"
 _OPTION_PLATFORM_NAME = "platform_name"
 _OPTION_CAPSULE_DEPS = "capsule_deps"
+
+_STATUS_JSON = "capsules.spaces.json"
+_STATUS_DOWNLOADED = "downloaded"
+_STATUS_SOURCE = "source"
 
 def _create_descriptor(
         domain,
@@ -385,23 +390,33 @@ def capsule_get_checkout_type(capsule, run_name):
     ORAL_URL = _get_option(capsule, _OPTION_ORAS_URL)
     GH_DEPLOY_REPO = _get_option(capsule, _OPTION_GH_DEPLOY_REPO)
     IS_USE_SOURCE = _get_option(capsule, _OPTION_IS_USE_SOURCE)
+    CAPSULE_NAME = _to_name(capsule)
+    CAPSULES_KEY = "capsules"
 
-    is_activate_checkout = False
-    platform_archive_rule = None
+    is_activate_checkout = None
 
-    # Has the source already been checked out?
-    IS_CHECKED_OUT = fs_exists(capsule_get_workspace_path(capsule))
-
-    # Check the platform install location to see if this has already been downloaded
-    IS_DOWNLOADED = fs_exists(capsule_get_install_path(capsule))
-    IS_CHECK_PLATFORM = not IS_USE_SOURCE and not IS_CHECKED_OUT and not IS_DOWNLOADED
-
-    if IS_CHECK_PLATFORM and (ORAL_URL != None or GH_DEPLOY_REPO != None):
-        platform_archive_rule = _add_archive(capsule)
-
-    # no platform archive ready -- need to checkout the source repo
-    if platform_archive_rule == None:
+    if IS_USE_SOURCE == True:
         is_activate_checkout = True
+    elif fs_exists(_STATUS_JSON):
+        STATUS = fs_read_json(_STATUS_JSON)
+        CAPSULE_STATUS = STATUS[CAPSULES_KEY][CAPSULE_NAME]
+        is_activate_checkout = CAPSULE_STATUS == _STATUS_DOWNLOADED
+
+    if is_activate_checkout == None and (ORAL_URL != None or GH_DEPLOY_REPO != None):
+        is_activate_checkout = _add_archive(capsule) == None
+    else:
+        is_activate_checkout = True
+        
+    if not fs_exists(_STATUS_JSON):
+        checkout_update_asset(
+            capsule_get_rule_name(capsule, "checkout_status"),
+            destination = _STATUS_JSON,
+            value = {
+                CAPSULES_KEY: {
+                    _to_name(capsule): _STATUS_DOWNLOADED if platform_archive_rule != None else _STATUS_SOURCE
+                }
+            }
+        )
 
     run_add_target(
         capsule_get_run_name(capsule),
