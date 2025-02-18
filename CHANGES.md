@@ -1,5 +1,11 @@
 # Changes
 
+## v0.2.1
+
+- Improve ergonomics of `capsules`
+- Update some internals to use `CONSTANTS` in all caps
+- Improve `cmake`/`gnu`/`capsules` integration
+
 ## v0.2.0
 
 - Add `type` arguments to `checkout` rules - allows for Optional checkout rules that are skipped
@@ -21,7 +27,7 @@
 ## Developer Notes
 
 ```sh
-export VERSION=0.2.0
+export VERSION=0.2.1
 git tag -a v$VERSION -m "Update version"
 git push origin tag v$VERSION
 ```
