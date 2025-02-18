@@ -413,7 +413,7 @@ def capsule_get_checkout_type(capsule, run_name):
             destination = _STATUS_JSON,
             value = {
                 CAPSULES_KEY: {
-                    _to_name(capsule): _STATUS_DOWNLOADED if platform_archive_rule != None else _STATUS_SOURCE
+                    _to_name(capsule): _STATUS_DOWNLOADED if not is_activate_checkout else _STATUS_SOURCE
                 }
             }
         )
