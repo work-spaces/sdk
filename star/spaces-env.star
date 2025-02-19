@@ -7,6 +7,7 @@ so that they can work in the terminal.
 """
 
 load("checkout.star", "checkout_update_env", "checkout_add_which_asset")
+load("workspace.star", "workspace_get_absolute_path")
 
 def spaces_working_env(add_spaces_to_sysroot = False):
     """
@@ -26,7 +27,7 @@ def spaces_working_env(add_spaces_to_sysroot = False):
         rule_name,
         system_paths = ["/usr/bin", "/bin"],
         vars = {
-            "SPACES_WORKSPACE": info.get_absolute_path_to_workspace(),
+            "SPACES_WORKSPACE": workspace_get_absolute_path(),
         } | ps1,
         inherited_vars = ["HOME"],
     )
