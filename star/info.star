@@ -2,7 +2,7 @@
 Spaces info built-ins
 """
 
-load("workspace.star", "workspace_get_absolute_path")
+load("ws.star", "workspace_get_absolute_path")
 
 def info_set_max_queue_count(max_queue_count):
     """

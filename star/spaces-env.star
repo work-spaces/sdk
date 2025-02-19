@@ -7,7 +7,7 @@ so that they can work in the terminal.
 """
 
 load("checkout.star", "checkout_update_env", "checkout_add_which_asset")
-load("workspace.star", "workspace_get_absolute_path")
+load("ws.star", "workspace_get_absolute_path")
 
 def spaces_working_env(add_spaces_to_sysroot = False):
     """
