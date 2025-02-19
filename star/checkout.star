@@ -5,6 +5,9 @@ User friendly wrapper functions for the spaces checkout built-in functions.
 CHECKOUT_TYPE_OPTIONAL = "Optional"
 CHECKOUT_TYPE_DEFAULT = None
 
+CHECKOUT_SPARSE_MODE_CONE = "Cone"
+CHECKOUT_SPARSE_MODE_NO_CONE = "NoCone"
+
 def checkout_add_repo(
         name,
         url,

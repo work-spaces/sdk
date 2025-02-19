@@ -6,6 +6,13 @@ RUN_INPUTS_ONCE = []
 RUN_INPUTS_ALWAYS = None
 RUN_TYPE_ALL = "Run"
 
+# Print the output of the run rule while running spaces
+RUN_LOG_LEVEL_APP = "App"
+
+RUN_EXPECT_SUCCESS = "Success"
+RUN_EXPECT_FAILURE = "Failure"
+RUN_EXPECT_ANY = "Any"
+
 def run_add_exec_setup(
         name,
         command,
