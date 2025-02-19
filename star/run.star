@@ -13,6 +13,17 @@ RUN_EXPECT_SUCCESS = "Success"
 RUN_EXPECT_FAILURE = "Failure"
 RUN_EXPECT_ANY = "Any"
 
+# Kill Signals
+RUN_SIGNAL_HUP = "HUP"
+RUN_SIGNAL_INT = "INT"
+RUN_SIGNAL_QUIT = "QUIT"
+RUN_SIGNAL_ABORT = "ABRT"
+RUN_SIGNAL_KILL = "KILL"
+RUN_SIGNAL_ALARM = "ALRM"
+RUN_SIGNAL_TERMINATE = "TERM"
+RUN_SIGNAL_USER1 = "USR1"
+RUN_SIGNAL_USER2 = "USR2"
+
 def run_add_exec_setup(
         name,
         command,
@@ -25,7 +36,7 @@ def run_add_exec_setup(
         log_level = None,
         redirect_stdout = None,
         timeout = None,
-        expect = "Success"):
+        expect = RUN_EXPECT_SUCCESS):
     """
     Adds a command as a setup rule. It will run only once and all run rules will depend on it.
 
@@ -80,7 +91,7 @@ def run_add_exec(
         log_level = None,
         redirect_stdout = None,
         timeout = None,
-        expect = "Success"):
+        expect = RUN_EXPECT_SUCCESS):
     """
     Adds a command to the run dependency graph
 
@@ -127,9 +138,9 @@ def run_add_exec(
 def run_add_kill_exec(
         name,
         target,
-        signal = "Kill",
+        signal = RUN_SIGNAL_KILL,
         help = None,
-        expect = "Success",
+        expect = RUN_EXPECT_SUCCESS,
         deps = [],
         type = None,
         platforms = None):
