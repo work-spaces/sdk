@@ -127,16 +127,16 @@ def gnu_add_repo(
         install_path: The path to install the project
     """
 
-    checkout_rule = "{}_source".format(name)
+    CHECKOUT_RULE = "{}_source".format(name)
     checkout_add_repo(
-        checkout_rule,
+        CHECKOUT_RULE,
         url = url,
         rev = rev,
         clone = "Blobless",
     )
 
     SUBMODULE_RULE = "{}_submodules".format(name)
-    SUBMODULE_DEPS = []
+    submodule_deps = []
     if checkout_submodules:
         run_add_exec(
             "{}_submodules".format(name),
@@ -144,14 +144,14 @@ def gnu_add_repo(
             args = ["submodule", "update", "--init", "--recursive"],
             working_directory = name,
         )
-        SUBMODULE_DEPS = [SUBMODULE_RULE]
+        submodule_deps = [SUBMODULE_RULE]
 
     gnu_add_configure_make_install(
         name,
-        source_directory = checkout_rule,
+        source_directory = CHECKOUT_RULE,
         autoreconf_args = autoreconf_args,
         configure_args = configure_args,
         make_args = make_args,
-        deps = deps + SUBMODULE_DEPS,
+        deps = deps + submodule_deps,
         install_path = install_path,
     )

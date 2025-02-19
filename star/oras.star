@@ -4,6 +4,7 @@ Spaces starlark functions for publishing packages using oras
 
 load("run.star", "run_add_exec", "run_add_target")
 load("checkout.star", "checkout_add_oras_archive")
+load("workspace.star", "WORKSPACE_SYSROOT")
 
 def _get_oras_command():
     return "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
@@ -36,51 +37,51 @@ def oras_add_publish_archive(
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip).
     """
 
-    platform = info.get_platform_name()
+    PLATFORM = info.get_platform_name()
 
     ARCHIVE_RULE_NAME = "{}_archive".format(name)
     ORAS_RULE_PUSH_NAME = "{}_oras_push".format(name)
 
-    archive_info = {
+    ARCHIVE_INFO = {
         "input": input,
         "name": artifact,
         "version": tag,
         "driver": suffix,
-        "platform": platform,
+        "platform": PLATFORM,
     }
 
-    archive_output_info = info.get_build_archive_info(rule_name = ARCHIVE_RULE_NAME, archive = archive_info)
-    archive_output = archive_output_info["archive_path"]
+    ARCHIVE_OUTPUT_INFO = workspace.get_build_archive_info(rule_name = ARCHIVE_RULE_NAME, archive = ARCHIVE_INFO)
+    ARCHIVE_OUTPUT = ARCHIVE_OUTPUT_INFO["archive_path"]
     run.add_archive(
         rule = {"name": ARCHIVE_RULE_NAME, "deps": deps},
-        archive = archive_info,
+        archive = ARCHIVE_INFO,
     )
 
-    oras_url_label = _get_oras_label(url, artifact, tag)
+    ORAS_URL_LABEL = _get_oras_label(url, artifact, tag)
 
-    # split archive_output between parent folder and file name
-    archive_output_folder = archive_output.rsplit("/", 1)[0]
-    archive_output_file = archive_output.rsplit("/", 1)[1]
-    artifact_type = "{}+{}".format(layer_info, suffix)
+    # split ARCHIVE_OUTPUT between parent folder and file name
+    ARCHIVE_OUTPUT_FOLDER = ARCHIVE_OUTPUT.rsplit("/", 1)[0]
+    ARCHIVE_OUTPUT_FILE = ARCHIVE_OUTPUT.rsplit("/", 1)[1]
+    ARTIFACT_TYPE = "{}+{}".format(layer_info, suffix)
 
-    oras_command = _get_oras_command()
+    ORAS_COMMAND = _get_oras_command()
 
-    deploy_args = [] if deploy_repo == None else ["--annotation=org.opencontainers.image.source={}".format(deploy_repo)]
+    DEPLOY_ARGS = [] if deploy_repo == None else ["--annotation=org.opencontainers.image.source={}".format(deploy_repo)]
 
     run_add_exec(
         ORAS_RULE_PUSH_NAME,
-        command = oras_command,
+        command = ORAS_COMMAND,
         args = [
             "push",
-            "--artifact-type={}".format(artifact_type),
-        ] + deploy_args + [
-            oras_url_label,
-            archive_output_file,
+            "--artifact-type={}".format(ARTIFACT_TYPE),
+        ] + DEPLOY_ARGS + [
+            ORAS_URL_LABEL,
+            ARCHIVE_OUTPUT_FILE,
         ],
         deps = [
             ARCHIVE_RULE_NAME,
         ],
-        working_directory = archive_output_folder,
+        working_directory = "//{}".format(ARCHIVE_OUTPUT_FOLDER),
     )
 
     run_add_target(
@@ -94,7 +95,7 @@ def oras_add_platform_archive(
         url,
         artifact,
         tag,
-        add_prefix = "sysroot",
+        add_prefix = WORKSPACE_SYSROOT,
         globs = None):
     """
     Checks out an archive using oras.
@@ -109,13 +110,13 @@ def oras_add_platform_archive(
 
     """
 
-    platform = info.get_platform_name()
-    effective_artifact = "{}-{}".format(artifact, platform)
+    PLATFORM = info.get_platform_name()
+    EFFECTIVE_ARTIFACT = "{}-{}".format(artifact, PLATFORM)
 
     checkout_add_oras_archive(
         name,
         url = url,
-        artifact = effective_artifact,
+        artifact = EFFECTIVE_ARTIFACT,
         tag = tag,
         add_prefix = add_prefix,
         globs = globs,

@@ -1,6 +1,12 @@
 """
 Spaces workspace built-ins
+
+Note: This file is name ws.star instead of workspace.star because of how
+the linter treats starlark files with workspace in the name.
+
 """
+
+WORKSPACE_SYSROOT = "sysroot"
 
 def workspace_get_absolute_path():
     """

@@ -24,89 +24,89 @@ def gh_add_publish_archive(
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
     """
 
-    platform = info.get_platform_name()
+    PLATFORM = info.get_platform_name()
 
-    archive_rule_name = "{}_archive".format(name)
-    archive_info = {
+    ARCHIVE_RULE_NAME = "{}_archive".format(name)
+    ARCHIVE_INFO = {
         "input": input,
         "name": name,
         "version": version,
         "driver": suffix,
-        "platform": platform,
+        "platform": PLATFORM,
     }
 
-    archive_output_info = info.get_build_archive_info(rule_name = archive_rule_name, archive = archive_info)
-    archive_output = archive_output_info["archive_path"]
-    archive_sha256 = archive_output_info["sha256_path"]
+    ARCHIVE_OUTPUT_INFO = info.get_build_archive_info(rule_name = ARCHIVE_RULE_NAME, archive = ARCHIVE_INFO)
+    ARCHIVE_OUTPUT = ARCHIVE_OUTPUT_INFO["archive_path"]
+    ARCHIVE_SHA256 = ARCHIVE_OUTPUT_INFO["sha256_path"]
 
     run.add_archive(
-        rule = {"name": archive_rule_name, "deps": deps},
-        archive = archive_info,
+        rule = {"name": ARCHIVE_RULE_NAME, "deps": deps},
+        archive = ARCHIVE_INFO,
     )
 
-    repo_arg = "--repo={}".format(deploy_repo)
-    archive_name = "{}-v{}".format(name, version)
-    check_release_rule_name = "{}_check_release".format(name)
-    release_rule_name = "{}_release".format(name)
-    publish_binary_rule_name = "{}_publish_release".format(name)
-    publish_sha256_rule_name = "{}_publish_sha256".format(name)
-    gh_command = "{}/sysroot/bin/gh".format(info.get_path_to_spaces_tools())
+    REPO_ARG = "--repo={}".format(deploy_repo)
+    ARCHIVE_NAME = "{}-v{}".format(name, version)
+    CHECK_RELEASE_RULE_NAME = "{}_check_release".format(name)
+    RELEASE_RULE_NAME = "{}_release".format(name)
+    PUBLISH_BINARY_RULE_NAME = "{}_publish_release".format(name)
+    PUBLISH_SHA256_RULE_NAME = "{}_publish_sha256".format(name)
+    GH_COMMAND = "{}/sysroot/bin/gh".format(info.get_path_to_spaces_tools())
 
     run.add_exec_if(
-        rule = {"name": check_release_rule_name, "deps": [archive_rule_name]},
+        rule = {"name": CHECK_RELEASE_RULE_NAME, "deps": [ARCHIVE_RULE_NAME]},
         exec_if = {
             "if": {
-                "command": gh_command,
+                "command": GH_COMMAND,
                 "args": [
                     "release",
                     "view",
-                    archive_name,
-                    repo_arg,
+                    ARCHIVE_NAME,
+                    REPO_ARG,
                 ],
                 "expect": "Failure",
             },
-            "then": [release_rule_name],
+            "then": [RELEASE_RULE_NAME],
         },
     )
 
     run_add_exec(
-        release_rule_name,
-        deps = [check_release_rule_name],
+        RELEASE_RULE_NAME,
+        deps = [CHECK_RELEASE_RULE_NAME],
         type = "Optional",
-        command = gh_command,
+        command = GH_COMMAND,
         args = [
             "release",
             "create",
-            archive_name,
+            ARCHIVE_NAME,
             "--generate-notes",
-            repo_arg,
+            REPO_ARG,
         ],
     )
 
     run_add_exec(
-        publish_binary_rule_name,
-        deps = [release_rule_name],
-        command = gh_command,
+        PUBLISH_BINARY_RULE_NAME,
+        deps = [RELEASE_RULE_NAME],
+        command = GH_COMMAND,
         args = [
             "release",
             "upload",
-            archive_name,
-            archive_output,
-            repo_arg,
+            ARCHIVE_NAME,
+            ARCHIVE_OUTPUT,
+            REPO_ARG,
         ],
     )
 
     run_add_exec(
-        publish_sha256_rule_name,
-        deps = [release_rule_name],
-        command = gh_command,
+        PUBLISH_SHA256_RULE_NAME,
+        deps = [RELEASE_RULE_NAME],
+        command = GH_COMMAND,
         args = [
             "release",
             "upload",
-            archive_name,
-            archive_sha256,
-            repo_arg,
+            ARCHIVE_NAME,
+            ARCHIVE_SHA256,
+            REPO_ARG,
         ],
     )
 
-    run_add_target(name, deps = [publish_binary_rule_name, publish_sha256_rule_name])
+    run_add_target(name, deps = [PUBLISH_BINARY_RULE_NAME, PUBLISH_SHA256_RULE_NAME])

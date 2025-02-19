@@ -14,11 +14,11 @@ def rpath_update_macos_install_dir(name, install_path, deps):
         deps: The dependencies of the rule
     """
 
-    bin_rule_name = "{}_bin".format(name)
-    lib_rule_name = "{}_lib".format(name)
+    BIN_RULE_NAME = "{}_bin".format(name)
+    LIB_RULE_NAME = "{}_lib".format(name)
 
     run_add_exec(
-        bin_rule_name,
+        BIN_RULE_NAME,
         deps = deps,
         command = "@star/sdk/script/update-rpath-macos.star",
         args = [
@@ -30,7 +30,7 @@ def rpath_update_macos_install_dir(name, install_path, deps):
     )
 
     run_add_exec(
-        lib_rule_name,
+        LIB_RULE_NAME,
         deps = deps,
         command = "@star/sdk/script/update-rpath-macos.star",
         args = [
@@ -41,4 +41,4 @@ def rpath_update_macos_install_dir(name, install_path, deps):
         help = "Update MacOS rpath entries in build/install/lib",
     )
 
-    run_add_target(name, deps = [bin_rule_name, lib_rule_name])
+    run_add_target(name, deps = [BIN_RULE_NAME, LIB_RULE_NAME])
