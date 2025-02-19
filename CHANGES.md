@@ -1,5 +1,11 @@
 # Changes
 
+## v0.3.0
+
+- Update to use `spaces-v0.14`
+- Better internal compliance with `CONSTANTS` convention
+- Move some `info` to `workspace` in accordance with `spaces-v0.14`
+
 ## v0.2.1
 
 - Improve ergonomics of `capsules`
@@ -27,7 +33,7 @@
 ## Developer Notes
 
 ```sh
-export VERSION=0.2.1
+export VERSION=0.3.0
 git tag -a v$VERSION -m "Update version"
 git push origin tag v$VERSION
 ```
