@@ -2,18 +2,30 @@
 User friendly wrapper functions for the spaces checkout built-in functions.
 """
 
+# Clone rules that are optional are not run
 CHECKOUT_TYPE_OPTIONAL = "Optional"
+# Clone rules that are default are always run
 CHECKOUT_TYPE_DEFAULT = None
 
-CHECKOUT_SPARSE_MODE_CONE = "Cone"
-CHECKOUT_SPARSE_MODE_NO_CONE = "NoCone"
+# Sparse checkout modes
+CHECKOUT_SPARSE_MODE_CONE = "Cone" # checkout directories
+CHECKOUT_SPARSE_MODE_NO_CONE = "NoCone" #checkout gitignore like expressions
+
+# Ways to `clone` a repository
+CHECKOUT_CLONE_DEFAULT = "Default" # Just a normal clone
+CHECKOUT_CLONE_WORKTREE = "Worktree" # stores the bare repository in the spaces store
+CHECKOUT_CLONE_BLOBLESS = "Blobless" # filters unused files from the repo history
+CHECKOUT_CLONE_SHALLOW = "Shallow" # The rev must be a branch not a tag or commit
+
+# This is the only supported value
+CHECKOUT_CLONE_TYPE_REVISION = "Revision"
 
 def checkout_add_repo(
         name,
         url,
         rev,
-        checkout_type = "Revision",
-        clone = "Default",
+        checkout_type = CHECKOUT_CLONE_TYPE_REVISION,
+        clone = CHECKOUT_CLONE_BLOBLESS,
         is_evaluate_spaces_modules = None,
         sparse_mode = None,
         sparse_list = None,

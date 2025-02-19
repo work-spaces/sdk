@@ -1,5 +1,9 @@
 # Changes
 
+## v0.3.1
+
+- Add clone and revision constant values to `checkout.star`
+
 ## v0.3.0
 
 - Update to use `spaces-v0.14`
@@ -33,7 +37,7 @@
 ## Developer Notes
 
 ```sh
-export VERSION=0.3.0
+export VERSION=0.3.1
 git tag -a v$VERSION -m "Update version"
 git push origin tag v$VERSION
 ```
