@@ -94,7 +94,7 @@ def _is_path_to_workspace_member_available(
         url,
         rev = None,
         semver = None):
-    workspace_set_minimum_version("0.12.6")
+    info.set_minimum_version("0.14.0")
     return workspace.is_path_to_workspace_member_available(
         member = _get_member_requirement(url, rev, semver),
     )
@@ -103,7 +103,7 @@ def _get_path_to_member(
         url,
         rev = None,
         semver = None):
-    workspace_set_minimum_version("0.12.6")
+    info.set_minimum_version("0.14.0")
     return workspace.get_path_to_workspace_member(
         member = _get_member_requirement(url, rev, semver),
     )
