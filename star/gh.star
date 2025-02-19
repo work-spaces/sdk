@@ -3,6 +3,9 @@ Spaces starlark function for archiving and publishing to github using GH
 """
 
 load("run.star", "run_add_exec", "run_add_target")
+load("ws.star", "workspace_get_build_archive_info")
+load("info.star", "info_get_platform_name")
+
 
 def gh_add_publish_archive(
         name,
@@ -24,7 +27,7 @@ def gh_add_publish_archive(
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
     """
 
-    PLATFORM = info.get_platform_name()
+    PLATFORM = info_get_platform_name()
 
     ARCHIVE_RULE_NAME = "{}_archive".format(name)
     ARCHIVE_INFO = {
@@ -35,7 +38,7 @@ def gh_add_publish_archive(
         "platform": PLATFORM,
     }
 
-    ARCHIVE_OUTPUT_INFO = info.get_build_archive_info(rule_name = ARCHIVE_RULE_NAME, archive = ARCHIVE_INFO)
+    ARCHIVE_OUTPUT_INFO = workspace_get_build_archive_info(ARCHIVE_RULE_NAME, archive = ARCHIVE_INFO)
     ARCHIVE_OUTPUT = ARCHIVE_OUTPUT_INFO["archive_path"]
     ARCHIVE_SHA256 = ARCHIVE_OUTPUT_INFO["sha256_path"]
 

@@ -96,12 +96,12 @@ def _get_member_requirement(url, rev = None, semver = None):
         "url": url,
     } | version_requirment
 
-def _is_path_to_workspace_member_available(
+def _is_path_to_member_available(
         url,
         rev = None,
         semver = None):
     info.set_minimum_version("0.14.0")
-    return workspace.is_path_to_workspace_member_available(
+    return workspace.is_path_to_member_available(
         member = _get_member_requirement(url, rev, semver),
     )
 
@@ -110,7 +110,7 @@ def _get_path_to_member(
         rev = None,
         semver = None):
     info.set_minimum_version("0.14.0")
-    return workspace.get_path_to_workspace_member(
+    return workspace.get_path_to_member(
         member = _get_member_requirement(url, rev, semver),
     )
 
@@ -168,7 +168,7 @@ def workspace_check_member_semver(url, semver):
         True if the workspace member is found satisfying semver, False otherwise
     """
 
-    return _is_path_to_workspace_member_available(url, rev = None, semver = semver)
+    return _is_path_to_member_available(url, rev = None, semver = semver)
 
 def workspace_assert_member_semver(url, semver):
     """
@@ -182,7 +182,7 @@ def workspace_assert_member_semver(url, semver):
         True if the workspace member is found satisfying semver, False otherwise
     """
 
-    IS_AVAILABLE = _is_path_to_workspace_member_available(url, semver = semver)
+    IS_AVAILABLE = _is_path_to_member_available(url, semver = semver)
     if not IS_AVAILABLE:
         info.abort("The workspace member at {} does not satisfy the semver requirement {}".format(url, semver))
 
@@ -198,7 +198,7 @@ def workspace_assert_member_revision(url, rev):
         Aborts if the requirement is not satisfied
     """
 
-    IS_AVAILABLE = _is_path_to_workspace_member_available(url, rev = rev)
+    IS_AVAILABLE = _is_path_to_member_available(url, rev = rev)
     if not IS_AVAILABLE:
         info.abort("The workspace member at {} does not satisfy the revision requirement {}".format(url, rev))
 
@@ -214,4 +214,17 @@ def workspace_check_member_revision(url, rev):
         True if the workspace member is found at the specified rev, False otherwise
     """
 
-    return _is_path_to_workspace_member_available(url, rev = rev)
+    return _is_path_to_member_available(url, rev = rev)
+
+def workspace_get_build_archive_info(name, archive):
+    """
+    Gets the archive info the specified rule and archive
+
+    Args:
+        name: rule name to get info for
+        archive: archive object containing details of how to create the archive
+    """
+    return workspace.get_build_archive_info(
+        rule_name = name,
+        archive = archive
+    )
