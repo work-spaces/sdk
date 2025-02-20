@@ -2,8 +2,6 @@
 Spaces info built-ins
 """
 
-load("ws.star", "workspace_get_absolute_path")
-
 def info_set_max_queue_count(max_queue_count):
     """
     Set the maximum number of jobs that can be queued.
@@ -21,18 +19,6 @@ def info_set_minimum_version(version):
         version: The minimum version of Spaces required to run the workflow
     """
     info.set_minimum_version(version)
-
-def info_get_absolute_path_to_workspace():
-    """
-    Get the absolute path to the workspace
-
-    Deprecated. Use workspace_get_absolute_path()
-
-    Returns:
-        The absolute path to the workspace
-    """
-    return workspace_get_absolute_path()
-
 
 def info_get_cpu_count():
     """

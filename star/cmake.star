@@ -9,7 +9,7 @@ load(
     "checkout_add_repo",
 )
 load("run.star", "run_add_exec", "run_add_target")
-load("info.star", "info_get_absolute_path_to_workspace")
+load("ws.star", "workspace_get_absolute_path")
 
 def cmake_get_default_prefix_paths(install_path = None):
     """
@@ -21,7 +21,7 @@ def cmake_get_default_prefix_paths(install_path = None):
     Returns:
         A list of the default prefix paths
     """
-    WORKSPACE = info_get_absolute_path_to_workspace()
+    WORKSPACE = workspace_get_absolute_path()
     locations = [install_path] if install_path != None else ["{}/build/install".format(WORKSPACE)]
     locations.append("{}/sysroot".format(WORKSPACE))
     return locations
@@ -60,7 +60,7 @@ def cmake_add_configure_build_install(
     CONFIGURE_RULE_NAME = "{}_configure".format(name)
     BUILD_RULE_NAME = "{}_build".format(name)
     INSTALL_RULE_NAME = "{}_install".format(name)
-    WORKSPACE = info_get_absolute_path_to_workspace()
+    WORKSPACE = workspace_get_absolute_path()
     EFFECTIVE_INSTALL_PATH = install_path if install_path != None else "{}/build/install".format(WORKSPACE)
     INSTALL_PREFIX_ARG = "-DCMAKE_INSTALL_PREFIX={}".format(EFFECTIVE_INSTALL_PATH)
     DEFAULT_PREFIX_PATHS = cmake_get_default_prefix_paths(install_path)

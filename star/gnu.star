@@ -3,7 +3,8 @@ GNU Build Functions
 """
 
 load("run.star", "run_add_exec", "run_add_target")
-load("info.star", "info_get_absolute_path_to_workspace", "info_get_cpu_count")
+load("info.star", "info_get_cpu_count")
+load("ws.star", "workspace_get_absolute_path")
 load("checkout.star", "checkout_add_repo")
 
 def gnu_add_configure_make_install(
@@ -37,7 +38,7 @@ def gnu_add_configure_make_install(
     CONFIGURE_RULE_NAME = "{}_configure".format(name)
     BUILD_RULE_NAME = "{}_build".format(name)
     INSTALL_RULE_NAME = "{}_install".format(name)
-    WORKSPACE = info_get_absolute_path_to_workspace()
+    WORKSPACE = workspace_get_absolute_path()
     EFFECTIVE_INSTALL_PATH = install_path if install_path != None else "build/install"
     PREFIX_ARG = "--prefix={}/{}".format(WORKSPACE, EFFECTIVE_INSTALL_PATH)
     NUM_CPUS = info_get_cpu_count()
