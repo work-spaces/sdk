@@ -2,7 +2,7 @@
 Shell functions
 """
 
-load("run.star", "run_add_exec")
+load("run.star", "RUN_EXPECT_SUCCESS", "run_add_exec")
 
 def cp(
         name,
@@ -12,7 +12,8 @@ def cp(
         deps = [],
         type = None,
         inputs = None,
-        expect = "Success"):
+        working_directory = None,
+        expect = RUN_EXPECT_SUCCESS):
     """
     Copy a file or directory from source to destination.
 
@@ -24,6 +25,7 @@ def cp(
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
         inputs (list): The inputs for the command.
+        working_directory (str): The working directory for the command.
         expect (str): Success | Failure
     """
 
@@ -35,6 +37,7 @@ def cp(
         type = type,
         inputs = inputs,
         expect = expect,
+        working_directory = working_directory,
     )
 
 def mv(
@@ -44,7 +47,8 @@ def mv(
         options = [],
         deps = [],
         type = None,
-        expect = "Success"):
+        working_directory = None,
+        expect = RUN_EXPECT_SUCCESS):
     """
     Rename a file or directory from source to destination.
 
@@ -55,6 +59,7 @@ def mv(
         options (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
+        working_directory (str): The working directory for the command.
         expect (str): Success | Failure
     """
 
@@ -65,6 +70,7 @@ def mv(
         deps = deps,
         type = type,
         expect = expect,
+        working_directory = working_directory,
     )
 
 def ln(
@@ -74,7 +80,8 @@ def ln(
         options = [],
         deps = [],
         type = None,
-        expect = "Success"):
+        working_directory = None,
+        expect = RUN_EXPECT_SUCCESS):
     """
     Create a link from source to destination.
 
@@ -85,6 +92,7 @@ def ln(
         options (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
+        working_directory (str): The working directory for the command.
         expect (str): Success | Failure
     """
 
@@ -95,6 +103,7 @@ def ln(
         deps = deps,
         type = type,
         expect = expect,
+        working_directory = working_directory,
     )
 
 def ls(
@@ -103,7 +112,8 @@ def ls(
         options = [],
         deps = [],
         type = None,
-        expect = "Success"):
+        working_directory = None,
+        expect = RUN_EXPECT_SUCCESS):
     """
     Run ls (this can be handy for checking if something exists).
 
@@ -113,6 +123,7 @@ def ls(
         options (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
+        working_directory (str): The working directory for the command.
         expect (str): Success | Failure
     """
 
@@ -123,6 +134,7 @@ def ls(
         deps = deps,
         type = type,
         expect = expect,
+        working_directory = working_directory,
     )
 
 def mkdir(
@@ -131,7 +143,8 @@ def mkdir(
         options = [],
         deps = [],
         type = None,
-        expect = "Success"):
+        working_directory = None,
+        expect = RUN_EXPECT_SUCCESS):
     """
     Create a new directory.
 
@@ -141,6 +154,7 @@ def mkdir(
         options (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
+        working_directory (str): The working directory for the command.
         expect (str): Success | Failure
     """
 
@@ -151,6 +165,7 @@ def mkdir(
         deps = deps,
         type = type,
         expect = expect,
+        working_directory = working_directory,
     )
 
 def chmod(
@@ -159,7 +174,8 @@ def chmod(
         path,
         deps = [],
         type = None,
-        expect = "Success"):
+        working_directory = None,
+        expect = RUN_EXPECT_SUCCESS):
     """
     Changes the mode of a file or directory.
 
@@ -169,6 +185,7 @@ def chmod(
         path (list): The options for the copy command.
         deps (list): The dependencies for the copy command.
         type (str): The type of the command.
+        working_directory (str): The working directory for the command.
         expect (str): Success | Failure
     """
 
@@ -179,4 +196,5 @@ def chmod(
         deps = deps,
         type = type,
         expect = expect,
+        working_directory = working_directory,
     )

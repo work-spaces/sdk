@@ -114,3 +114,24 @@ def info_get_supported_platforms():
         The supported platforms
     """
     return info.get_supported_platforms()
+
+def info_get_path_to_spaces_tools():
+    """
+    Get the path to the Spaces tools
+
+    Returns:
+        The path to the Spaces tools
+    """
+    return info.get_path_to_spaces_tools()
+
+def info_parse_log_file(path):
+    """
+    Parses a log file
+
+    Args:
+        path: path to the log file
+
+    Returns:
+        dict: with members `header` and lines
+    """
+    return info.parse_log_file(path)
