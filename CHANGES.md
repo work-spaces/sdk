@@ -1,5 +1,11 @@
 # Changes
 
+## v0.3.2
+
+- Add `std/time.star` for spaces v0.14.3
+- Remove `info_get_absolute_path_to_workpace()`
+- Add script/scan-log-file
+
 ## v0.3.1
 
 - Add clone and revision constant values to `checkout.star`
@@ -37,7 +43,7 @@
 ## Developer Notes
 
 ```sh
-export VERSION=0.3.1
+export VERSION=0.3.2
 git tag -a v$VERSION -m "Update version"
 git push origin tag v$VERSION
 ```
