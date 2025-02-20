@@ -143,7 +143,7 @@ def gnu_add_repo(
             "{}_submodules".format(name),
             command = "git",
             args = ["submodule", "update", "--init", "--recursive"],
-            working_directory = name,
+            working_directory = "//{}".format(CHECKOUT_RULE),
         )
         submodule_deps = [SUBMODULE_RULE]
 

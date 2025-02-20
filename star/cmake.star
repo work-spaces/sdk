@@ -179,7 +179,7 @@ def cmake_add_repo(
                 SUBMODULE_RULE,
                 command = "git",
                 args = ["submodule", "update", "--init", "--recursive"],
-                working_directory = CHECKOUT_RULE,
+                working_directory = "//{}".format(CHECKOUT_RULE),
             )
             SUBMODULE_DEPS = [SUBMODULE_RULE]
 
