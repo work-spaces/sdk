@@ -1,5 +1,9 @@
 # Changes
 
+## v0.3.3
+
+- Fix `working_directory` for checking out submodules
+
 ## v0.3.2
 
 - Add `std/time.star` for spaces v0.14.3
@@ -43,7 +47,7 @@
 ## Developer Notes
 
 ```sh
-export VERSION=0.3.2
+export VERSION=0.3.3
 git tag -a v$VERSION -m "Update version"
 git push origin tag v$VERSION
 ```
