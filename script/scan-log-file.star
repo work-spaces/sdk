@@ -8,16 +8,18 @@ load(
     "//@star/sdk/star/script.star",
     "script_get_args",
     "script_set_exit_code",
+    "script_print",
 )
 load("//@star/sdk/star/info.star", "info_parse_log_file")
-load("//@star/sdk/star/time.star", "time_now")
+load("//@star/sdk/star/std/time.star", "time_now", "time_sleep")
 
 ARGUMENTS = script_get_args()
 
 NAMED_ARGUMENTS = ARGUMENTS["named"]
-SAMPLING_PERIOD = NAMED_ARGUMENTS.get("--sampling-period", 1)
-TIMEOUT = NAMED_ARGUMENTS.get("--timeout", 10.0)
+SAMPLING_PERIOD = float(NAMED_ARGUMENTS.get("--sampling-period", 1.0))
+TIMEOUT = float(NAMED_ARGUMENTS.get("--timeout", 10.0))
 EXPECTED = NAMED_ARGUMENTS.get("--expected", "")
+
 
 if "--path" in NAMED_ARGUMENTS and "--expected" in NAMED_ARGUMENTS:
     PATH = NAMED_ARGUMENTS["--path"]
@@ -26,6 +28,7 @@ if "--path" in NAMED_ARGUMENTS and "--expected" in NAMED_ARGUMENTS:
     LOOP_COUNT = int(TIMEOUT / SAMPLING_PERIOD)
 
     is_found = False
+
     for _ in range(LOOP_COUNT):
         RESULT = info_parse_log_file(PATH)
         for lines in RESULT["lines"]:
@@ -33,14 +36,16 @@ if "--path" in NAMED_ARGUMENTS and "--expected" in NAMED_ARGUMENTS:
                 is_found = True
                 break
 
-        if TIMEOUT > 0.0 and time_now() - START > TIMEOUT:
-            script_set_exit_code(1)
-            break
-
         if is_found:
             break
 
         time_sleep(SAMPLING_PERIOD)
+    
+    if not is_found:
+        script_print("Error: Did not find `{}` in {} after {} seconds".format(EXPECTED, PATH, TIMEOUT))
+        script_set_exit_code(1)
 else:
     script_print("Usage: scan-log-file.star --path=<path> --expected=<expected> [--sampling-period=<sampling-period>] [--timeout=<timeout>]")
     script_set_exit_code(1)
+
+
