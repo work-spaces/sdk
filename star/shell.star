@@ -198,3 +198,36 @@ def chmod(
         expect = expect,
         working_directory = working_directory,
     )
+
+def shell(
+    name,
+    script,
+    shell = "bash",
+    options = ["-c"],
+    expect = RUN_EXPECT_SUCCESS,
+    type = None,
+    working_directory = None,
+    deps = []):
+    """
+    Execute a string as a shell script
+
+    Args:
+        name (str): name of the rule
+        script (str): text of the script to run
+        shell (str): shell to use (default is bash)
+        options (str): options to pass before script default is '-c'
+        expect (str): Success or Failure
+        type: Optional or All (default is Optional)
+        working_directory: workspace working directory (default is workspace root)
+        deps: rule dependencies
+    """
+
+    run_add_exec(
+        name,
+        command = shell,
+        args = options + [script],
+        type = type,
+        deps = deps,
+        working_directory = working_directory,
+        expect = expect
+    )
