@@ -121,3 +121,12 @@ def info_parse_log_file(path):
         dict: with members `header` and lines
     """
     return info.parse_log_file(path)
+
+def info_set_required_semver(required):
+    """
+    Set the required `spaces` semver for the workflow
+
+    Args:
+        required: The required semver for the workflow
+    """
+    info.set_required_semver(required)
