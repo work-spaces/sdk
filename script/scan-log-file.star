@@ -44,6 +44,9 @@ if "--path" in NAMED_ARGUMENTS and "--expected" in NAMED_ARGUMENTS:
     if not is_found:
         script_print("Error: Did not find `{}` in {} after {} seconds".format(EXPECTED, PATH, TIMEOUT))
         script_set_exit_code(1)
+    else:
+        script_print("Success: Found `{}` in {} after {} seconds".format(EXPECTED, PATH, time_now() - START))
+
 else:
     script_print("Usage: scan-log-file.star --path=<path> --expected=<expected> [--sampling-period=<sampling-period>] [--timeout=<timeout>]")
     script_set_exit_code(1)
