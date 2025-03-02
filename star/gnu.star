@@ -54,7 +54,7 @@ def gnu_add_configure_make_install(
         run_add_exec(
             AUTORECONF_RULE_NAME,
             deps = [PREPARE_RULE_NAME] + deps,
-            inputs = ["+{}/configure.ac".format(source_directory)],
+            inputs = ["+//{}/configure.ac".format(source_directory)],
             command = "autoreconf",
             args = autoreconf_args,
             working_directory = source_directory,
@@ -65,7 +65,7 @@ def gnu_add_configure_make_install(
     run_add_exec(
         CONFIGURE_RULE_NAME,
         deps = autoreconf_deps + deps,
-        inputs = ["+{}/configure".format(source_directory)],
+        inputs = ["+//{}/configure".format(source_directory)],
         command = "../../{}/configure".format(source_directory),
         args = [PREFIX_ARG] + configure_args,
         working_directory = BUILD_DIR,
@@ -76,9 +76,8 @@ def gnu_add_configure_make_install(
         BUILD_RULE_NAME,
         deps = [CONFIGURE_RULE_NAME],
         inputs = [
-            "+{}/Makefile".format(BUILD_DIR),
-            "+{}/**".format(source_directory),
-            "-{}/.git/**".format(source_directory),
+            "+//{}/Makefile".format(BUILD_DIR),
+            "+//{}/**".format(source_directory),
         ],
         command = "make",
         args = ["-j{}".format(NUM_CPUS)] + make_args,

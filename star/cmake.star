@@ -74,16 +74,14 @@ def cmake_add_configure_build_install(
     EFFECTIVE_BUILD_DIRECTORY = build_directory if build_directory != None else "build/{}".format(name)
 
     DEFAULT_CONFIGURE_INPUTS = [
-        "+{}/**/CMakeLists.txt".format(source_directory),
-        "+{}/**/*.cmake".format(source_directory),
-        "-{}/.git/**".format(source_directory),
+        "+//{}/**/CMakeLists.txt".format(source_directory),
+        "+//{}/**/*.cmake".format(source_directory),
     ]
 
     EFFECTIVE_CONFIGURE_INPUTS = configure_inputs if configure_inputs != None else DEFAULT_CONFIGURE_INPUTS
 
     DEFAULT_BUILD_INPUTS = [
-        "+{}/**".format(source_directory),
-        "-{}/.git/**".format(source_directory),
+        "+//{}/**".format(source_directory),
     ]
     EFFECTIVE_BUILD_INPUTS = build_inputs if build_inputs != None else DEFAULT_BUILD_INPUTS
 
