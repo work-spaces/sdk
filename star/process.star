@@ -12,6 +12,10 @@ def process_exec(
     """
     Execute a command
 
+    The command executes during evaluation. It is not recommended to run
+    functions when adding rules because evalation is skipped if none of the
+    starlark files have changed.
+
     Args:
         command: The command to execute
         args: The arguments to pass to the command

@@ -103,10 +103,10 @@ def info_get_supported_platforms():
 
 def info_get_path_to_spaces_tools():
     """
-    Get the path to the Spaces tools
+    Get the path to the Spaces tools folder
 
     Returns:
-        The path to the Spaces tools
+        The path to the Spaces tools folder
     """
     return info.get_path_to_spaces_tools()
 

@@ -37,18 +37,18 @@ def checkout_add_repo(
     Clones a repository and checks it out at a specific revision.
 
     Args:
-        name (str): The name of the rule.
-        url (str): The git repository URL to clone
-        rev (str): The branch or commit hash to checkout
-        checkout_type (str): Revision | NewBranch
-        clone (str): Default | Worktree
-        is_evaluate_spaces_modules (bool): Whether to evaluate spaces.star files in the repo (default is True).
-        sparse_mode (str): Cone | NoCone
-        sparse_list (list): List of paths to include/exclude
-        deps (list): List of dependencies for the rule.
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
-        platforms (list): List of platforms to add the archive to.
-        working_directory (str): The working directory to clone the repository into.
+        name: The name of the rule.
+        url: The git repository URL to clone
+        rev: The branch or commit hash to checkout
+        checkout_type: Revision | NewBranch
+        clone: Default | Worktree
+        is_evaluate_spaces_modules: Whether to evaluate spaces.star files in the repo (default is True).
+        sparse_mode: Cone | NoCone
+        sparse_list: List of paths to include/exclude
+        deps: List of dependencies for the rule.
+        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
+        platforms: List of platforms to add the repo to.
+        working_directory: The working directory to clone the repository into.
     """
 
     EVALUATE_SPACES_MODULES = {
@@ -90,19 +90,21 @@ def checkout_add_archive(
     """
     Adds an archive to the workspace.
 
+    The archive is downloaded to the spaces store and hard-linked to the workspace.
+
     Args:
-        name (str): The name of the rule.
-        url (str): The URL of the archive to download.
-        sha256 (str): The SHA256 checksum of the archive.
-        link (str): Hard | None
-        includes (list): List of globs to include.
-        excludes (list): List of globs to exclude.
-        strip_prefix (str): Prefix to strip from the archive.
-        add_prefix (str): Prefix to add to the archive.
-        filename (str): The filename if it isn't the last part of the URL
-        platforms (list): List of platforms to add the archive to.
-        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
-        deps (list): List of dependencies for the rule.
+        name: The name of the rule.
+        url: The URL of the archive to download.
+        sha256: The SHA256 checksum of the archive.
+        link: Hard | None
+        includes: List of globs to include.
+        excludes: List of globs to exclude.
+        strip_prefix: Prefix to strip from the archive.
+        add_prefix: Prefix to add to the archive.
+        filename: The filename if it isn't the last part of the URL
+        platforms: List of platforms to add the archive to.
+        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional
+        deps: List of dependencies for the rule.
     """
     checkout.add_archive(
         rule = {
@@ -133,13 +135,15 @@ def checkout_add_asset(
     """
     Adds an asset to the workspace.
 
+    This will create a file in the workspace with the given content as string value.
+
     Args:
-        name (str): The name of the rule.
-        content (str): The content of the asset.
-        destination (str): The destination path for the asset.
-        deps (list): List of dependencies for the asset.
-        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
-        platforms (list): List of platforms to add the archive to.
+        name: The name of the rule.
+        content: The content of the file to create.
+        destination: The destination path for the file.
+        deps: List of dependencies for the rule.
+        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
+        platforms: List of platforms to add the archive to.
     """
     checkout.add_asset(
         rule = {
@@ -165,14 +169,16 @@ def checkout_update_asset(
     """
     Updates an asset in the workspace.
 
+    This rule will merge the data of an existing JSON, TOML, or YAML file with the given value.
+
     Args:
-        name (str): The name of the rule.
-        destination (str): The destination path for the asset.
-        format (str): The format of the asset (json | toml | yaml). Default will get extension from destination.
-        value (str): The value of the asset.
-        deps (list): List of dependencies for the asset.
-        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
-        platforms (list): List of platforms to add the archive to.
+        name: The name of the rule.
+        destination: The destination path for the asset.
+        format: The format of the asset (json | toml | yaml). Default will get extension from destination.
+        value: The value of the asset as a dict to merge with the existing file.
+        deps: List of dependencies for the asset.
+        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
+        platforms: List of platforms to add the archive to.
     """
 
     effective_format = format if format != None else destination.split(".")[-1]
@@ -199,13 +205,13 @@ def checkout_add_cargo_bin(
     Adds a cargo binary to the workspace.
 
     Args:
-        name (str): The name of the rule.
-        crate (str): The name of the crate.
-        version (str): The version of the crate.
-        bins (list): List of binaries to add.
-        deps (list): List of dependencies for the rule.
-        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
-        platforms (list): List of platforms to add the archive to.
+        name: The name of the rule.
+        crate: The name of the crate.
+        version: The version of the crate.
+        bins: List of binaries to add.
+        deps: List of dependencies for the rule.
+        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
+        platforms: List of platforms to add the archive to.
     """
     checkout.add_cargo_bin(
         rule = {
@@ -228,12 +234,12 @@ def checkout_add_hard_link_asset(
     Adds a hard link asset to the workspace.
 
     Args:
-        name (str): The name of the rule.
-        source (str): The source path of the asset.
-        destination (str): The destination path for the asset.
-        deps (list): List of dependencies for the asset.
-        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
-        platforms (list): List of platforms to add the archive to.
+        name: The name of the rule.
+        source: The source path of the asset.
+        destination: The destination path for the asset.
+        deps: List of dependencies for the asset.
+        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
+        platforms: List of platforms to add the archive to.
     """
     checkout.add_hard_link_asset(
         rule = {
@@ -252,15 +258,15 @@ def checkout_add_soft_link_asset(
         type = None,
         platforms = None):
     """
-    Adds a hard link asset to the workspace.
+    Adds a soft link asset to the workspace.
 
     Args:
-        name (str): The name of the rule.
-        source (str): The source path of the soft link.
-        destination (str): The relative workspace path of the soft link destination.
-        deps (list): List of dependencies for the asset.
-        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
-        platforms (list): List of platforms to add the archive to.
+        name: The name of the rule.
+        source: The source path of the soft link.
+        destination: The relative workspace path of the soft link destination.
+        deps: List of dependencies for the asset.
+        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
+        platforms: List of platforms to add the archive to.
     """
     checkout.add_soft_link_asset(
         rule = {
@@ -280,10 +286,10 @@ def checkout_add_target(
     Adds a target to the workspace.
 
     Args:
-        name (str): The name of the rule.
-        deps (list): List of dependencies for the target.
-        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
-        platforms (list): List of platforms to build the target for (default is all).
+        name: The name of the rule.
+        deps: List of dependencies for the target.
+        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
+        platforms: List of platforms to build the target for (default is all).
     """
     checkout.add_target(
         rule = {
@@ -302,11 +308,13 @@ def checkout_add_platform_archive(
     """
     Adds a platform archive to the checkout.
 
+    Platform archives are used to add binary tools based on the host platform.
+
     Args:
-        name (str): The name of the rule.
-        platforms (list): List of platforms to add the archive to.
-        deps (list): List of dependencies for the rule.
-        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
+        name: The name of the rule.
+        platforms: List of platforms to add the archive to.
+        deps: List of dependencies for the rule.
+        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
     """
     checkout.add_platform_archive(
         rule = {"name": name, "type": type, "deps": deps},
@@ -325,15 +333,19 @@ def checkout_update_env(
     """
     Updates the environment with the given variables and paths.
 
+    Variables other than PATH are added as a hash map. PATH is added as a list of values. The order
+    of the PATHS is based on execution order which can be controlled using deps. The `system_paths`
+    are added after the `paths` values.
+
     Args:
-        name (str): The name of the rule.
-        vars (dict): Dictionary of environment variables to set.
-        paths (list): List of paths to add to the PATH.
-        system_paths (str): The path to add to the system PATH.
-        inherited_vars (list): List of environment variables to inherit from the calling environment.
-        deps (list): List of dependencies for the rule.
-        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
-        platforms (list): List of platforms to add the archive to.
+        name: The name of the rule.
+        vars: Dictionary of environment variables to set.
+        paths: List of paths to add to the PATH.
+        system_paths: The path to add to the system PATH.
+        inherited_vars: List of environment variables to inherit from the calling environment.
+        deps: List of dependencies for the rule.
+        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
+        platforms: List of platforms to add the archive to.
     """
 
     effective_inherited_vars = {"inherited_vars": inherited_vars} if inherited_vars != None else {}
@@ -362,13 +374,15 @@ def checkout_add_which_asset(
     """
     Adds an asset to the destintion based on the which command.
 
+    Using this function creates system dependencies that may not be reproducible across different systems.
+
     Args:
-        name (str): The name of the rule.
-        which (str): The name of the asset to add.
-        destination (str): The destination path for the asset.
-        deps (list): List of dependencies for the asset.
-        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
-        platforms (list): List of platforms to add the archive to.
+        name: The name of the rule.
+        which: The name of the asset to add.
+        destination: The destination path for the asset.
+        deps: List of dependencies for the asset.
+        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
+        platforms: List of platforms to add the archive to.
     """
 
     checkout.add_which_asset(
@@ -394,17 +408,19 @@ def checkout_add_capsule(
         platforms = None,
         type = None):
     """
-    Adds a capsule dependency to the workspace.
+    Adds a capsule dependency to the workspace (deprecated).
+
+    This built-in is deprecated and will be removed.
 
     Args:
-        name (str): The name of the rule.
-        scripts (list): List of scripts to run that define how to install the capsule on the local machine.
-        prefix (str): The workspace prefix where capsule artifacts should be hard-linked. Default is not hard-linking
-        globs (list): List of globs to include/exclude.
-        deps (list): List of dependencies for creating the capsule.
-        descriptor (dict): domain, owner, repo
-        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
-        platforms (list): List of platforms to add the archive to.
+        name: The name of the rule.
+        scripts: List of scripts to run that define how to install the capsule on the local machine.
+        prefix: The workspace prefix where capsule artifacts should be hard-linked. Default is not hard-linking
+        globs: List of globs to include/exclude.
+        deps: List of dependencies for creating the capsule.
+        descriptor: domain, owner, repo
+        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
+        platforms: List of platforms to add the archive to.
     """
 
     checkout.add_capsule(
@@ -429,8 +445,8 @@ def update_platforms_prefix(
     Updates the prefix of the platforms.
 
     Args:
-        platforms (list): List of platforms to update.
-        add_prefix (str): The prefix to set.
+        platforms: List of platforms to update.
+        add_prefix: The prefix to set.
 
     Returns:
         An updated list of platforms.
@@ -460,17 +476,17 @@ def checkout_add_oras_archive(
     Adds an oras archive to the workspace.
 
     Args:
-        name (str): The name of the rule.
-        url (str): The URL of the oras archive to download.
-        artifact (str): The artifact name of the oras archive.
-        tag (str): The tag of the oras archive.
-        add_prefix (str): The prefix to add to the archive.
-        manifest_digest_path (str): The path to the manifest digest in the oras archive.
-        manifest_artifact_path (str): The path to the manifest artifact in the oras archive.
-        globs (list): List of globs to include/exclude.
-        deps (list): List of dependencies for the rule.
-        type (str): CHECKOUT_TYPE_OPTIONAL to make the rule optional (must be trigger by another rule to execute).
-        platforms (list): List of platforms to add the archive to.
+        name: The name of the rule.
+        url: The URL of the oras archive to download.
+        artifact: The artifact name of the oras archive.
+        tag: The tag of the oras archive.
+        add_prefix: The prefix to add to the archive.
+        manifest_digest_path: The path to the manifest digest in the oras archive.
+        manifest_artifact_path: The path to the manifest artifact in the oras archive.
+        globs: List of globs to include/exclude.
+        deps: List of dependencies for the rule.
+        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
+        platforms: List of platforms to add the archive to.
     """
 
     checkout.add_oras_archive(

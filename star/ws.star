@@ -45,6 +45,8 @@ def workspace_get_cpu_count():
     """
     Get the number of CPUs available
 
+    Use info_get_cpu_count(). This will be removed in a future release.
+
     Returns:
         The number of CPUs available
     """

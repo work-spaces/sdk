@@ -7,6 +7,9 @@ def script_print(message):
     """
     Print a message
 
+    This is for debugging purposes only. It is not recommended to use this
+    function for normal output.
+
     Args:
         message: The message to print
     """

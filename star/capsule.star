@@ -169,15 +169,15 @@ def capsule_declare(
         owner: The owner of the capsule
         repo: The repo of the capsule
         version: The version of the capsule
-        capsule_deps: The dependencies of the capsule (as returned by capsule_declare())
+        capsule_deps: The dependencies of the capsule (as returned by another call to capsule_declare())
         source_directory: location of the source directory (default is infer from domain/org/repo)
         rev: The revision of the source code
         archive_suffix: The suffix of the archive
         install_path: The install path of the capsule
         oras_url: The oras url of the capsule
         gh_deploy_repo: The github deploy repo of the capsule
-        is_use_source: Whether to use the source code
-        platform_name: None to use the host platform name
+        is_use_source: Whether to use the source code or check for a binary release
+        platform_name: Platform name of the capsule (default is infer from the host platform)
 
     Returns:
         dict: The capsule
@@ -213,7 +213,7 @@ def _add_checkout_oras(capsule):
     If the release is not available None is returned. Otherwise, a platform archive dictionary is returned.
 
     Args:
-        capsule: return value of capsule()
+        capsule: return value of capsule_declare()
 
     Returns:
         dict: with the platform and the url to download the gh executable
@@ -259,7 +259,7 @@ def _add_checkout_gh(capsule):
     If the release is not available None is returned. Otherwise, a platform archive dictionary is returned.
 
     Args:
-        capsule: return value of capsule()
+        capsule: return value of capsule_declare()
 
     Returns:
         str: the name of checkout rule for the platform archive
@@ -344,7 +344,7 @@ def capsule_get_run_name(capsule):
     Dependents should depend on this rule to build the capsule.
 
     Args:
-        capsule: return value of capsule()
+        capsule: return value of capsule_declare()
     Returns:
         str: the name of the run rule
     """
@@ -352,27 +352,23 @@ def capsule_get_run_name(capsule):
 
 def capsule_get_publish_name(capsule):
     """
-    Gets the name of the run rule associated with this capsule.
-
-    Dependents should depend on this rule to build the capsule.
+    Gets the name of the publish rule associated with this capsule.
 
     Args:
-        capsule: return value of capsule()
+        capsule: return value of capsule_declare()
     Returns:
-        str: the name of the run rule
+        str: the name of the publish rule
     """
     return capsule_get_rule_name(capsule, "publish")
 
 def capsule_get_workspace_path(capsule):
     """
-    Gets the name of the run rule associated with this capsule.
-
-    Dependents should depend on this rule to build the capsule.
+    Gets the workspace path to the capsule.
 
     Args:
-        capsule: return value of capsule()
+        capsule: return value of capsule_declare()
     Returns:
-        str: the name of the run rule
+        str: the workspace path to the capsule
     """
     return _get_option(capsule, _OPTION_SOURCE_DIRECTORY)
 
@@ -381,11 +377,11 @@ def capsule_get_checkout_type(capsule, run_name):
     This will either download pre-built binaries matching the capsule or checkout the source to build the capsule.
 
     Args:
-        capsule: return value of capsule()
+        capsule: return value of capsule_declare()
         run_name: the name of the optional run target to activate if pre-built binaries are not available
 
     Returns:
-        The name of the run target that dependents should use to build from source or use the pre-built binaries
+        CHECKOUT_TYPE_OPTIONAL if the binary was downloaded
     """
 
     ORAL_URL = _get_option(capsule, _OPTION_ORAS_URL)
@@ -478,7 +474,7 @@ def capsule_publish(
     Relocate the capsule and publish to github.
 
     Args:
-        capsule: return value of capsule()
+        capsule: return value of capsule_declare()
         deps: The dependencies of the capsule
     """
 
@@ -508,7 +504,7 @@ def capsule_publish_add_run_target(capsule, run_name):
     Add the checkout and run if the install path does not exist
 
     Args:
-        capsule: return value of capsule()
+        capsule: return value of capsule_declare()
         run_name: The run rule that will build and install (not publish) the target
     """
 
@@ -525,7 +521,7 @@ def capsule_get_deps(capsule):
     The deps must all be declared in the same spaces file.
 
     Args:
-        capsule: return value of capsule()
+        capsule: return value of capsule_declare()
 
     Returns:
         list: The dependencies of the capsule
@@ -542,7 +538,7 @@ def capsule_get_prefix_paths(capsule):
     Get the prefix paths of the capsule dependencies.
 
     Args:
-        capsule: return value of capsule()
+        capsule: return value of capsule_declare()
 
     Returns:
         list: The prefix paths of the capsule dependencies. This can be used by cmake targets to find the dependencies.

@@ -18,15 +18,15 @@ def cp(
     Copy a file or directory from source to destination.
 
     Args:
-        name (str): The name of the function.
-        source (str): The source file or directory.
-        destination (str): The destination file or directory.
-        options (list): The options for the copy command.
-        deps (list): The dependencies for the copy command.
-        type (str): The type of the command.
-        inputs (list): The inputs for the command.
-        working_directory (str): The working directory for the command.
-        expect (str): Success | Failure
+        name: The name of the rule.
+        source: The source file or directory.
+        destination: The destination file or directory.
+        options: The options for the copy command.
+        deps: The dependencies for the copy command.
+        type: The type of the command.
+        inputs: The inputs for the command.
+        working_directory: The working directory for the command.
+        expect: Success | Failure
     """
 
     run_add_exec(
@@ -53,14 +53,14 @@ def mv(
     Rename a file or directory from source to destination.
 
     Args:
-        name (str): The name of the function.
-        source (str): The source file or directory.
-        destination (str): The destination file or directory.
-        options (list): The options for the copy command.
-        deps (list): The dependencies for the copy command.
-        type (str): The type of the command.
-        working_directory (str): The working directory for the command.
-        expect (str): Success | Failure
+        name: The name of the rule.
+        source: The source file or directory.
+        destination: The destination file or directory.
+        options: The options for the copy command.
+        deps: The dependencies for the copy command.
+        type: The type of the command.
+        working_directory: The working directory for the command.
+        expect: Success | Failure
     """
 
     run_add_exec(
@@ -86,14 +86,14 @@ def ln(
     Create a link from source to destination.
 
     Args:
-        name (str): The name of the function.
-        source (str): The source file or directory.
-        destination (str): destination or target (to be created).
-        options (list): The options for the copy command.
-        deps (list): The dependencies for the copy command.
-        type (str): The type of the command.
-        working_directory (str): The working directory for the command.
-        expect (str): Success | Failure
+        name: The name of the rule.
+        source: The source file or directory.
+        destination: destination or target (to be created).
+        options: The options for the copy command.
+        deps: The dependencies for the copy command.
+        type: The type of the command.
+        working_directory: The working directory for the command.
+        expect: Success | Failure
     """
 
     run_add_exec(
@@ -118,13 +118,13 @@ def ls(
     Run ls (this can be handy for checking if something exists).
 
     Args:
-        name (str): The name of the function.
-        path (str): The source file or directory.
-        options (list): The options for the copy command.
-        deps (list): The dependencies for the copy command.
-        type (str): The type of the command.
-        working_directory (str): The working directory for the command.
-        expect (str): Success | Failure
+        name: The name of the rule.
+        path: The directory to list.
+        options: The options for the copy command.
+        deps: The dependencies for the copy command.
+        type: The type of the command.
+        working_directory: The working directory for the command.
+        expect: Success | Failure
     """
 
     run_add_exec(
@@ -149,13 +149,13 @@ def mkdir(
     Create a new directory.
 
     Args:
-        name (str): The name of the function.
-        path (str): The source file or directory.
-        options (list): The options for the copy command.
-        deps (list): The dependencies for the copy command.
-        type (str): The type of the command.
-        working_directory (str): The working directory for the command.
-        expect (str): Success | Failure
+        name: The name of the rule.
+        path: The source file or directory.
+        options: The options for the copy command.
+        deps: The dependencies for the copy command.
+        type: The type of the command.
+        working_directory: The working directory for the command.
+        expect: Success | Failure
     """
 
     run_add_exec(
@@ -180,13 +180,13 @@ def chmod(
     Changes the mode of a file or directory.
 
     Args:
-        name (str): The name of the function.
-        mode (str): The source file or directory.
-        path (list): The options for the copy command.
-        deps (list): The dependencies for the copy command.
-        type (str): The type of the command.
-        working_directory (str): The working directory for the command.
-        expect (str): Success | Failure
+        name: The name of the rule.
+        mode: The source file or directory.
+        path: The options for the copy command.
+        deps: The dependencies for the copy command.
+        type: The type of the command.
+        working_directory: The working directory for the command.
+        expect: Success | Failure
     """
 
     run_add_exec(
@@ -212,11 +212,11 @@ def shell(
     Execute a string as a shell script
 
     Args:
-        name (str): name of the rule
-        script (str): text of the script to run
-        shell (str): shell to use (default is bash)
-        options (str): options to pass before script default is '-c'
-        expect (str): Success or Failure
+        name: name of the rule
+        script: text of the script to run
+        shell: shell to use (default is bash)
+        options: options to pass before script default is '-c'
+        expect: Success or Failure
         type: Optional or All (default is Optional)
         working_directory: workspace working directory (default is workspace root)
         deps: rule dependencies
