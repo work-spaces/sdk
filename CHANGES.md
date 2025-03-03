@@ -1,5 +1,9 @@
 # Changes
 
+## v0.3.5
+
+- See [Milestone](https://github.com/work-spaces/sdk/milestone/3?closed=1)
+
 ## v0.3.4
 
 - See [Milestone](https://github.com/work-spaces/sdk/milestone/1?closed=1)
@@ -51,7 +55,7 @@
 ## Developer Notes
 
 ```sh
-export VERSION=0.3.4
+export VERSION=0.3.5
 git tag -a v$VERSION -m "Update version"
 git push origin tag v$VERSION
 ```
