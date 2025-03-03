@@ -41,18 +41,18 @@ def run_add_exec_setup(
     Adds a command as a setup rule. It will run only once and all run rules will depend on it.
 
     Args:
-        name (str): The name of the rule.
-        command (str): The name of the rule.
-        help (str): The help message for the rule.
-        args (str): The git repository URL to clone
-        deps (str): The branch or commit hash to checkout
-        env (dict): key value pairs of environment variables
-        working_directory (str): The branch or commit hash to checkout
-        platforms (list): Platforms to run on (default is all).
-        log_level (str): The log level to use None|App
-        redirect_stdout: The file to redirect stdout to.
+        name: The name of the rule.
+        command: The command to execute.
+        help: The help message for the rule.
+        args: The arguments to pass to the command
+        deps: The rule dependencies
+        env: key value pairs of environment variables
+        working_directory: The directory to run the command (default is workspace root).
+        platforms: Platforms to run on (default is all).
+        log_level: The log level to use None|App
+        redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
-        expect (str): The expected result of the command Success|Failure|Any. (default is Success)
+        expect: The expected result of the command Success|Failure|Any. (default is Success)
     """
 
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
@@ -96,19 +96,19 @@ def run_add_exec(
     Adds a command to the run dependency graph
 
     Args:
-        name (str): The name of the rule.
-        command (str): The name of the rule.
-        help (str): The help message for the rule.
-        args (str): The git repository URL to clone
-        type (str): The exec type ("Run"| "Setup" | "Optional")
-        deps (str): The branch or commit hash to checkout
-        inputs (list): List of globs to specify the inputs
-        env (dict): key value pairs of environment variables
-        working_directory (str): The branch or commit hash to checkout
-        platforms (list): Platforms to run on (default is all).
-        log_level (str): The log level to use None|App
-        expect (str): The expected result of the command Success|Failure|Any. (default is Success)
-        redirect_stdout: The file to redirect stdout to.
+        name: The name of the rule.
+        command: The command to execute.
+        help: The help message for the rule.
+        args: The arguments to pass to the command.
+        type: The exec type ("Run"| "Setup" | "Optional")
+        deps: The rule dependencies that must be run before this command
+        inputs: List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
+        env: key value pairs of environment variables
+        working_directory: The directory to run the command (default is workspace root).
+        platforms: Platforms to run on (default is all).
+        log_level: The log level to use None|App
+        expect: The expected result of the command Success|Failure|Any. (default is Success)
+        redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
     """
 
@@ -148,14 +148,14 @@ def run_add_kill_exec(
     Adds a target that will send a signal to another target.
 
     Args:
-        name (str): The name of the rule.
-        target (str): The name of the rule to kill.
-        signal (str): The signal to send to the target.
-        help (str): The help message for the rule.
-        expect (str): The expected result of the kill. (default is Success)
-        deps (str): Run rule dependencies.
-        type (str): The exec type ("Run"| "Setup" | "Optional")
-        platforms (list): Platforms to run on (default is all).
+        name: The name of the rule.
+        target: The name of the rule to kill.
+        signal: The signal to send to the target.
+        help: The help message for the rule.
+        expect: The expected result of the kill. (default is Success)
+        deps: Run rule dependencies.
+        type: The exec type ("Run"| "Setup" | "Optional")
+        platforms: Platforms to run on (default is all).
     """
 
     EFFECTIVE_TYPE = type if type != None else "Optional"
@@ -185,14 +185,14 @@ def run_add_target(
     """
     Adds a target to the workspace.
 
-    This rule can be used to consilidate dependencies into a single target.
+    This rule can be used to consolidate dependencies into a single target.
 
     Args:
-        name (str): The name of the rule.
-        deps (list): List of dependencies for the target.
-        platforms (list): List of platforms to build the target for (default is all).
-        type (str): The exec type ("Run"| "Setup" | "Optional")
-        help (str): The help message for the rule.
+        name: The name of the rule.
+        deps: List of dependencies for the target.
+        platforms: List of platforms to build the target for (default is all).
+        type: The exec type ("Run"| "Setup" | "Optional")
+        help: The help message for the rule.
     """
     run.add_target(
         rule = {
@@ -208,13 +208,13 @@ def run_add_to_all(
         name,
         deps):
     """
-    Adds the dependencies to name and to the phantom all target.
+    Creates a target rule called name with deps and part of `:all`.
 
     Targets will run with `spaces run`.
 
     Args:
-        name (str): The name of the rule.
-        deps (list): List of dependencies to run with `spaces run`
+        name: The name of the rule.
+        deps: List of dependencies to run with `spaces run`
     """
 
     run_add_target(name, deps, type = RUN_TYPE_ALL)
