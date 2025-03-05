@@ -398,46 +398,6 @@ def checkout_add_which_asset(
         },
     )
 
-def checkout_add_capsule(
-        name,
-        scripts,
-        descriptor,
-        prefix = None,
-        globs = None,
-        deps = [],
-        platforms = None,
-        type = None):
-    """
-    Adds a capsule dependency to the workspace (deprecated).
-
-    This built-in is deprecated and will be removed.
-
-    Args:
-        name: The name of the rule.
-        scripts: List of scripts to run that define how to install the capsule on the local machine.
-        prefix: The workspace prefix where capsule artifacts should be hard-linked. Default is not hard-linking
-        globs: List of globs to include/exclude.
-        deps: List of dependencies for creating the capsule.
-        descriptor: domain, owner, repo
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
-        platforms: List of platforms to add the archive to.
-    """
-
-    checkout.add_capsule(
-        rule = {
-            "name": name,
-            "deps": deps,
-            "platforms": platforms,
-            "type": type,
-        },
-        capsule = {
-            "scripts": scripts,
-            "prefix": prefix,
-            "globs": globs,
-            "descriptor": descriptor,
-        },
-    )
-
 def update_platforms_prefix(
         platforms,
         add_prefix):
