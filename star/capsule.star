@@ -113,6 +113,16 @@ def _to_name(capsule):
     )
 
 def capsule_get_rule_name(capsule, suffix):
+    """
+    Get the rule name for the capsule.
+
+    Args:
+        capsule: return value of capsule_declare()
+        suffix: The suffix to append to the rule name
+
+    Returns:
+        `str`: The rule name
+    """
     return "{}_{}".format(_to_name(capsule), suffix)
 
 def _to_oras_artifact(capsule):
@@ -127,24 +137,87 @@ def _to_oras_label(capsule):
     return "{}/{}:{}".format(URL, ORAS_ARTIFACT, VERSION)
 
 def capsule_get_domain(capsule):
+    """
+    Get the domain of the capsule.
+
+    Args:
+        capsule: return value of [capsule_declare()](#capsule_declare)
+    
+    Returns:
+        `str`: The domain of the capsule
+    """
     return capsule[_DESCRIPTOR][_DOMAIN]
 
 def capsule_get_owner(capsule):
+    """
+    Get the owner of the capsule.
+
+    Args:
+        capsule: return value of [capsule_declare()](#capsule_declare)
+    
+    Returns:
+        `str`: The owner of the capsule
+    """
     return capsule[_DESCRIPTOR][_OWNER]
 
 def capsule_get_repo(capsule):
+    """
+    Get the repo of the capsule.
+
+    Args:
+        capsule: return value of [capsule_declare()](#capsule_declare)
+    
+    Returns:
+        `str`: The repo of the capsule
+    """
     return capsule[_DESCRIPTOR][_REPO]
 
 def capsule_get_version(capsule):
+    """
+    Get the version of the capsule.
+
+    Args:
+        capsule: return value of [capsule_declare()](#capsule_declare)
+
+    Returns:
+        `str`: The version of the capsule
+    """
     return _get_option(capsule, _OPTION_VERSION)
 
 def capsule_get_install_path(capsule):
+    """
+    Get the install path of the capsule.
+
+    Args:
+        capsule: return value of [capsule_declare()](#capsule_declare)
+
+    Returns:
+        `str`: The install path of the capsule
+    """
     return _get_option(capsule, _OPTION_INSTALL_PATH)
 
 def capsule_get_build_path(capsule):
+    """
+    Get the build path of the capsule.
+
+    Args:
+        capsule: return value of [capsule_declare()](#capsule_declare)
+    
+    Returns:
+        `str` The build path of the capsule
+    """
     return "build/{}".format(_to_name(capsule))
 
 def capsule_can_publish(capsule):
+    """
+    Check if the capsule can be published.
+
+    Args:
+        capsule: return value of [capsule_declare()](#capsule_declare)
+
+    Returns:
+        `bool` True if the capsule can be published
+    """
     return _get_option(capsule, _OPTION_ORAS_URL) != None or _get_option(capsule, _OPTION_GH_DEPLOY_REPO) != None
 
 def capsule_declare(
@@ -165,22 +238,22 @@ def capsule_declare(
     Declare a capsule.
 
     Args:
-        domain: The domain of the capsule
-        owner: The owner of the capsule
-        repo: The repo of the capsule
-        version: The version of the capsule
-        capsule_deps: The dependencies of the capsule (as returned by another call to capsule_declare())
-        source_directory: location of the source directory (default is infer from domain/org/repo)
-        rev: The revision of the source code
-        archive_suffix: The suffix of the archive
-        install_path: The install path of the capsule
-        oras_url: The oras url of the capsule
-        gh_deploy_repo: The github deploy repo of the capsule
-        is_use_source: Whether to use the source code or check for a binary release
-        platform_name: Platform name of the capsule (default is infer from the host platform)
+        domain: `str` The domain of the capsule
+        owner:`str`  The owner of the capsule
+        repo: `str` The repo of the capsule
+        version: `str` The version of the capsule
+        capsule_deps: `[dict]` The dependencies of the capsule (as returned by another call to capsule_declare())
+        source_directory: `str` location of the source directory (default is infer from domain/org/repo)
+        rev: `str` The revision of the source code. If empty, the value is version with a `v` prefixed.
+        archive_suffix: `str` The suffix of the archive
+        install_path: `str` The install path of the capsule
+        oras_url: `str` The oras url of the capsule (None to deploy to gh releases)
+        gh_deploy_repo: `str` The github deploy repo of the capsule (None to skip deployment).
+        is_use_source: `bool` Whether to use the source code or check for a binary release
+        platform_name: `str` Platform name of the capsule (default is infer from the host platform)
 
     Returns:
-        dict: The capsule
+        `dict` The capsule definition
     """
 
     EFFECTIVE_REV = rev if rev != None else "v{}".format(version)

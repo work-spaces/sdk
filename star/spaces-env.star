@@ -11,10 +11,12 @@ load("ws.star", "workspace_get_absolute_path")
 
 def spaces_working_env(add_spaces_to_sysroot = False):
     """
-    Sets the spaces working env which provides /usr/bin and /bin in the PATH so that the user can run system commands.
+    Sets the spaces working env which provides `/usr/bin` and `/bin` in the `PATH` so that the user can run system commands.
+
+    Adding this checkout rule also inherits `HOME` and adds `(spaces)` to the prompt when using `source ./env`.
 
     Args:
-        add_spaces_to_sysroot (bool): If True, adds the spaces binary to the sysroot/bin directory.
+        add_spaces_to_sysroot: `bool` If True, adds the spaces binary to the sysroot/bin directory.
 
     Returns:
         The name of the rule.

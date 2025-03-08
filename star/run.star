@@ -24,6 +24,137 @@ RUN_SIGNAL_TERMINATE = "Terminate"
 RUN_SIGNAL_USER1 = "User1"
 RUN_SIGNAL_USER2 = "User2"
 
+# Provide thin wrapper for constants so that they can have docstrings
+def run_inputs_once():
+    """
+    Assign `inputs` to `[]` to run the command once.
+
+    Returns:
+        list: []
+    """
+    return RUN_INPUTS_ONCE
+
+def run_inputs_always():
+    """
+    Assign `inputs` to `None` to run the command every time.
+
+    Returns:
+        None
+    """
+    return RUN_INPUTS_ALWAYS
+
+def run_type_all():
+    """
+    Assign `type` to `Run` to run the command with `spaces run`.
+
+    The rules marked as `Run` are part of the `//:all` target.
+
+    ```sh
+    spaces run //:all
+    ```
+
+    Returns:
+        str: "Run"
+    """
+    return RUN_TYPE_ALL
+
+def run_log_level_app():
+    """
+    Print the output of the run rule while running spaces
+
+    Returns:
+        str: "App"
+    """
+    return RUN_LOG_LEVEL_APP
+
+def run_expect_success():
+    """
+    Expect the command to succeed
+
+    Returns:
+        str: "Success"
+    """
+    return RUN_EXPECT_SUCCESS
+
+def run_expect_failure():
+    """
+    Expect the command to fail.
+
+    If the command fails and is expected to fail, spaces exits successfully.
+
+    Returns:
+        str: "Failure"
+    """
+    return RUN_EXPECT_FAILURE
+
+def run_expect_any():
+    """
+    Expect the command to succeed or fail.
+
+    `spaces` exits successfully if the command succeeds or fails.
+
+    Returns:
+        str: "Any"
+    """
+    return RUN_EXPECT_ANY
+
+
+
+
+def run_signal_hup():
+    """
+    Gets the Hangup signal
+    """
+    return RUN_SIGNAL_HUP
+
+def run_signal_int():
+    """
+    Gets the Interrupt signal
+    """
+    return RUN_SIGNAL_INT
+
+def run_signal_quit():
+    """
+    Gets the Quit signal
+    """
+    return RUN_SIGNAL_QUIT
+
+def run_signal_abort():
+    """
+    Gets the Abort signal
+    """
+    return RUN_SIGNAL_ABORT
+
+def run_signal_kill():
+    """
+    Gets the Kill signal
+    """
+    return RUN_SIGNAL_KILL
+
+def run_signal_alarm():
+    """
+    Gets the Alarm signal
+    """
+    return RUN_SIGNAL_ALARM
+
+def run_signal_terminate():
+    """
+    Gets the Terminate signal
+    """
+    return RUN_SIGNAL_TERMINATE
+
+def run_signal_user1():
+    """
+    Gets the User1 signal
+    """
+    return RUN_SIGNAL_USER1
+
+def run_signal_user2():
+    """
+    Gets the User2 signal
+    """
+    return RUN_SIGNAL_USER2
+
 def run_add_exec_setup(
         name,
         command,
@@ -39,6 +170,12 @@ def run_add_exec_setup(
         expect = RUN_EXPECT_SUCCESS):
     """
     Adds a command as a setup rule. It will run only once and all run rules will depend on it.
+
+    All setup rules can be executed with:
+
+    ```sh
+    spaces run //:setup
+    ```
 
     Args:
         name: The name of the rule.

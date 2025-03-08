@@ -1,6 +1,5 @@
 """
 Script wrappers for built-ins
-
 """
 
 def script_print(message):

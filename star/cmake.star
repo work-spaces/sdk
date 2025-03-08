@@ -155,7 +155,7 @@ def cmake_add_repo(
         checkout_submodules: Whether to checkout submodules
         relative_source_directory: The directory of the project (default is the name)
         clone: The clone type (Worktree, Blobless, Shallow, Default)
-        checkout_type: Use CHECKOUT_TYPE_OPTIONAL to make the checkout optional
+        checkout_type: `str` use [checkout_type_optional()](#/docs/@star/sdk/star/checkout#checkout_type_optional) to skip rule checkout
         skip_install: Skip the install step
         deps: The dependencies of the project
     """
@@ -211,17 +211,17 @@ def cmake_add_source_archive(
     Add a CMake project to the build
 
     Args:
-        name: The name of the project
-        url: The URL of the source archive
-        sha256: The SHA256 of the source archive
-        source_directory: The directory of the project
-        filename: The filename of the source archive
-        install_path: The path to install the project
-        configure_args: The arguments to pass to the configure script
-        build_args: The arguments to pass to the build command
-        build_artifact_globs: The globs to match when installing build artifacts
-        deps: The dependencies of the project
-        checkout_type: Use CHECKOUT_TYPE_OPTIONAL to make the checkout optional
+        name: `str` The name of the project
+        url: `str` The URL of the source archive
+        sha256: `str` The SHA256 of the source archive
+        source_directory: `str` The directory of the project
+        filename: `str` The filename of the source archive
+        install_path: `str` The path to install the project
+        configure_args: `[str]` The arguments to pass to the configure script
+        build_args: `[str]` The arguments to pass to the build command
+        build_artifact_globs: `[str]` The globs to match when installing build artifacts
+        deps: `[str]` List of dependencies of the project
+        checkout_type: `str` use [checkout_type_optional()](#/docs/@star/sdk/star/checkout#checkout_type_optional) to skip rule checkout
         skip_install: Skip the install step
     """
 
