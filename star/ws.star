@@ -13,7 +13,7 @@ def workspace_get_absolute_path():
     Get the absolute path to the workspace
 
     Returns:
-        The absolute path to the workspace
+        `str` The absolute path to the workspace
     """
     return workspace.get_absolute_path()
 
@@ -22,7 +22,7 @@ def workspace_get_path_to_checkout():
     Get the path in the workspace where the current module is located
 
     Returns:
-        The path to the checked out repo or archive
+        `str` The path to the checked out repo or archive
     """
     return workspace.get_path_to_checkout()
 
@@ -33,10 +33,10 @@ def workspace_get_path_to_log_file(name):
     The log file location changes on every run.
 
     Args:
-        name: The name of the rule
+        name: `str` The name of the rule
 
     Returns:
-        The relative workspace path to the log file
+        `str` The relative workspace path to the log file
     """
 
     return workspace.get_path_to_log_file(name)
@@ -48,7 +48,7 @@ def workspace_get_cpu_count():
     Use info_get_cpu_count(). This will be removed in a future release.
 
     Returns:
-        The number of CPUs available
+        `int` The number of CPUs available
     """
     return workspace.get_cpu_count()
 
@@ -57,10 +57,10 @@ def workspace_get_env_var(name):
     Get the value of an environment variable
 
     Args:
-        name: The name of the environment variable
+        name:`str`  The name of the environment variable
 
     Returns:
-        The value of the environment variable
+        `str` The value of the environment variable
     """
     return workspace.get_env_var(name)
 
@@ -69,10 +69,10 @@ def workspace_is_env_var_set(name):
     Check if an environment variable is set
 
     Args:
-        name: The name of the environment variable
+        name: `str` The name of the environment variable
 
     Returns:
-        True if the environment variable is set, False otherwise
+        `bool` True if the environment variable is set, False otherwise
     """
     return workspace.is_env_var_set(name)
 
@@ -84,7 +84,7 @@ def workspace_is_reproducible():
     Use a lock file (see `--create-lock-file`) to ensure reproducibility.
 
     Returns:
-        True if the workspace is reproducible, False otherwise
+        `bool` True if the workspace is reproducible, False otherwise
     """
     return workspace.is_reproducible()
 
@@ -127,11 +127,11 @@ def workspace_get_path_to_member_with_semver(
     or pulled from the git rev (tag).
 
     Args:
-        url: The url of the workspace member
-        semver: The semver requiement assuming the member has a version
+        url: `str` The url of the workspace member
+        semver: `str` The semver requiement assuming the member has a version
 
     Returns:
-        The path to the workspace member.
+        `bool` The path to the workspace member.
     """
     return _get_path_to_member(
         url = url,
@@ -147,11 +147,11 @@ def workspace_get_path_to_member_with_rev(
     If the the specified requirement is not found, the program will exit with an error.
 
     Args:
-        url: The url of the workspace member
-        rev: the git or sha256 hash
+        url: `str` The url of the workspace member
+        rev: `str` the git or sha256 hash
 
     Returns:
-        The path to the workspace member.
+        `str` The path to the workspace member.
     """
     return _get_path_to_member(
         url = url,
@@ -163,11 +163,11 @@ def workspace_check_member_semver(url, semver):
     Checks if the workspace satifies a requirement
 
     Args:
-        url: The url of the workspace member
-        semver: The semver requiement assuming the member has a version
+        url: `str` The url of the workspace member
+        semver: `str` The semver requiement assuming the member has a version
 
     Returns:
-        True if the workspace member is found satisfying semver, False otherwise
+        `bool` True if the workspace member is found satisfying semver, False otherwise
     """
 
     return _is_path_to_member_available(url, rev = None, semver = semver)
@@ -177,11 +177,8 @@ def workspace_assert_member_semver(url, semver):
     Fails if the workspace does not satifies a requirement
 
     Args:
-        url: The url of the workspace member
-        semver: The semver requiement assuming the member has a version
-
-    Returns:
-        True if the workspace member is found satisfying semver, False otherwise
+        url: `str` The url of the workspace member
+        semver: `str` The semver requiement assuming the member has a version
     """
 
     IS_AVAILABLE = _is_path_to_member_available(url, semver = semver)
@@ -193,11 +190,8 @@ def workspace_assert_member_revision(url, rev):
     Checks if the workspace satifies a requirement
 
     Args:
-        url: The url of the workspace member
-        rev: git/sha256 hash
-
-    Returns:
-        Aborts if the requirement is not satisfied
+        url: `str` The url of the workspace member
+        rev: `str` git/sha256 hash
     """
 
     IS_AVAILABLE = _is_path_to_member_available(url, rev = rev)
@@ -209,11 +203,11 @@ def workspace_check_member_revision(url, rev):
     Checks if the workspace satifies a requirement
 
     Args:
-        url: The url of the workspace member
-        rev: git/sha256 hash
+        url: `str` The url of the workspace member
+        rev: `str` git/sha256 hash
 
     Returns:
-        True if the workspace member is found at the specified rev, False otherwise
+        `bool` True if the workspace member is found at the specified rev, False otherwise
     """
 
     return _is_path_to_member_available(url, rev = rev)
@@ -223,8 +217,11 @@ def workspace_get_build_archive_info(name, archive):
     Gets the archive info the specified rule and archive
 
     Args:
-        name: rule name to get info for
-        archive: archive object containing details of how to create the archive
+        name: `str` rule name to get info for
+        archive: `str` archive object containing details of how to create the archive
+    
+    Returns:
+        `dict` The archive info
     """
     return workspace.get_build_archive_info(
         rule_name = name,

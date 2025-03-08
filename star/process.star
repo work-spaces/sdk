@@ -10,11 +10,24 @@ def process_exec(
     working_directory = None,
     stdin = None):
     """
-    Execute a command
+    Executes a command when the script is evaluated.
 
     The command executes during evaluation. It is not recommended to run
     functions when adding rules because evalation is skipped if none of the
     starlark files have changed.
+
+    Example:
+
+    ```python
+    process_exec(
+        "ls", 
+        args = ["-alt"],
+        working_directory = ".",
+        env = {
+            "PATH": "/usr/bin:/bin"
+        }
+    )
+    ```
 
     Args:
         command: The command to execute

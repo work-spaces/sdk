@@ -20,6 +20,80 @@ CHECKOUT_CLONE_SHALLOW = "Shallow" # The rev must be a branch not a tag or commi
 # This is the only supported value
 CHECKOUT_CLONE_TYPE_REVISION = "Revision"
 
+def checkout_type_optional():
+    """
+    Use `checkout_add_repo(type = checkout_type_optional())` to skip checkout 
+
+    Returns:
+        str: CHECKOUT_TYPE_OPTIONAL
+    """
+    return CHECKOUT_TYPE_OPTIONAL
+
+def checkout_type_default():
+    """
+    Use `checkout_add_repo(type = checkout_type_default())` to use default checkout behavior
+    
+    Returns:
+        None: CHECKOUT_TYPE_DEFAULT
+    """
+    return CHECKOUT_TYPE_DEFAULT
+
+def checkout_sparse_mode_cone():
+    """
+    Use `checkout_add_repo(sparse_mode = checkout_sparse_mode_cone())` for sparse cone mode.
+
+    Returns:
+        str: CHECKOUT_SPARSE_MODE_CONE
+    """
+    return CHECKOUT_SPARSE_MODE_CONE
+
+def checkout_sparse_mode_no_cone():
+    """
+    Use `checkout_add_repo(sparse_mode = checkout_sparse_mode_no_cone())` for sparse no-cone mode.
+    This mode uses gitignore-like expressions for sparse checkout.
+
+    Returns:
+        str: CHECKOUT_SPARSE_MODE_NO_CONE
+    """
+    return CHECKOUT_SPARSE_MODE_NO_CONE
+
+def checkout_clone_default():
+    """
+    Use `checkout_add_repo(clone = checkout_clone_default())` for a normal git clone.
+    
+    Returns:
+        str: CHECKOUT_CLONE_DEFAULT
+    """
+    return CHECKOUT_CLONE_DEFAULT
+
+def checkout_clone_worktree():
+    """
+    Use `checkout_add_repo(clone = checkout_clone_worktree())` to store the bare repository in the spaces store.
+    
+    Returns:
+        str: CHECKOUT_CLONE_WORKTREE
+    """
+    return CHECKOUT_CLONE_WORKTREE
+
+def checkout_clone_blobless():
+    """
+    Use `checkout_add_repo(clone = checkout_clone_blobless())` to filter unused files from the repository history.
+    
+    Returns:
+        str: CHECKOUT_CLONE_BLOBLESS
+    """
+    return CHECKOUT_CLONE_BLOBLESS
+
+def checkout_clone_shallow():
+    """
+    Use `checkout_add_repo(clone = checkout_clone_shallow())` for a shallow clone.
+    Note: The rev must be a branch, not a tag or commit.
+    
+    Returns:
+        str: CHECKOUT_CLONE_SHALLOW
+    """
+    return CHECKOUT_CLONE_SHALLOW
+
 def checkout_add_repo(
         name,
         url,
@@ -36,19 +110,34 @@ def checkout_add_repo(
     """
     Clones a repository and checks it out at a specific revision.
 
+    The for `clone=checkout_clone_default() | checkout_clone_blobless()`, the repo
+    is cloned first to the store and then copied to the workspace. If the filesystem
+    supports copy-on-write (COW) semantics, COW semantics are used to copy from the 
+    store to the workspace.
+
+    Example:
+
+    ```python
+    checkout_add_repo(
+        "spaces",
+        url = "https://github.com/work-spaces/spaces",
+        rev = "main"
+    )
+    ```
+
     Args:
-        name: The name of the rule.
-        url: The git repository URL to clone
-        rev: The branch or commit hash to checkout
-        checkout_type: Revision | NewBranch
-        clone: Default | Worktree
-        is_evaluate_spaces_modules: Whether to evaluate spaces.star files in the repo (default is True).
-        sparse_mode: Cone | NoCone
-        sparse_list: List of paths to include/exclude
-        deps: List of dependencies for the rule.
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
-        platforms: List of platforms to add the repo to.
-        working_directory: The working directory to clone the repository into.
+        name: `str` The name of the rule. This is also the location of the new repo in the workspace.
+        url: `str` The git repository URL to clone
+        rev: `str` The branch or commit hash to checkout
+        checkout_type: `enum` Revision
+        clone: `enum` [checkout_clone_default()](#checkout_clone_default) | [checkout_clone_blobless()](#checkout_clone_blobless) | [checkout_clone_worktree()](#checkout_clone_worktree)
+        is_evaluate_spaces_modules: `bool` Whether to evaluate spaces.star files in the repo (default is True).
+        sparse_mode: `enum` Cone | NoCone
+        sparse_list: `[str]` List of paths to include/exclude
+        deps: `[str]` List of dependencies for the rule.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: `[str]` List of platforms to add the repo to.
+        working_directory: `str` The working directory to clone the repository into.
     """
 
     EVALUATE_SPACES_MODULES = {
@@ -93,18 +182,18 @@ def checkout_add_archive(
     The archive is downloaded to the spaces store and hard-linked to the workspace.
 
     Args:
-        name: The name of the rule.
-        url: The URL of the archive to download.
-        sha256: The SHA256 checksum of the archive.
+        name: `str` The name of the rule.
+        url: `str` The URL of the archive to download.
+        sha256: `str` The SHA256 checksum of the archive.
         link: Hard | None
-        includes: List of globs to include.
-        excludes: List of globs to exclude.
-        strip_prefix: Prefix to strip from the archive.
-        add_prefix: Prefix to add to the archive.
-        filename: The filename if it isn't the last part of the URL
-        platforms: List of platforms to add the archive to.
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional
-        deps: List of dependencies for the rule.
+        includes: `[str]` List of globs to include.
+        excludes: `[str]` List of globs to exclude.
+        strip_prefix:`str` Prefix to strip from the archive.
+        add_prefix: `str` Prefix to add to the archive.
+        filename: `str` The filename if it isn't the last part of the URL
+        platforms: `[str]` List of platforms to add the archive to.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        deps: `[str]` List of dependencies for the rule.
     """
     checkout.add_archive(
         rule = {
@@ -138,12 +227,12 @@ def checkout_add_asset(
     This will create a file in the workspace with the given content as string value.
 
     Args:
-        name: The name of the rule.
-        content: The content of the file to create.
-        destination: The destination path for the file.
-        deps: List of dependencies for the rule.
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
-        platforms: List of platforms to add the archive to.
+        name: `str` The name of the rule.
+        content: `str` The content of the file to create.
+        destination: `str` The destination path for the file.
+        deps: `[str]` List of dependencies for the rule.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
     """
     checkout.add_asset(
         rule = {
@@ -176,9 +265,9 @@ def checkout_update_asset(
         destination: The destination path for the asset.
         format: The format of the asset (json | toml | yaml). Default will get extension from destination.
         value: The value of the asset as a dict to merge with the existing file.
-        deps: List of dependencies for the asset.
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
-        platforms: List of platforms to add the archive to.
+        deps: `[str]` List of dependencies for the asset.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
     """
 
     effective_format = format if format != None else destination.split(".")[-1]
@@ -209,9 +298,9 @@ def checkout_add_cargo_bin(
         crate: The name of the crate.
         version: The version of the crate.
         bins: List of binaries to add.
-        deps: List of dependencies for the rule.
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
-        platforms: List of platforms to add the archive to.
+        deps: `[str]` List of dependencies for the rule.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
     """
     checkout.add_cargo_bin(
         rule = {
@@ -237,9 +326,9 @@ def checkout_add_hard_link_asset(
         name: The name of the rule.
         source: The source path of the asset.
         destination: The destination path for the asset.
-        deps: List of dependencies for the asset.
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
-        platforms: List of platforms to add the archive to.
+        deps: `[str]` List of dependencies for the asset.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
     """
     checkout.add_hard_link_asset(
         rule = {
@@ -261,12 +350,12 @@ def checkout_add_soft_link_asset(
     Adds a soft link asset to the workspace.
 
     Args:
-        name: The name of the rule.
-        source: The source path of the soft link.
-        destination: The relative workspace path of the soft link destination.
-        deps: List of dependencies for the asset.
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
-        platforms: List of platforms to add the archive to.
+        name: `str` The name of the rule.
+        source: `str` The source path of the soft link.
+        destination: `str` The relative workspace path of the soft link destination.
+        deps: `[str]` List of dependencies for the asset.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
     """
     checkout.add_soft_link_asset(
         rule = {
@@ -286,10 +375,10 @@ def checkout_add_target(
     Adds a target to the workspace.
 
     Args:
-        name: The name of the rule.
-        deps: List of dependencies for the target.
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
-        platforms: List of platforms to build the target for (default is all).
+        name: `str` The name of the rule.
+        deps: `[str]` List of dependencies for the target.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
     """
     checkout.add_target(
         rule = {
@@ -311,10 +400,10 @@ def checkout_add_platform_archive(
     Platform archives are used to add binary tools based on the host platform.
 
     Args:
-        name: The name of the rule.
-        platforms: List of platforms to add the archive to.
-        deps: List of dependencies for the rule.
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
+        name: `str` The name of the rule.
+        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        deps: `[str]` List of dependencies for the rule.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
     """
     checkout.add_platform_archive(
         rule = {"name": name, "type": type, "deps": deps},
@@ -338,14 +427,14 @@ def checkout_update_env(
     are added after the `paths` values.
 
     Args:
-        name: The name of the rule.
-        vars: Dictionary of environment variables to set.
-        paths: List of paths to add to the PATH.
-        system_paths: The path to add to the system PATH.
+        name: `str` The name of the rule.
+        vars: `dict` Dictionary of environment variables to set.
+        paths: `[str]` List of paths to add to the PATH.
+        system_paths: `[str]` The path to add to the system PATH.
         inherited_vars: List of environment variables to inherit from the calling environment.
-        deps: List of dependencies for the rule.
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
-        platforms: List of platforms to add the archive to.
+        deps: `[str]` List of dependencies for the rule.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
     """
 
     effective_inherited_vars = {"inherited_vars": inherited_vars} if inherited_vars != None else {}
@@ -380,9 +469,9 @@ def checkout_add_which_asset(
         name: The name of the rule.
         which: The name of the asset to add.
         destination: The destination path for the asset.
-        deps: List of dependencies for the asset.
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
-        platforms: List of platforms to add the archive to.
+        deps: `[str]` List of dependencies for the asset.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
     """
 
     checkout.add_which_asset(
@@ -405,7 +494,7 @@ def update_platforms_prefix(
     Updates the prefix of the platforms.
 
     Args:
-        platforms: List of platforms to update.
+        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
         add_prefix: The prefix to set.
 
     Returns:
@@ -436,17 +525,17 @@ def checkout_add_oras_archive(
     Adds an oras archive to the workspace.
 
     Args:
-        name: The name of the rule.
-        url: The URL of the oras archive to download.
-        artifact: The artifact name of the oras archive.
-        tag: The tag of the oras archive.
-        add_prefix: The prefix to add to the archive.
-        manifest_digest_path: The path to the manifest digest in the oras archive.
-        manifest_artifact_path: The path to the manifest artifact in the oras archive.
+        name: `str` The name of the rule.
+        url: `str` The URL of the oras archive to download.
+        artifact: `str` The artifact name of the oras archive.
+        tag: `str` The tag of the oras archive.
+        add_prefix: `str` The prefix to add to the archive.
+        manifest_digest_path: `str` The path to the manifest digest in the oras archive.
+        manifest_artifact_path: `str` The path to the manifest artifact in the oras archive.
         globs: List of globs to include/exclude.
-        deps: List of dependencies for the rule.
-        type: CHECKOUT_TYPE_OPTIONAL to make the rule optional.
-        platforms: List of platforms to add the archive to.
+        deps: `[str]` List of dependencies for the rule.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
     """
 
     checkout.add_oras_archive(
