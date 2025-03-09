@@ -18,15 +18,15 @@ def cp(
     Copy a file or directory from source to destination.
 
     Args:
-        name: The name of the rule.
-        source: The source file or directory.
-        destination: The destination file or directory.
-        options: The options for the copy command.
-        deps: The dependencies for the copy command.
-        type: The type of the command.
-        inputs: The inputs for the command.
-        working_directory: The working directory for the command.
-        expect: Success | Failure
+        name: `str` The name of the rule.
+        source: `str` The source file or directory.
+        destination: `str` The destination file or directory.
+        options: `[str]` The options for the copy command.
+        deps: `[str]` The dependencies for the copy command.
+        type: `enum` The type of the command.
+        inputs: `[str]` The inputs for the command.
+        working_directory: `str` The working directory for the command.
+        expect: `enum` Success | Failure
     """
 
     run_add_exec(
@@ -54,13 +54,13 @@ def mv(
 
     Args:
         name: The name of the rule.
-        source: The source file or directory.
-        destination: The destination file or directory.
-        options: The options for the copy command.
-        deps: The dependencies for the copy command.
-        type: The type of the command.
-        working_directory: The working directory for the command.
-        expect: Success | Failure
+        source: `str` The source file or directory.
+        destination: `str` The destination file or directory.
+        options: `[str]` The options for the copy command.
+        deps: `[str]` The dependencies for the copy command.
+        type: `enum` The type of the command.
+        working_directory: `str` The working directory for the command.
+        expect: `enum` Success | Failure
     """
 
     run_add_exec(
@@ -86,14 +86,14 @@ def ln(
     Create a link from source to destination.
 
     Args:
-        name: The name of the rule.
-        source: The source file or directory.
-        destination: destination or target (to be created).
-        options: The options for the copy command.
-        deps: The dependencies for the copy command.
-        type: The type of the command.
-        working_directory: The working directory for the command.
-        expect: Success | Failure
+        name: `str` The name of the rule.
+        source: `str` The source file or directory.
+        destination: `str` destination or target (to be created).
+        options: `[str]` The options for the copy command.
+        deps: `[str]` The dependencies for the copy command.
+        type: `enum` The type of the command.
+        working_directory: `str` The working directory for the command.
+        expect: `enum` Success | Failure
     """
 
     run_add_exec(
@@ -118,13 +118,13 @@ def ls(
     Run ls (this can be handy for checking if something exists).
 
     Args:
-        name: The name of the rule.
-        path: The directory to list.
-        options: The options for the copy command.
-        deps: The dependencies for the copy command.
-        type: The type of the command.
-        working_directory: The working directory for the command.
-        expect: Success | Failure
+        name: `str` The name of the rule.
+        path: `str` The directory to list.
+        options: `[str]` The options for the copy command.
+        deps: `[str]` The dependencies for the copy command.
+        type: `enum` The type of the command.
+        working_directory: `str` The working directory for the command.
+        expect: `enum` Success | Failure
     """
 
     run_add_exec(
@@ -155,7 +155,7 @@ def mkdir(
         deps: The dependencies for the copy command.
         type: The type of the command.
         working_directory: The working directory for the command.
-        expect: Success | Failure
+        expect: `enum` Success | Failure
     """
 
     run_add_exec(
@@ -180,13 +180,13 @@ def chmod(
     Changes the mode of a file or directory.
 
     Args:
-        name: The name of the rule.
+        name: `str` The name of the rule.
         mode: The source file or directory.
-        path: The options for the copy command.
-        deps: The dependencies for the copy command.
-        type: The type of the command.
-        working_directory: The working directory for the command.
-        expect: Success | Failure
+        path: `str` The options for the copy command.
+        deps: `[str]` The dependencies for the copy command.
+        type: `enum` The type of the command.
+        working_directory: `str` The working directory for the command.
+        expect: `enum` Success | Failure
     """
 
     run_add_exec(
@@ -209,17 +209,33 @@ def shell(
     working_directory = None,
     deps = []):
     """
-    Execute a string as a shell script
+    Add a run rule that executes a shell script.
+
+    Examples:
+
+    ```python
+    shell(
+        name = "echo",
+        script = "echo hello",
+    )
+    ```
+
+    ```python
+    shell(
+        name = "echo",
+        script = "ls some_file && rm some_file",
+    )
+    ```
 
     Args:
-        name: name of the rule
-        script: text of the script to run
-        shell: shell to use (default is bash)
-        options: options to pass before script default is '-c'
-        expect: Success or Failure
-        type: Optional or All (default is Optional)
-        working_directory: workspace working directory (default is workspace root)
-        deps: rule dependencies
+        name: `str` name of the rule
+        script: `str` text of the script to run
+        shell: `str` shell to use (default is `bash`)
+        options: `[str]` options to pass before script default is `-c`
+        expect: `enum` Success | Failure
+        type: `enum` Optional | All (default is Optional)
+        working_directory: `str` working directory (default is workspace root)
+        deps: `[str]` rule dependencies
     """
 
     run_add_exec(

@@ -9,10 +9,10 @@ def shebang_add_update(name, input_file, new_shebang, deps):
     Update the she-bang for a file
 
     Args:
-        name: The name of the rule
-        input_file: The path to the file to update
-        new_shebang: The new she-bang line
-        deps: The dependencies of the rule
+        name: `str` The name of the rule
+        input_file: `str` The path to the file to update
+        new_shebang: `str` The new she-bang line
+        deps: `[str]` The dependencies of the rule
     """
 
     run_add_exec(

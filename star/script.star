@@ -31,10 +31,10 @@ def script_get_args():
     """
     Get all command line arguments
 
-    `named` arguements are of the format `--name=value`.
+    `named` arguments are of the format `--name=value`.
 
     Returns:
-        dict: with members [ordered] and {named}
+        dict: with members `[ordered]` and `{named}`
     """
     return script.get_args()
 
