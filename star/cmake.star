@@ -46,9 +46,9 @@ def cmake_add_configure_build_install(
         name: The name of the project
         build_directory: The directory to build the project in (default is build/<name>)
         source_directory: The directory of the project
-        configure_inputs: The inputs for the configure step
-        build_inputs: The inputs for the build step
-        prefix_paths: The paths to add to the CMAKE_PREFIX_PATH: default is sysroot;build/install
+        configure_inputs: The inputs for the configure step. Default uses cmake files in source directory
+        build_inputs: The inputs for the build step. Default uses source directory
+        prefix_paths: The paths to add to the CMAKE_PREFIX_PATH: default is sysroot;build/install (uses absolute paths)
         configure_args: The arguments to pass to the configure script
         build_args: The arguments to pass to the build command
         build_artifact_globs: The globs to match when installing build artifacts
@@ -68,9 +68,7 @@ def cmake_add_configure_build_install(
     if prefix_paths != None:
         effective_prefix_paths = prefix_paths
 
-    ABSOLUTE_PREFIX_PATHS = ["{}/{}".format(WORKSPACE, path) for path in effective_prefix_paths]
-
-    prefix_arg = "-DCMAKE_PREFIX_PATH={}".format(";".join(ABSOLUTE_PREFIX_PATHS))
+    prefix_arg = "-DCMAKE_PREFIX_PATH={}".format(";".join(effective_prefix_paths))
     EFFECTIVE_BUILD_DIRECTORY = build_directory if build_directory != None else "build/{}".format(name)
 
     DEFAULT_CONFIGURE_INPUTS = [
