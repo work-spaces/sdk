@@ -9,6 +9,7 @@ load("checkout.star",
     "checkout_add_asset")
 
 load("std/fs.star", "fs_exists")
+load("shell.star", "cp", "mkdir")
 
 def docs_add_hard_link_asset(
     name,
@@ -57,4 +58,54 @@ def docs_add_asset(
             deps = deps,
             type = type,
             platforms = platforms,
+        )
+
+def docs_cp(
+    name,
+    source,
+    destination,
+    options = [],
+    deps = [],
+    type = None,
+    inputs = None,
+    working_directory = None):
+    """
+    Adds content to the workspace @docs content folder using `cp`.
+
+    The `source` is copied to @docs/content/docs/<destination> in the workspace.
+
+    The rule is only created if the @docs/content/docs folder exists.
+
+    Args:
+        name: The name of the rule.
+        source: The source file or directory to copy.
+        destination: The destination folder in the @docs/content/docs folder.
+        options: Additional options for the `cp` command.
+        deps: Dependencies for the rule.
+        type: The type of the rule.
+        inputs: Rules inputs to determine if run can be skipped.
+        platforms: Platforms for the rule.
+        working_directory: The working directory for the `cp` command.
+    """
+
+    if fs_exists("@docs/content/docs"):
+        EFFECTIVE_OPTIONS = options if options else ["-rf"]
+        MKDIR_RULE = "{}_mkdir".format(name)
+        DESTINATION_PATH = "@docs/content/docs/" + destination
+        mkdir(
+            MKDIR_RULE,
+            path = DESTINATION_PATH,
+            options = ["-p"],
+            deps = deps,
+        )
+
+        cp(
+            name = name,
+            source = source,
+            destination = DESTINATION_PATH,
+            options = EFFECTIVE_OPTIONS,
+            inputs = inputs,
+            working_directory = working_directory,
+            deps = [MKDIR_RULE],
+            type = type,
         )
