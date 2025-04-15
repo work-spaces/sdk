@@ -30,7 +30,9 @@ def workspace_get_path_to_log_file(name):
     """
     Gets the path to the log file for a given target.
 
-    The log file location changes on every run.
+    The log file location changes on every run. Calling this will
+    effectively call `workspace_set_always_evaluate(True)` because
+    the log path location changes with every run.
 
     Args:
         name: `str` The name of the rule
@@ -227,3 +229,13 @@ def workspace_get_build_archive_info(name, archive):
         rule_name = name,
         archive = archive
     )
+
+def workspace_set_always_evaluate(value):
+    """
+    Set the always evaluate flag for the workspace.
+
+    This will prevent spaces from skipping the evaluation phase when
+    running rules in the workspace.
+
+    """
+    return workspace.set_always_evaluate(value)
