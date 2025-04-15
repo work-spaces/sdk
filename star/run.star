@@ -214,6 +214,67 @@ def run_add_exec_setup(
         } | EFFECTIVE_TIMEOUT,
     )
 
+def run_add_exec_test(
+        name,
+        command,
+        help = None,
+        args = [],
+        env = {},
+        deps = [],
+        inputs = RUN_INPUTS_ALWAYS,
+        working_directory = None,
+        platforms = None,
+        log_level = None,
+        redirect_stdout = None,
+        timeout = None,
+        expect = RUN_EXPECT_SUCCESS):
+    """
+    Adds a command as a test rule.
+
+    All test rules can be executed with:
+
+    ```sh
+    spaces run //:test
+    ```
+
+    Args:
+        name: The name of the rule.
+        command: The command to execute.
+        help: The help message for the rule.
+        args: The arguments to pass to the command
+        deps: The rule dependencies
+        inputs: List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
+        env: key value pairs of environment variables
+        working_directory: The directory to run the command (default is workspace root).
+        platforms: Platforms to run on (default is all).
+        log_level: The log level to use None|App
+        redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
+        timeout: Number of seconds to run before sending a kill signal.
+        expect: The expected result of the command Success|Failure|Any. (default is Success)
+    """
+
+    EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
+
+    run.add_exec(
+        rule = {
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "help": help,
+            "type": "Test",
+            "inputs": inputs,
+        },
+        exec = {
+            "command": command,
+            "args": args,
+            "working_directory": working_directory,
+            "env": env,
+            "expect": expect,
+            "log_level": log_level,
+            "redirect_stdout": redirect_stdout,
+        } | EFFECTIVE_TIMEOUT,
+    )
+
 def run_add_exec(
         name,
         command,
