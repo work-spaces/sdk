@@ -5,6 +5,7 @@ Spaces starlark function for archiving and publishing to github using GH
 load("run.star", "run_add_exec", "run_add_target")
 load("ws.star", "workspace_get_build_archive_info")
 load("info.star", "info_get_platform_name")
+load("shell.star", "shell")
 
 
 def gh_add_publish_archive(
@@ -13,6 +14,7 @@ def gh_add_publish_archive(
         version,
         deploy_repo,
         deps,
+        sh = "bash",
         suffix = "tar.xz"):
     """Creates an archive and publishes it to github.
 
@@ -24,6 +26,7 @@ def gh_add_publish_archive(
         version: Version to publish
         deploy_repo: The github URL to the repo
         deps: dependencies for the archive
+        sh: The shell to use for running commands (default: bash)
         suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
     """
 
@@ -49,41 +52,25 @@ def gh_add_publish_archive(
 
     REPO_ARG = "--repo={}".format(deploy_repo)
     ARCHIVE_NAME = "{}-v{}".format(name, version)
-    CHECK_RELEASE_RULE_NAME = "{}_check_release".format(name)
     RELEASE_RULE_NAME = "{}_release".format(name)
     PUBLISH_BINARY_RULE_NAME = "{}_publish_release".format(name)
     PUBLISH_SHA256_RULE_NAME = "{}_publish_sha256".format(name)
     GH_COMMAND = "{}/sysroot/bin/gh".format(info.get_path_to_spaces_tools())
 
-    run.add_exec_if(
-        rule = {"name": CHECK_RELEASE_RULE_NAME, "deps": [ARCHIVE_RULE_NAME]},
-        exec_if = {
-            "if": {
-                "command": GH_COMMAND,
-                "args": [
-                    "release",
-                    "view",
-                    ARCHIVE_NAME,
-                    REPO_ARG,
-                ],
-                "expect": "Failure",
-            },
-            "then": [RELEASE_RULE_NAME],
-        },
-    )
+    CHECK_RELEASE_COMMAND = "{} release view {} {}".format(
+        GH_COMMAND, ARCHIVE_NAME, REPO_ARG)
 
-    run_add_exec(
+    CREATE_RELEASE_COMMAND = "{} release create {} --generate-notes {}".format(
+        GH_COMMAND, ARCHIVE_NAME, REPO_ARG)
+
+    shell(
         RELEASE_RULE_NAME,
-        deps = [CHECK_RELEASE_RULE_NAME],
-        type = "Optional",
-        command = GH_COMMAND,
-        args = [
-            "release",
-            "create",
-            ARCHIVE_NAME,
-            "--generate-notes",
-            REPO_ARG,
-        ],
+        script = "{} || {}".format(
+            CHECK_RELEASE_COMMAND,
+            CREATE_RELEASE_COMMAND,
+        ),
+        shell = sh,
+        deps = [ARCHIVE_RULE_NAME],
     )
 
     run_add_exec(
