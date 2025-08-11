@@ -9,7 +9,7 @@ def fs_read_directory(path):
 
     Args:
         path: `str` path to the directory
-    
+
     Returns:
         `[str]` A list of files and directories in the directory
     """
@@ -21,7 +21,7 @@ def fs_exists(path):
 
     Args:
         path: `str` path to the file or directory
-    
+
     Returns:
        `bool`  True if the file or directory exists, False otherwise
     """
@@ -110,3 +110,25 @@ def fs_read_json(path):
         `dict` The parsed JSON object
     """
     return fs.read_json_to_dict(path)
+
+def fs_read_text(path):
+    """
+    Read a text file
+
+    Args:
+        path: `str` path to the text file
+
+    Returns:
+        `str` The content of the text file
+    """
+    return fs.read_file_to_string(path)
+
+def fs_write_text(path, content):
+    """
+    Write a text file
+
+    Args:
+        path: `str` path to the text file
+        content: `str` content to write to the text file
+    """
+    return fs.write_string_to_file(path = path, content = content)
