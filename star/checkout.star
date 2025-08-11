@@ -7,6 +7,7 @@ CHECKOUT_TYPE_OPTIONAL = "Optional"
 # Clone rules that are default are always run
 CHECKOUT_TYPE_DEFAULT = None
 
+
 # Sparse checkout modes
 CHECKOUT_SPARSE_MODE_CONE = "Cone" # checkout directories
 CHECKOUT_SPARSE_MODE_NO_CONE = "NoCone" #checkout gitignore like expressions
@@ -20,9 +21,17 @@ CHECKOUT_CLONE_SHALLOW = "Shallow" # The rev must be a branch not a tag or commi
 # This is the only supported value
 CHECKOUT_CLONE_TYPE_REVISION = "Revision"
 
+def checkout_get_compile_commands_spaces_name():
+    """
+    Returns the name of the file used with checkout_add_compile_commands_dir().
+
+    This is used internally between the checkout rule and compile_commands_merge()
+    """
+    return "compile_commands.spaces.json"
+
 def checkout_type_optional():
     """
-    Use `checkout_add_repo(type = checkout_type_optional())` to skip checkout 
+    Use `checkout_add_repo(type = checkout_type_optional())` to skip checkout
 
     Returns:
         str: CHECKOUT_TYPE_OPTIONAL
@@ -32,7 +41,7 @@ def checkout_type_optional():
 def checkout_type_default():
     """
     Use `checkout_add_repo(type = checkout_type_default())` to use default checkout behavior
-    
+
     Returns:
         None: CHECKOUT_TYPE_DEFAULT
     """
@@ -60,7 +69,7 @@ def checkout_sparse_mode_no_cone():
 def checkout_clone_default():
     """
     Use `checkout_add_repo(clone = checkout_clone_default())` for a normal git clone.
-    
+
     Returns:
         str: CHECKOUT_CLONE_DEFAULT
     """
@@ -69,7 +78,7 @@ def checkout_clone_default():
 def checkout_clone_worktree():
     """
     Use `checkout_add_repo(clone = checkout_clone_worktree())` to store the bare repository in the spaces store.
-    
+
     Returns:
         str: CHECKOUT_CLONE_WORKTREE
     """
@@ -78,7 +87,7 @@ def checkout_clone_worktree():
 def checkout_clone_blobless():
     """
     Use `checkout_add_repo(clone = checkout_clone_blobless())` to filter unused files from the repository history.
-    
+
     Returns:
         str: CHECKOUT_CLONE_BLOBLESS
     """
@@ -88,7 +97,7 @@ def checkout_clone_shallow():
     """
     Use `checkout_add_repo(clone = checkout_clone_shallow())` for a shallow clone.
     Note: The rev must be a branch, not a tag or commit.
-    
+
     Returns:
         str: CHECKOUT_CLONE_SHALLOW
     """
@@ -112,7 +121,7 @@ def checkout_add_repo(
 
     The for `clone=checkout_clone_default() | checkout_clone_blobless()`, the repo
     is cloned first to the store and then copied to the workspace. If the filesystem
-    supports copy-on-write (COW) semantics, COW semantics are used to copy from the 
+    supports copy-on-write (COW) semantics, COW semantics are used to copy from the
     store to the workspace.
 
     Example:
@@ -554,4 +563,20 @@ def checkout_add_oras_archive(
             "add_prefix": add_prefix,
             "globs": globs,
         },
+    )
+
+
+def checkout_add_compile_commands_dir(name, path, rule):
+    """
+    Registers a build directory in the compile_commands.spaces.json file.
+
+    Args:
+        name: `str` The name of the rule.
+        path: `str` The path to the build directory where compile_commands.json will be found.
+    """
+
+    checkout_update_asset(
+        name,
+        destination = checkout_get_compile_commands_spaces_name(),
+        value = { "{}".format(path): "{}".format(rule)  }
     )
