@@ -34,7 +34,9 @@ def cmake_add_configure_build_install(
         configure_inputs = None,
         build_inputs = None,
         configure_args = [],
+        configure_env = {},
         build_args = [],
+        build_env = {},
         build_artifact_globs = None,
         deps = [],
         install_path = None,
@@ -50,7 +52,9 @@ def cmake_add_configure_build_install(
         build_inputs: The inputs for the build step. Default uses source directory
         prefix_paths: The paths to add to the CMAKE_PREFIX_PATH: default is sysroot;build/install (uses absolute paths)
         configure_args: The arguments to pass to the configure script
+        configure_env: The environment variables to set for the configure step
         build_args: The arguments to pass to the build command
+        build_env: The environment variables to set for the build step
         build_artifact_globs: The globs to match when installing build artifacts
         deps: The dependencies of the project
         install_path: The path to install the project
@@ -68,7 +72,7 @@ def cmake_add_configure_build_install(
     if prefix_paths != None:
         effective_prefix_paths = prefix_paths
 
-    prefix_arg = "-DCMAKE_PREFIX_PATH={}".format(";".join(effective_prefix_paths))
+    prefix_arg = '-DCMAKE_PREFIX_PATH="{}"'.format(";".join(effective_prefix_paths))
     EFFECTIVE_BUILD_DIRECTORY = build_directory if build_directory != None else "build/{}".format(name)
 
     DEFAULT_CONFIGURE_INPUTS = [
@@ -95,6 +99,7 @@ def cmake_add_configure_build_install(
             "-B{}".format(EFFECTIVE_BUILD_DIRECTORY),
             "-S{}".format(source_directory),
         ] + configure_args,
+        env = configure_env,
         help = "CMake Configure:{}".format(name),
     )
 
@@ -104,6 +109,7 @@ def cmake_add_configure_build_install(
         inputs = EFFECTIVE_BUILD_INPUTS,
         deps = [CONFIGURE_RULE_NAME],
         args = ["--build", EFFECTIVE_BUILD_DIRECTORY] + build_args,
+        env = build_env,
         help = "CMake build:{}".format(name),
     )
 
