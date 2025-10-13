@@ -451,13 +451,11 @@ def checkout_update_env(
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
     """
 
-    effective_inherited_vars = {"inherited_vars": inherited_vars} if inherited_vars != None else {}
     if optional_inherited_vars != None:
         info_set_required_semver(">=0.15.1")
+        inherited_vars.extend(["{}?".format(var) for var in optional_inherited_vars])
 
-        # add ? to end of optional inherited vars
-        effective_optional_inherited_vars = ["{}?".format(var) for var in optional_inherited_vars]
-        effective_inherited_vars["inherited_vars"].append(effective_optional_inherited_vars)
+    effective_inherited_vars = {"inherited_vars": inherited_vars} if inherited_vars != None else {}
 
     checkout.update_env(
         rule = {
