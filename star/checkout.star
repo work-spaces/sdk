@@ -2,6 +2,9 @@
 User friendly wrapper functions for the spaces checkout built-in functions.
 """
 
+load("info.star", "info_set_required_semver")
+
+
 # Clone rules that are optional are not run
 CHECKOUT_TYPE_OPTIONAL = "Optional"
 # Clone rules that are default are always run
@@ -425,6 +428,7 @@ def checkout_update_env(
         paths = [],
         system_paths = None,
         inherited_vars = None,
+        optional_inherited_vars = None,
         deps = [],
         type = None,
         platforms = None):
@@ -441,12 +445,19 @@ def checkout_update_env(
         paths: `[str]` List of paths to add to the PATH.
         system_paths: `[str]` The path to add to the system PATH.
         inherited_vars: List of environment variables to inherit from the calling environment.
+        optional_inherited_vars: List of environment variables to inherit from the calling environment if they are not already set (requires spaces >v0.15.1)
         deps: `[str]` List of dependencies for the rule.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
     """
 
     effective_inherited_vars = {"inherited_vars": inherited_vars} if inherited_vars != None else {}
+    if optional_inherited_vars != None:
+        info_set_required_semver(">0.15.1")
+
+        # add ? to end of optional inherited vars
+        effective_optional_inherited_vars = ["{}?".format(var) for var in optional_inherited_vars]
+        effective_inherited_vars.append(effective_optional_inherited_vars)
 
     checkout.update_env(
         rule = {
