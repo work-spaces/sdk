@@ -23,7 +23,7 @@ def spaces_working_env(add_spaces_to_sysroot = False, inherit_terminal = False):
         The name of the rule.
     """
 
-    ps1 = {"PS1": "(spaces) $PS1"} if info.is_ci() == False else {}
+    ps1 = {"PS1": "(spaces) $ "} if info.is_ci() == False else {}
 
     rule_name = "spaces_starlark_sdk_spaces_working_env"
 
