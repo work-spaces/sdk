@@ -453,7 +453,7 @@ def checkout_update_env(
 
     effective_inherited_vars = {"inherited_vars": inherited_vars} if inherited_vars != None else {}
     if optional_inherited_vars != None:
-        info_set_required_semver(">=0.15.1"
+        info_set_required_semver(">=0.15.1")
 
         # add ? to end of optional inherited vars
         effective_optional_inherited_vars = ["{}?".format(var) for var in optional_inherited_vars]
