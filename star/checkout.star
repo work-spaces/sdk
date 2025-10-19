@@ -187,7 +187,7 @@ def checkout_add_archive(
         filename = None,
         platforms = None,
         type = None,
-        standard_headers = None,
+        headers = None,
         custom_headers = None,
         deps = []):
     """
@@ -210,7 +210,7 @@ def checkout_add_archive(
         headers: `dict` key-value pairs of headers to use when downloading the archive.
         deps: `[str]` List of dependencies for the rule.
     """
-    if standard_headers != None or custom_headers != None:
+    if headers != None:
         info_set_required_semver(">=0.15.2")
 
     effective_headers = {}
