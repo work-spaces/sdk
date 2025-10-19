@@ -207,20 +207,15 @@ def checkout_add_archive(
         filename: `str` The filename if it isn't the last part of the URL
         platforms: `[str]` List of platforms to add the archive to.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        standard_headers: `dict` key-value pairs of standard headers to use when downloading the archive.
-        custom_headers: `dict` key-value pairs of custom headers to use when downloading the archive.
+        headers: `dict` key-value pairs of headers to use when downloading the archive.
         deps: `[str]` List of dependencies for the rule.
     """
     if standard_headers != None or custom_headers != None:
         info_set_required_semver(">=0.15.2")
 
-    effective_standard_headers = {}
-    if standard_headers != None:
-        effective_standard_headers = { "standard_headers": standard_headers }
-
-    effective_custom_headers = {}
-    if custom_headers != None:
-        effective_custom_headers = { "custom_headers": custom_headers }
+    effective_headers = {}
+    if headers != None:
+        effective_headers = { "headers": headers }
 
     checkout.add_archive(
         rule = {
@@ -238,7 +233,7 @@ def checkout_add_archive(
             "strip_prefix": strip_prefix,
             "add_prefix": add_prefix,
             "filename": filename,
-        } | effective_standard_headers | effective_custom_headers,
+        } | effective_headers,
     )
 
 def checkout_add_asset(
