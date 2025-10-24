@@ -57,8 +57,8 @@ def mv(
         name: The name of the rule.
         source: `str` The source file or directory.
         destination: `str` The destination file or directory.
-        options: `[str]` The options for the copy command.
-        deps: `[str]` The dependencies for the copy command.
+        options: `[str]` The options for the move command.
+        deps: `[str]` The dependencies for the move command.
         type: `enum` The type of the command.
         inputs: `[str]` The inputs for the command.
         working_directory: `str` The working directory for the command.
