@@ -47,6 +47,7 @@ def mv(
         options = [],
         deps = [],
         type = None,
+        inputs = None,
         working_directory = None,
         expect = RUN_EXPECT_SUCCESS):
     """
@@ -59,6 +60,7 @@ def mv(
         options: `[str]` The options for the copy command.
         deps: `[str]` The dependencies for the copy command.
         type: `enum` The type of the command.
+        inputs: `[str]` The inputs for the command.
         working_directory: `str` The working directory for the command.
         expect: `enum` Success | Failure
     """
@@ -69,6 +71,7 @@ def mv(
         args = options + [source, destination],
         deps = deps,
         type = type,
+        inputs = inputs,
         expect = expect,
         working_directory = working_directory,
     )
@@ -80,6 +83,7 @@ def ln(
         options = [],
         deps = [],
         type = None,
+        inputs = None,
         working_directory = None,
         expect = RUN_EXPECT_SUCCESS):
     """
@@ -92,6 +96,7 @@ def ln(
         options: `[str]` The options for the copy command.
         deps: `[str]` The dependencies for the copy command.
         type: `enum` The type of the command.
+        inputs: `[str]` The inputs for the command.
         working_directory: `str` The working directory for the command.
         expect: `enum` Success | Failure
     """
@@ -102,6 +107,7 @@ def ln(
         args = options + [source, destination],
         deps = deps,
         type = type,
+        inputs = inputs,
         expect = expect,
         working_directory = working_directory,
     )
@@ -112,6 +118,7 @@ def ls(
         options = [],
         deps = [],
         type = None,
+        inputs = None,
         working_directory = None,
         expect = RUN_EXPECT_SUCCESS):
     """
@@ -123,6 +130,7 @@ def ls(
         options: `[str]` The options for the copy command.
         deps: `[str]` The dependencies for the copy command.
         type: `enum` The type of the command.
+        inputs: `[str]` The inputs for the command.
         working_directory: `str` The working directory for the command.
         expect: `enum` Success | Failure
     """
@@ -133,6 +141,7 @@ def ls(
         args = options + [path],
         deps = deps,
         type = type,
+        inputs = inputs,
         expect = expect,
         working_directory = working_directory,
     )
@@ -143,6 +152,7 @@ def mkdir(
         options = [],
         deps = [],
         type = None,
+        inputs = None,
         working_directory = None,
         expect = RUN_EXPECT_SUCCESS):
     """
@@ -154,6 +164,7 @@ def mkdir(
         options: The options for the copy command.
         deps: The dependencies for the copy command.
         type: The type of the command.
+        inputs: The inputs for the command.
         working_directory: The working directory for the command.
         expect: `enum` Success | Failure
     """
@@ -164,6 +175,7 @@ def mkdir(
         args = options + [path],
         deps = deps,
         type = type,
+        inputs = inputs,
         expect = expect,
         working_directory = working_directory,
     )
@@ -174,6 +186,7 @@ def chmod(
         path,
         deps = [],
         type = None,
+        inputs = None,
         working_directory = None,
         expect = RUN_EXPECT_SUCCESS):
     """
@@ -185,6 +198,7 @@ def chmod(
         path: `str` The options for the copy command.
         deps: `[str]` The dependencies for the copy command.
         type: `enum` The type of the command.
+        inputs: `[str]` The inputs for the command.
         working_directory: `str` The working directory for the command.
         expect: `enum` Success | Failure
     """
@@ -195,6 +209,7 @@ def chmod(
         args = [mode, path],
         deps = deps,
         type = type,
+        inputs = inputs,
         expect = expect,
         working_directory = working_directory,
     )
@@ -206,6 +221,7 @@ def shell(
     options = ["-c"],
     expect = RUN_EXPECT_SUCCESS,
     type = None,
+    inputs = None,
     working_directory = None,
     deps = []):
     """
@@ -234,6 +250,7 @@ def shell(
         options: `[str]` options to pass before script default is `-c`
         expect: `enum` Success | Failure
         type: `enum` Optional | All (default is Optional)
+        inputs: `[str]` The inputs for the command.
         working_directory: `str` working directory (default is workspace root)
         deps: `[str]` rule dependencies
     """
@@ -244,6 +261,7 @@ def shell(
         args = options + [script],
         type = type,
         deps = deps,
+        inputs = inputs,
         working_directory = working_directory,
         expect = expect
     )
