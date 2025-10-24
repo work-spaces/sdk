@@ -195,7 +195,7 @@ def chmod(
     Args:
         name: `str` The name of the rule.
         mode: The source file or directory.
-        path: `str` The options for the copy command.
+        path: `str` The path/file to change permissions for.
         deps: `[str]` The dependencies for the copy command.
         type: `enum` The type of the command.
         inputs: `[str]` The inputs for the command.
