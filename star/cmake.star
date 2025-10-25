@@ -40,7 +40,8 @@ def cmake_add_configure_build_install(
         build_artifact_globs = None,
         deps = [],
         install_path = None,
-        skip_install = False):
+        skip_install = False,
+        find_using_cmake_system_path = False):
     """
     Add a CMake project to the build
 
@@ -95,7 +96,7 @@ def cmake_add_configure_build_install(
         args = [
             INSTALL_PREFIX_ARG,
             prefix_arg,
-            "-DCMAKE_FIND_USE_CMAKE_SYSTEM_PATH=FALSE",
+            "-DCMAKE_FIND_USE_CMAKE_SYSTEM_PATH={}".format("FALSE" if find_using_cmake_system_path == False else "TRUE"),
             "-B{}".format(EFFECTIVE_BUILD_DIRECTORY),
             "-S{}".format(source_directory),
         ] + configure_args,
@@ -141,9 +142,10 @@ def cmake_add_repo(
         build_artifact_globs = [],
         checkout_submodules = False,
         relative_source_directory = None,
-        clone = "Worktree",
+        clone = "Default",
         checkout_type = None,
         skip_install = False,
+        find_using_cmake_system_path = False,
         deps = []):
     """
     Add a CMake project to the build
@@ -196,6 +198,7 @@ def cmake_add_repo(
             deps = deps + SUBMODULE_DEPS,
             install_path = install_path,
             skip_install = skip_install,
+            find_using_cmake_system_path = find_using_cmake_system_path,
         )
 
 def cmake_add_source_archive(
