@@ -2,6 +2,8 @@
 User friendly wrapper functions for the spaces run built-in functions.
 """
 
+load("info.star", "info_get_platform_name")
+
 RUN_INPUTS_ONCE = []
 RUN_INPUTS_ALWAYS = None
 RUN_TYPE_ALL = "Run"
@@ -474,3 +476,52 @@ def run_add_to_all(
     """
 
     run_add_target(name, deps, type = RUN_TYPE_ALL)
+
+def run_add_archive(
+        name,
+        deps,
+        version,
+        source_directory,
+        suffix = "tar.gz",
+        includes = None,
+        excludes = None,
+        platform = None):
+    """
+    Adds an archive target to the workspace.
+
+    This rule can be used to consolidate dependencies into a single target.
+
+    Args:
+        name: The name of the rule.
+        deps: List of dependencies to run with `spaces run`
+        version: The version of the archive.
+        source_directory: The directory containing the source files to archive.
+        includes: List of globs to include in the archive.
+        excludes: List of globs to exclude from the archive.
+        platform: The platform to build the target for (default is all).
+
+    Returns:
+        A tuple containing (<path to the archive>, <sha256 checksum of the archive>).
+    """
+
+    effective_platform = info_get_platform_name() if platform == None else platform
+
+    archive_rule_name = "{}_archive".format(name)
+    archive_info = {
+        "input": source_directory,
+        "name": name,
+        "version": version,
+        "driver": suffix,
+        "platform": PLATFORM,
+        "includes": includes,
+        "excludes": excludes,
+    }
+
+    run.add_archive(
+        rule = {"name": archive_rule_name, "deps": deps},
+        archive = archive_info,
+    )
+
+    archive_output_info = workspace_get_build_archive_info(archive_rule_name, archive = archive_info)
+
+    return (archive_output_info["archive_path"], archive_output_info["sha256_path"])
