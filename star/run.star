@@ -479,6 +479,7 @@ def run_add_to_all(
 
 def run_add_archive(
         name,
+        archive_name,
         deps,
         version,
         source_directory,
@@ -506,10 +507,9 @@ def run_add_archive(
 
     effective_platform = info_get_platform_name() if platform == None else platform
 
-    archive_rule_name = "{}_archive".format(name)
     archive_info = {
         "input": source_directory,
-        "name": name,
+        "name": archive_name,
         "version": version,
         "driver": suffix,
         "platform": PLATFORM,
@@ -518,10 +518,10 @@ def run_add_archive(
     }
 
     run.add_archive(
-        rule = {"name": archive_rule_name, "deps": deps},
+        rule = {"name": name, "deps": deps},
         archive = archive_info,
     )
 
-    archive_output_info = workspace_get_build_archive_info(archive_rule_name, archive = archive_info)
+    archive_output_info = workspace_get_build_archive_info(name, archive = archive_info)
 
     return (archive_output_info["archive_path"], archive_output_info["sha256_path"])
