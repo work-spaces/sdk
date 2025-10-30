@@ -485,8 +485,7 @@ def run_add_archive(
         version,
         source_directory,
         suffix = "tar.gz",
-        includes = None,
-        excludes = None,
+        globs = None,
         platform = None):
     """
     Adds an archive target to the workspace.
@@ -498,8 +497,7 @@ def run_add_archive(
         deps: List of dependencies to run with `spaces run`
         version: The version of the archive.
         source_directory: The directory containing the source files to archive.
-        includes: List of globs to include in the archive.
-        excludes: List of globs to exclude from the archive.
+        globs: List of globs to control what is include. Prefix with `+` to include and `-` to exclude.
         platform: The platform to build the target for (default is all).
 
     Returns:
@@ -507,6 +505,17 @@ def run_add_archive(
     """
 
     effective_platform = info_get_platform_name() if platform == None else platform
+
+    effective_includes = None
+    effective_excludes = None
+    if globs != None:
+        includes = [glob for glob in globs if glob.startswith("+")]
+        excludes = [glob for glob in globs if glob.startswith("-")]
+
+    if includes != None && len(includes) > 0:
+        effective_includes = includes
+    if excludes != None && len(excludes) > 0:
+        effective_excludes = excludes
 
     archive_info = {
         "input": source_directory,
