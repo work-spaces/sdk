@@ -21,7 +21,7 @@ def json_dumps(value, is_pretty = False):
     Args:
         value: `dict` The JSON object to dump
         is_pretty: `bool` Whether to pretty print the JSON
-    
+
     Returns:
         `str` The JSON string
     """

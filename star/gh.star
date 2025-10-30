@@ -2,11 +2,10 @@
 Spaces starlark function for archiving and publishing to github using GH
 """
 
-load("run.star", "run_add_exec", "run_add_target")
-load("ws.star", "workspace_get_build_archive_info")
 load("info.star", "info_get_platform_name")
+load("run.star", "run_add_exec", "run_add_target")
 load("shell.star", "shell")
-
+load("ws.star", "workspace_get_build_archive_info")
 
 def gh_add_publish_archive(
         name,
@@ -58,10 +57,16 @@ def gh_add_publish_archive(
     GH_COMMAND = "{}/sysroot/bin/gh".format(info.get_path_to_spaces_tools())
 
     CHECK_RELEASE_COMMAND = "{} release view {} {}".format(
-        GH_COMMAND, ARCHIVE_NAME, REPO_ARG)
+        GH_COMMAND,
+        ARCHIVE_NAME,
+        REPO_ARG,
+    )
 
     CREATE_RELEASE_COMMAND = "{} release create {} --generate-notes {}".format(
-        GH_COMMAND, ARCHIVE_NAME, REPO_ARG)
+        GH_COMMAND,
+        ARCHIVE_NAME,
+        REPO_ARG,
+    )
 
     shell(
         RELEASE_RULE_NAME,

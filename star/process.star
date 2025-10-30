@@ -2,13 +2,12 @@
 Process built-ins
 """
 
-
 def process_exec(
-    command,
-    args = [],
-    env = {},
-    working_directory = None,
-    stdin = None):
+        command,
+        args = [],
+        env = {},
+        working_directory = None,
+        stdin = None):
     """
     Executes a command when the script is evaluated.
 
@@ -20,7 +19,7 @@ def process_exec(
 
     ```python
     process_exec(
-        "ls", 
+        "ls",
         args = ["-alt"],
         working_directory = ".",
         env = {
@@ -40,8 +39,9 @@ def process_exec(
         dict: with members `status`, `stdout`, and `stderr`
     """
     return process.exec({
-        "command": command, 
-        "args": args, 
-        "env": env, 
-        "working_directory": working_directory, 
-        "stdin": stdin})
+        "command": command,
+        "args": args,
+        "env": env,
+        "working_directory": working_directory,
+        "stdin": stdin,
+    })

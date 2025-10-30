@@ -221,13 +221,13 @@ def workspace_get_build_archive_info(name, archive):
     Args:
         name: `str` rule name to get info for
         archive: `str` archive object containing details of how to create the archive
-    
+
     Returns:
         `dict` The archive info
     """
     return workspace.get_build_archive_info(
         rule_name = name,
-        archive = archive
+        archive = archive,
     )
 
 def workspace_set_always_evaluate(value):

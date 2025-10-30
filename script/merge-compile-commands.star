@@ -3,16 +3,15 @@
 load(
     "//@star/sdk/star/script.star",
     "script_get_args",
-    "script_set_exit_code",
     "script_print",
+    "script_set_exit_code",
 )
-
-load("//@star/sdk/star/std/fs.star",
+load(
+    "//@star/sdk/star/std/fs.star",
     "fs_read_json",
     "fs_read_text",
-    "fs_write_text"
+    "fs_write_text",
 )
-
 load("//@star/sdk/star/std/json.star", "json_dumps")
 
 ARGUMENTS = script_get_args()
@@ -31,7 +30,7 @@ if "--manifest" in NAMED_ARGUMENTS:
             all_commands.append(item)
 
     output = NAMED_ARGUMENTS.get("--output", "build/{}".format(COMPILE_COMMANDS_JSON))
-    output_string = json_dumps(all_commands, is_pretty=True)
+    output_string = json_dumps(all_commands, is_pretty = True)
     fs_write_text(output, output_string)
 
 else:

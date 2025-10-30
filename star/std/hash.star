@@ -2,7 +2,6 @@
 Hash std built-in functions
 """
 
-
 def hash_compute_sha256_from_file(file_path):
     """
     Compute the SHA256 hash of a file
@@ -14,7 +13,6 @@ def hash_compute_sha256_from_file(file_path):
         `str` The SHA256 hash of the file
     """
     return hash.compute_sha256_from_file(file_path)
-
 
 def compute_sha256_from_string(value):
     """

@@ -2,7 +2,6 @@
 Spaces Filesystem built-in functions
 """
 
-
 def fs_read_directory(path):
     """
     Read a directory

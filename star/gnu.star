@@ -2,10 +2,10 @@
 GNU Build Functions
 """
 
-load("run.star", "run_add_exec", "run_add_target")
-load("info.star", "info_get_cpu_count")
-load("ws.star", "workspace_get_absolute_path")
 load("checkout.star", "checkout_add_repo")
+load("info.star", "info_get_cpu_count")
+load("run.star", "run_add_exec", "run_add_target")
+load("ws.star", "workspace_get_absolute_path")
 
 def gnu_add_configure_make_install(
         name,
@@ -88,7 +88,7 @@ def gnu_add_configure_make_install(
     if skip_install:
         run_add_target(name, deps = [BUILD_RULE_NAME])
         return
-        
+
     run_add_exec(
         INSTALL_RULE_NAME,
         deps = [BUILD_RULE_NAME],
@@ -100,7 +100,6 @@ def gnu_add_configure_make_install(
     )
 
     run_add_target(name, deps = [INSTALL_RULE_NAME])
-
 
 def gnu_add_repo(
         name,

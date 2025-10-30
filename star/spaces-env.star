@@ -6,7 +6,7 @@ so that they can work in the terminal.
 
 """
 
-load("checkout.star", "checkout_update_env", "checkout_add_which_asset")
+load("checkout.star", "checkout_add_which_asset", "checkout_update_env")
 load("ws.star", "workspace_get_absolute_path")
 
 def spaces_working_env(add_spaces_to_sysroot = False, inherit_terminal = False):
@@ -34,7 +34,8 @@ def spaces_working_env(add_spaces_to_sysroot = False, inherit_terminal = False):
         "LANG",
         "TERM",
         "TERMINFO_DIRS",
-        "TMPDIR"]
+        "TMPDIR",
+    ]
 
     checkout_update_env(
         rule_name,
@@ -43,7 +44,7 @@ def spaces_working_env(add_spaces_to_sysroot = False, inherit_terminal = False):
             "SPACES_WORKSPACE": workspace_get_absolute_path(),
         } | ps1,
         inherited_vars = ["HOME", "USER"],
-        optional_inherited_vars = terminal_vars if inherit_terminal else []
+        optional_inherited_vars = terminal_vars if inherit_terminal else [],
     )
 
     if add_spaces_to_sysroot:

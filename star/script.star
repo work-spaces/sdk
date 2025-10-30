@@ -14,7 +14,6 @@ def script_print(message):
     """
     script.print(message)
 
-
 def script_get_arg(offset):
     """
     Get a command line argument
