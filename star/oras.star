@@ -2,8 +2,8 @@
 Spaces starlark functions for publishing packages using oras
 """
 
-load("run.star", "run_add_exec", "run_add_target")
 load("checkout.star", "checkout_add_oras_archive")
+load("run.star", "run_add_exec", "run_add_target")
 load("ws.star", "WORKSPACE_SYSROOT")
 
 def _get_oras_command():
@@ -87,7 +87,7 @@ def oras_add_publish_archive(
     run_add_target(
         name,
         deps = [ORAS_RULE_PUSH_NAME],
-        help = "Publish {} using oras".format(name)
+        help = "Publish {} using oras".format(name),
     )
 
 def oras_add_platform_archive(

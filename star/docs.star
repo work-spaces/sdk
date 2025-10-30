@@ -3,20 +3,21 @@ Starlark functions to copying content in to the workspace @docs
 content folder.
 """
 
-load("checkout.star", 
+load(
+    "checkout.star",
+    "checkout_add_asset",
     "checkout_add_hard_link_asset",
     "checkout_add_soft_link_asset",
-    "checkout_add_asset")
-
-load("std/fs.star", "fs_exists")
+)
 load("shell.star", "cp", "mkdir")
+load("std/fs.star", "fs_exists")
 
 def docs_add_hard_link_asset(
-    name,
-    source,
-    deps = [],
-    type = None,
-    platforms = None):
+        name,
+        source,
+        deps = [],
+        type = None,
+        platforms = None):
     """
     Adds content to the workspace @docs content folder using a hard link.
 
@@ -36,15 +37,15 @@ def docs_add_hard_link_asset(
         )
 
 def docs_add_asset(
-    name,
-    content,
-    deps = [],
-    type = None,
-    platforms = None):
+        name,
+        content,
+        deps = [],
+        type = None,
+        platforms = None):
     """
     Adds string content to the workspace @docs content folder.
 
-    The `content` is a string that is written to @docs/content/docs/<name>.md 
+    The `content` is a string that is written to @docs/content/docs/<name>.md
     in the workspace.
 
     The rule is only created if the @docs/content/docs folder exists.
@@ -61,14 +62,14 @@ def docs_add_asset(
         )
 
 def docs_cp(
-    name,
-    source,
-    destination,
-    options = [],
-    deps = [],
-    type = None,
-    inputs = None,
-    working_directory = None):
+        name,
+        source,
+        destination,
+        options = [],
+        deps = [],
+        type = None,
+        inputs = None,
+        working_directory = None):
     """
     Adds content to the workspace @docs content folder using `cp`.
 

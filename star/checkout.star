@@ -4,22 +4,21 @@ User friendly wrapper functions for the spaces checkout built-in functions.
 
 load("info.star", "info_set_required_semver")
 
-
 # Clone rules that are optional are not run
 CHECKOUT_TYPE_OPTIONAL = "Optional"
+
 # Clone rules that are default are always run
 CHECKOUT_TYPE_DEFAULT = None
 
-
 # Sparse checkout modes
-CHECKOUT_SPARSE_MODE_CONE = "Cone" # checkout directories
-CHECKOUT_SPARSE_MODE_NO_CONE = "NoCone" #checkout gitignore like expressions
+CHECKOUT_SPARSE_MODE_CONE = "Cone"  # checkout directories
+CHECKOUT_SPARSE_MODE_NO_CONE = "NoCone"  #checkout gitignore like expressions
 
 # Ways to `clone` a repository
-CHECKOUT_CLONE_DEFAULT = "Default" # Just a normal clone
-CHECKOUT_CLONE_WORKTREE = "Worktree" # stores the bare repository in the spaces store
-CHECKOUT_CLONE_BLOBLESS = "Blobless" # filters unused files from the repo history
-CHECKOUT_CLONE_SHALLOW = "Shallow" # The rev must be a branch not a tag or commit
+CHECKOUT_CLONE_DEFAULT = "Default"  # Just a normal clone
+CHECKOUT_CLONE_WORKTREE = "Worktree"  # stores the bare repository in the spaces store
+CHECKOUT_CLONE_BLOBLESS = "Blobless"  # filters unused files from the repo history
+CHECKOUT_CLONE_SHALLOW = "Shallow"  # The rev must be a branch not a tag or commit
 
 # This is the only supported value
 CHECKOUT_CLONE_TYPE_REVISION = "Revision"
@@ -215,7 +214,7 @@ def checkout_add_archive(
 
     effective_headers = {}
     if headers != None:
-        effective_headers = { "headers": headers }
+        effective_headers = {"headers": headers}
 
     checkout.add_archive(
         rule = {
@@ -296,7 +295,11 @@ def checkout_update_asset(
 
     checkout.update_asset(
         rule = {
-            "name": name, "deps": deps, "platforms": platforms, "type": type},
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "type": type,
+        },
         asset = {
             "destination": destination,
             "format": effective_format,
@@ -326,7 +329,11 @@ def checkout_add_cargo_bin(
     """
     checkout.add_cargo_bin(
         rule = {
-            "name": name, "deps": deps, "platforms": platforms, "type": type},
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "type": type,
+        },
         cargo_bin = {
             "crate": crate,
             "version": version,
@@ -354,7 +361,11 @@ def checkout_add_hard_link_asset(
     """
     checkout.add_hard_link_asset(
         rule = {
-            "name": name, "deps": deps, "platforms": platforms, "type": type},
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "type": type,
+        },
         asset = {
             "source": source,
             "destination": destination,
@@ -381,7 +392,11 @@ def checkout_add_soft_link_asset(
     """
     checkout.add_soft_link_asset(
         rule = {
-            "name": name, "deps": deps, "platforms": platforms, "type": type},
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "type": type,
+        },
         asset = {
             "source": source,
             "destination": destination,
@@ -586,7 +601,6 @@ def checkout_add_oras_archive(
         },
     )
 
-
 def checkout_add_compile_commands_dir(name, path, rule):
     """
     Registers a build directory in the compile_commands.spaces.json file.
@@ -599,5 +613,5 @@ def checkout_add_compile_commands_dir(name, path, rule):
     checkout_update_asset(
         name,
         destination = checkout_get_compile_commands_spaces_name(),
-        value = { "{}".format(path): "{}".format(rule)  }
+        value = {"{}".format(path): "{}".format(rule)},
     )

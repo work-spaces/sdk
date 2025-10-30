@@ -98,9 +98,6 @@ def run_expect_any():
     """
     return RUN_EXPECT_ANY
 
-
-
-
 def run_signal_hup():
     """
     Gets the Hangup signal

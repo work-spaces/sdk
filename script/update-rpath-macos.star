@@ -28,12 +28,12 @@ def _update_rpaths(binary_path, install_path, new_base_path):
             exec = {
                 "command": "otool",
                 "args": ["-L", file],
-            }
+            },
         )
         if otool_result["status"] != 0:
             script.print("Skipping non-binary file: {}".format(file))
             continue
-            
+
         lines = otool_result["stdout"].splitlines()
         for line in lines:
             line = line.strip()
@@ -44,7 +44,7 @@ def _update_rpaths(binary_path, install_path, new_base_path):
                     exec = {
                         "command": "install_name_tool",
                         "args": ["-change", change_old, change_new, file],
-                    }
+                    },
                 )
                 if install_name_result["status"] != 0:
                     script.print("Warning running install_name_tool for {}".format(file))
@@ -53,12 +53,12 @@ def _update_rpaths(binary_path, install_path, new_base_path):
                 script.print("{}: {} -> {}".format(file, change_old, change_new))
 
         file_name = file.split("/")[-1]
-        
+
         id_result = process.exec(
             exec = {
                 "command": "install_name_tool",
                 "args": ["-id", "@rpath/{}".format(file_name), file],
-            }
+            },
         )
 
         if id_result["status"] != 0:
@@ -70,22 +70,21 @@ def _update_rpaths(binary_path, install_path, new_base_path):
             exec = {
                 "command": "install_name_tool",
                 "args": ["-delete_rpath", "{}/lib".format(install_path), file],
-            }
+            },
         )
-
 
         process.exec(
             exec = {
                 "command": "install_name_tool",
                 "args": ["-add_rpath", "@loader_path", file],
-            }
+            },
         )
 
         process.exec(
             exec = {
                 "command": "install_name_tool",
                 "args": ["-add_rpath", "@loader_path/../lib", file],
-            }
+            },
         )
 
 args = script.get_args()

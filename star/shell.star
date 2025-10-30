@@ -215,15 +215,15 @@ def chmod(
     )
 
 def shell(
-    name,
-    script,
-    shell = "bash",
-    options = ["-c"],
-    expect = RUN_EXPECT_SUCCESS,
-    type = None,
-    inputs = None,
-    working_directory = None,
-    deps = []):
+        name,
+        script,
+        shell = "bash",
+        options = ["-c"],
+        expect = RUN_EXPECT_SUCCESS,
+        type = None,
+        inputs = None,
+        working_directory = None,
+        deps = []):
     """
     Add a run rule that executes a shell script.
 
@@ -263,5 +263,5 @@ def shell(
         deps = deps,
         inputs = inputs,
         working_directory = working_directory,
-        expect = expect
+        expect = expect,
     )
