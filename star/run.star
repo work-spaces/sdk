@@ -512,7 +512,7 @@ def run_add_archive(
         "name": archive_name,
         "version": version,
         "driver": suffix,
-        "platform": PLATFORM,
+        "platform": effective_platform,
         "includes": includes,
         "excludes": excludes,
     }
