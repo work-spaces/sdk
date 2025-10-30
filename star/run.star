@@ -3,6 +3,7 @@ User friendly wrapper functions for the spaces run built-in functions.
 """
 
 load("info.star", "info_get_platform_name")
+load("ws.star", "workspace_get_build_archive_info")
 
 RUN_INPUTS_ONCE = []
 RUN_INPUTS_ALWAYS = None
