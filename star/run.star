@@ -508,13 +508,17 @@ def run_add_archive(
 
     effective_includes = None
     effective_excludes = None
+    includes = []
+    excludes = []
     if globs != None:
         includes = [glob for glob in globs if glob.startswith("+")]
         excludes = [glob for glob in globs if glob.startswith("-")]
+        if len(globs) != len(includes) + len(excludes):
+            run.abort("Each entry in globs[] must start with `+` or `-`")
 
-    if includes != None && len(includes) > 0:
+    if includes != None and len(includes) > 0:
         effective_includes = includes
-    if excludes != None && len(excludes) > 0:
+    if excludes != None and len(excludes) > 0:
         effective_excludes = excludes
 
     archive_info = {
