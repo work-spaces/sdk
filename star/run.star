@@ -527,8 +527,8 @@ def run_add_archive(
         "version": version,
         "driver": suffix,
         "platform": effective_platform,
-        "includes": includes,
-        "excludes": excludes,
+        "includes": effective_includes,
+        "excludes": effective_excludes,
     }
 
     run.add_archive(
