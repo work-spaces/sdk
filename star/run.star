@@ -11,6 +11,7 @@ RUN_TYPE_ALL = "Run"
 
 # Print the output of the run rule while running spaces
 RUN_LOG_LEVEL_APP = "App"
+RUN_LOG_LEVEL_PASSTHROUGH = "Passthrough"
 
 RUN_EXPECT_SUCCESS = "Success"
 RUN_EXPECT_FAILURE = "Failure"
@@ -69,6 +70,15 @@ def run_log_level_app():
         str: "App"
     """
     return RUN_LOG_LEVEL_APP
+
+def run_log_level_passthrough():
+    """
+    Print the output of the run rule while running spaces with no additional markings
+
+    Returns:
+        str: "Passthrough"
+    """
+    return RUN_LOG_LEVEL_PASSTHROUGH
 
 def run_expect_success():
     """
