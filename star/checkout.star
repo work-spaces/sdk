@@ -4,6 +4,8 @@ User friendly wrapper functions for the spaces checkout built-in functions.
 
 load("info.star", "info_set_required_semver")
 
+_CHECKOUT_SHELL_SPACES_TOML = "shell.spaces.toml"
+
 # Clone rules that are optional are not run
 CHECKOUT_TYPE_OPTIONAL = "Optional"
 
@@ -614,4 +616,71 @@ def checkout_add_compile_commands_dir(name, path, rule):
         name,
         destination = checkout_get_compile_commands_spaces_name(),
         value = {"{}".format(path): "{}".format(rule)},
+    )
+
+def checkout_update_shell(name, shell_path, args = [], deps = []):
+    """
+
+    Updates the workspace shell configuration that is used with `spaces shell`
+
+    Args:
+        name: `str` The name of the rule.
+        shell_path: `str` The path to the shell executable.
+        args: `list` The arguments to pass to the shell.
+        deps: `list` The dependencies of the rule (allows controlling order of updating the file)
+    """
+    checkout_update_asset(
+        name,
+        destination = _CHECKOUT_SHELL_SPACES_TOML,
+        value = {
+            "path": shell_path,
+            "args": args,
+        },
+        deps = deps,
+    )
+
+def checkout_update_shell_startup(name, script_name, contents, env_name = None, deps = []):
+    """
+
+    Updates the workspace shell configuration that is used with `spaces shell`
+
+    Args:
+        name: `str` The name of the rule.
+        script_name: `str` The name of the startup file to generate and store at `.spaces/shell/<script_name>` in the workspace.
+        contents: `str` The contents of the startup file.
+        env_name: `str` If not None, this will be set to point to the workspace shell startup directory `.spaces/shell`.
+        deps: `list` The dependencies of the rule (allows controlling order of updating the file)
+    """
+
+    effective_env_name = {"env_name": env_name} if env_name else {}
+
+    checkout_update_asset(
+        name,
+        destination = _CHECKOUT_SHELL_SPACES_TOML,
+        value = {
+            "startup": {
+                "name": script_name,
+                "contents": contents,
+            } | effective_env_name,
+        },
+        deps = deps,
+    )
+
+def checkout_update_shell_shortcuts(name, shortcuts, deps = []):
+    """
+
+    Updates the `.spaces/shell/shortcuts.sh` file with shell functions. This file can be source when starting the shell.
+
+    Args:
+        name: `str` The name of the rule.
+        shortcuts: `dict` A dictionary of function names (key) and shell commands to execute (values).
+        deps: `list` A list of dependencies that allows override of shortcuts.
+    """
+    checkout_update_asset(
+        name,
+        destination = _CHECKOUT_SHELL_SPACES_TOML,
+        value = {
+            "shortcuts": shortcuts,
+        },
+        deps = deps,
     )
