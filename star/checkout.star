@@ -676,11 +676,12 @@ def checkout_update_shell_shortcuts(name, shortcuts, deps = []):
         shortcuts: `dict` A dictionary of function names (key) and shell commands to execute (values).
         deps: `list` A list of dependencies that allows override of shortcuts.
     """
-    checkout_update_asset(
-        name,
-        destination = _CHECKOUT_SHELL_SPACES_TOML,
-        value = {
-            "shortcuts": shortcuts,
-        },
-        deps = deps,
-    )
+    if shortcuts != None:
+        checkout_update_asset(
+            name,
+            destination = _CHECKOUT_SHELL_SPACES_TOML,
+            value = {
+                "shortcuts": shortcuts,
+            },
+            deps = deps,
+        )
