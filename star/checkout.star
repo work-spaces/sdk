@@ -475,7 +475,7 @@ def checkout_update_env(
         vars: `dict` Dictionary of variables to store in `env.spaces.star`.
         paths: `[str]` List of paths to add to the PATH.
         system_paths: `[str]` The path to add to the system PATH.
-        inherited_vars: List of variables to inherit from the calling environment and store in `env.spaces.star`.
+        inherited_vars: `[str]` List of variables to inherit from the calling environment and store in `env.spaces.star`.
         optional_inherited_vars: `[str]` List of variables to inherit from the calling environment if they exist and store in `env.spaces.star` (requires spaces >v0.15.1)
         run_inherited_vars: `[str]` List of variables inherited when executing spaces run
         deps: `[str]` List of dependencies for the rule.
