@@ -477,7 +477,7 @@ def checkout_update_env(
         system_paths: `[str]` The path to add to the system PATH.
         inherited_vars: `[str]` List of variables to inherit from the calling environment and store in `env.spaces.star`.
         optional_inherited_vars: `[str]` List of variables to inherit from the calling environment if they exist and store in `env.spaces.star` (requires spaces >v0.15.1)
-        run_inherited_vars: `[str]` List of variables inherited when executing spaces run
+        run_inherited_vars: `[str]` List of variables inherited when executing spaces run.
         deps: `[str]` List of dependencies for the rule.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
