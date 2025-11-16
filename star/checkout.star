@@ -468,7 +468,7 @@ def checkout_update_env(
     are added after the `paths` values.
 
     All vars are fixed at checkout time except vars specified in `run_inherited_vars`. Checkout vars
-    are stored in the new workspace in `env.spaces.star`. `run_inherited_vars` are inherited when executing spaces run.
+    are stored in the new workspace in `env.spaces.star`. `run_inherited_vars` are inherited when executing `spaces run`.
 
     Args:
         name: `str` The name of the rule.
