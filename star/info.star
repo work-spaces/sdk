@@ -130,3 +130,12 @@ def info_set_required_semver(required):
         required: The required semver for the workflow
     """
     info.set_required_semver(required)
+
+def info_is_ci():
+    """
+    Check if the workflow is running in a CI environment.
+
+    Returns:
+        True if `--ci` is passed when running `spaces`, False otherwise
+    """
+    return info.is_ci()
