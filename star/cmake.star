@@ -57,7 +57,7 @@ def cmake_add_configure_build_install(
         build_args: `list[str]` The arguments to pass to the build command
         build_env: `dict[str, str]` The environment variables to set for the build step
         build_artifact_globs: `list[str]` The globs to match when installing build artifacts
-        deps: `list[str]` The dependencies of the project
+        deps: `[str]` The dependencies of the project
         install_path: `str` The path to install the project
         skip_install: `bool` Skip the install step
     """
