@@ -16,7 +16,7 @@ def info_set_minimum_version(version):
     Set the minimum version of Spaces required to run the workflow
 
     Args:
-        version: The minimum version of Spaces required to run the workflow
+        version: `str` The minimum version of Spaces required to run the workflow
     """
     info.set_minimum_version(version)
 
@@ -115,7 +115,7 @@ def info_parse_log_file(path):
     Parses a log file
 
     Args:
-        path: path to the log file
+        path: `str` path to the log file
 
     Returns:
         dict: with members `header` and lines
@@ -127,7 +127,7 @@ def info_set_required_semver(required):
     Set the required `spaces` semver for the workflow
 
     Args:
-        required: The required semver for the workflow
+        required: `str` The required semver for the workflow
     """
     info.set_required_semver(required)
 

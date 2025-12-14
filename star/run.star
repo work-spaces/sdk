@@ -8,6 +8,7 @@ load("ws.star", "workspace_get_build_archive_info")
 RUN_INPUTS_ONCE = []
 RUN_INPUTS_ALWAYS = None
 RUN_TYPE_ALL = "Run"
+RUN_TYPE_DEFAULT = "Optional"
 RUN_TYPE_TEST = "Test"
 RUN_TYPE_SETUP = "Setup"
 RUN_TYPE_PRECOMMIT = "PreCommit"
@@ -475,25 +476,24 @@ def run_add_exec(
     """
     Adds a command to the run dependency graph
 
-
     Args:
-        name: The name of the rule.
-        command: The command to execute.
-        help: The help message for the rule.
-        args: The arguments to pass to the command.
-        type: The exec type (Run|Setup|Optional (default)|PreCommit|Clean|Test)
-        deps: The rule dependencies that must be run before this command
-        inputs: List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
-        env: key value pairs of environment variables
-        working_directory: The directory to run the command (default is workspace root).
-        platforms: Platforms to run on (default is all).
-        log_level: The log level to use None|App
-        expect: The expected result of the command Success|Failure|Any. (default is Success)
-        redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
-        timeout: Number of seconds to run before sending a kill signal.
+        name: `str` The name of the rule.
+        command: `str` The command to execute.
+        help: `str` The help message for the rule.
+        args: `[str]` The arguments to pass to the command.
+        type: `str` The exec type (Run|Setup|Optional (default)|PreCommit|Clean|Test)
+        deps: `[str]`The rule dependencies that must be run before this command
+        inputs: `[str]`List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
+        env: `dict` key value pairs of environment variables
+        working_directory: `str` The directory to run the command (default is workspace root).
+        platforms: `[str]` Platforms to run on (default is all).
+        log_level: `str` The log level to use None|App|Passthrough
+        expect: `str` The expected result of the command Success|Failure|Any. (default is Success)
+        redirect_stdout: `str` The file to redirect stdout to (prefer to parse the log file).
+        timeout: `float` Number of seconds to run before sending a kill signal.
     """
 
-    EFFECTIVE_TYPE = type if type != None else "Optional"
+    EFFECTIVE_TYPE = type if type != None else RUN_TYPE_DEFAULT
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
 
     run.add_exec(
@@ -529,17 +529,17 @@ def run_add_kill_exec(
     Adds a target that will send a signal to another target.
 
     Args:
-        name: The name of the rule.
-        target: The name of the rule to kill.
-        signal: The signal to send to the target.
-        help: The help message for the rule.
-        expect: The expected result of the kill. (default is Success)
-        deps: Run rule dependencies.
-        type: See run_add_exec()
-        platforms: Platforms to run on (default is all).
+        name: `str` The name of the rule.
+        target: `str` The name of the rule to kill.
+        signal: `str` The signal to send to the target.
+        help: `str` The help message for the rule.
+        expect: `str` The expected result of the kill. (default is Success)
+        deps: `[str]` Run rule dependencies.
+        type: `str` See [run_add_exec()](#run_add_exec)
+        platforms: `[str]` Platforms to run on (default is all).
     """
 
-    EFFECTIVE_TYPE = type if type != None else "Optional"
+    EFFECTIVE_TYPE = type if type != None else RUN_TYPE_DEFAULT
 
     run.add_kill_exec(
         rule = {
@@ -569,11 +569,11 @@ def run_add_target(
     This rule can be used to consolidate dependencies into a single target.
 
     Args:
-        name: The name of the rule.
-        deps: List of dependencies for the target.
-        platforms: List of platforms to build the target for (default is all).
-        type: See run_add_exec()
-        help: The help message for the rule.
+        name: `str` The name of the rule.
+        deps: `[str]` List of dependencies for the target.
+        platforms: `[str]` List of platforms to build the target for (default is all).
+        type: `str` See [run_add_exec()](#run_add_exec)
+        help: `str` The help message for the rule.
     """
     run.add_target(
         rule = {
@@ -596,10 +596,10 @@ def run_add_target_test(
     This rule can be used to consolidate test dependencies into a single target.
 
     Args:
-        name: The name of the rule.
-        deps: List of dependencies for the target.
-        platforms: List of platforms to build the target for (default is all).
-        help: The help message for the rule.
+        name: `str` The name of the rule.
+        deps: `[str]` List of dependencies for the target.
+        platforms: `[str]` List of platforms to build the target for (default is all).
+        help: `str` The help message for the rule.
     """
     run_add_target(
         name,
@@ -620,10 +620,10 @@ def run_add_target_precommit(
     This rule can be used to consolidate PreCommit dependencies into a single target.
 
     Args:
-        name: The name of the rule.
-        deps: List of dependencies for the target.
-        platforms: List of platforms to build the target for (default is all).
-        help: The help message for the rule.
+        name: `str` The name of the rule.
+        deps: `[str]` List of dependencies for the target.
+        platforms: `[str]` List of platforms to build the target for (default is all).
+        help: `str` The help message for the rule.
     """
     run_add_target(
         name,
@@ -642,8 +642,8 @@ def run_add_to_all(
     Targets will run with `spaces run` or `spaces run //:all`.
 
     Args:
-        name: The name of the rule.
-        deps: List of dependencies to run with `spaces run`
+        name: `str` The name of the rule.
+        deps: `[str]` List of dependencies to run with `spaces run`
     """
 
     run_add_target(name, deps, type = RUN_TYPE_ALL)
@@ -664,13 +664,13 @@ def run_add_archive(
     This rule can be used to consolidate dependencies into a single target.
 
     Args:
-        name: The name of the rule.
-        deps: List of dependencies to run with `spaces run`
-        version: The version of the archive.
-        source_directory: The directory containing the source files to archive.
-        includes: List of globs to include in the archive.
-        excludes: List of globs to exclude from the archive.
-        platform: The platform to build the target for (default is all).
+        name: `str` The name of the rule.
+        deps: `[str]` List of dependencies to run with `spaces run`
+        version: `str` The version of the archive.
+        source_directory: `str` The directory containing the source files to archive.
+        includes: `[str]` List of globs to include in the archive.
+        excludes: `[str]` List of globs to exclude from the archive.
+        platform: `str` The platform to build the target for (default is all).
 
     Returns:
         A tuple containing (<path to the archive>, <sha256 checksum of the archive>).

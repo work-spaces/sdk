@@ -13,8 +13,8 @@ def compile_commands_merge(name, output = None):
     This can be used with multiple calls to checkout_add_compile_commands_dir().
 
     Args:
-        name (str): The name of the rule.
-        output (str, optional): The output file path. Defaults to "build/compile_commands.json".
+        name: `str` The name of the rule.
+        output: `Optional<str>` The output file path. Defaults to "build/compile_commands.json".
     """
 
     CONFIG_FILE_NAME = checkout_get_compile_commands_spaces_name()

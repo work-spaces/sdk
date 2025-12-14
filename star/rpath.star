@@ -9,9 +9,9 @@ def rpath_update_macos_install_dir(name, install_path, deps):
     Update the rpaths of the binaries on macOS.
 
     Args:
-        name: The name of the rule
-        install_path: The path to the install directory
-        deps: The dependencies of the rule
+        name: `str` The name of the rule
+        install_path: `str` The path to the install directory
+        deps: `[str]` The dependencies of the rule
     """
 
     BIN_RULE_NAME = "{}_bin".format(name)

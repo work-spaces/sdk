@@ -200,7 +200,7 @@ def checkout_add_archive(
         name: `str` The name of the rule.
         url: `str` The URL of the archive to download.
         sha256: `str` The SHA256 checksum of the archive.
-        link: Hard | None
+        link: `str` Hard | None
         includes: `[str]` List of globs to include.
         excludes: `[str]` List of globs to exclude.
         strip_prefix:`str` Prefix to strip from the archive.
@@ -284,10 +284,10 @@ def checkout_update_asset(
     This rule will merge the data of an existing JSON, TOML, or YAML file with the given value.
 
     Args:
-        name: The name of the rule.
-        destination: The destination path for the asset.
-        format: The format of the asset (json | toml | yaml). Default will get extension from destination.
-        value: The value of the asset as a dict to merge with the existing file.
+        name: `str` The name of the rule.
+        destination: `str` The destination path for the asset.
+        format: `str` The format of the asset (json | toml | yaml). Default will get extension from destination.
+        value: `dict|list` The value of the asset as a dict to merge with the existing file.
         deps: `[str]` List of dependencies for the asset.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
@@ -321,10 +321,10 @@ def checkout_add_cargo_bin(
     Adds a cargo binary to the workspace.
 
     Args:
-        name: The name of the rule.
-        crate: The name of the crate.
-        version: The version of the crate.
-        bins: List of binaries to add.
+        name: `str` The name of the rule.
+        crate: `str` The name of the crate.
+        version: `str` The version of the crate.
+        bins: `[str]` List of binaries to add.
         deps: `[str]` List of dependencies for the rule.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
@@ -354,9 +354,9 @@ def checkout_add_hard_link_asset(
     Adds a hard link asset to the workspace.
 
     Args:
-        name: The name of the rule.
-        source: The source path of the asset.
-        destination: The destination path for the asset.
+        name: `str` The name of the rule.
+        source: `str` The source path of the asset.
+        destination: `str` The destination path for the asset.
         deps: `[str]` List of dependencies for the asset.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
@@ -524,9 +524,9 @@ def checkout_add_which_asset(
     Using this function creates system dependencies that may not be reproducible across different systems.
 
     Args:
-        name: The name of the rule.
-        which: The name of the asset to add.
-        destination: The destination path for the asset.
+        name: `str` The name of the rule.
+        which: `str` The name of the asset to add.
+        destination: `str` The destination path for the asset.
         deps: `[str]` List of dependencies for the asset.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
@@ -590,7 +590,7 @@ def checkout_add_oras_archive(
         add_prefix: `str` The prefix to add to the archive.
         manifest_digest_path: `str` The path to the manifest digest in the oras archive.
         manifest_artifact_path: `str` The path to the manifest artifact in the oras archive.
-        globs: List of globs to include/exclude.
+        globs: `[str]` List of globs to include/exclude.
         deps: `[str]` List of dependencies for the rule.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.

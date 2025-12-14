@@ -1,5 +1,7 @@
 """
 Spaces starlark functions for creating and working with capsules
+
+This is deprecated and will be removed in a future release.
 """
 
 load(

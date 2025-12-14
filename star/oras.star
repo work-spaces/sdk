@@ -26,15 +26,15 @@ def oras_add_publish_archive(
     Publishes an archive using oras.
 
     Args:
-        name: Name of the project to publish.
-        url: The URL of the oras archive to publish.
-        artifact: The artifact name of the oras archive.
-        tag: The tag of the oras archive.
-        input: The workspace path to the folder/file to archive and publish.
-        deps: Dependencies for the archive.
-        deploy_repo: The deploy repository to publish the archive to.
-        layer_info: The layer info of the archive.
-        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip).
+        name: `str` Name of the project to publish.
+        url: `str` The URL of the oras archive to publish.
+        artifact: `str` The artifact name of the oras archive.
+        tag: `str` The tag of the oras archive.
+        input: `str` The workspace path to the folder/file to archive and publish.
+        deps: `[str]` Dependencies for the archive.
+        deploy_repo: `str` The deploy repository to publish the archive to.
+        layer_info: `str` The layer info of the archive.
+        suffix: `str` The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip).
     """
 
     PLATFORM = info.get_platform_name()
@@ -101,12 +101,12 @@ def oras_add_platform_archive(
     Checks out an archive using oras.
 
     Args:
-        name: Name of the rule.
-        url: The URL of the oras archive to download.
-        artifact: The artifact name of the oras archive (platform will be appended to artifact name)
-        tag: The tag of the oras archive.
-        add_prefix: The prefix to add to the archive.
-        globs: List of globs to include/exclude.
+        name: `str` Name of the rule.
+        url: `str` The URL of the oras archive to download.
+        artifact: `str` The artifact name of the oras archive (platform will be appended to artifact name)
+        tag: `str` The tag of the oras archive.
+        add_prefix: `str` The prefix to add to the archive.
+        globs: `[str]` List of globs to include/exclude.
 
     """
 
