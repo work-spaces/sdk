@@ -483,7 +483,7 @@ def run_add_exec(
         args: `[str]` The arguments to pass to the command.
         type: `str` The exec type (Run|Setup|Optional (default)|PreCommit|Clean|Test)
         deps: `[str]`The rule dependencies that must be run before this command
-        inputs: `[str]`List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
+        inputs: `[str]` List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
         env: `dict` key value pairs of environment variables
         working_directory: `str` The directory to run the command (default is workspace root).
         platforms: `[str]` Platforms to run on (default is all).
