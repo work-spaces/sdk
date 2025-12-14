@@ -8,6 +8,17 @@ load("ws.star", "workspace_get_build_archive_info")
 RUN_INPUTS_ONCE = []
 RUN_INPUTS_ALWAYS = None
 RUN_TYPE_ALL = "Run"
+RUN_TYPE_TEST = "Test"
+RUN_TYPE_SETUP = "Setup"
+RUN_TYPE_PRECOMMIT = "PreCommit"
+RUN_TYPE_CLEAN = "Clean"
+RUN_TYPES = [
+    RUN_TYPE_ALL,
+    RUN_TYPE_TEST,
+    RUN_TYPE_SETUP,
+    RUN_TYPE_PRECOMMIT,
+    RUN_TYPE_CLEAN,
+]
 
 # Print the output of the run rule while running spaces
 RUN_LOG_LEVEL_APP = "App"
@@ -61,6 +72,45 @@ def run_type_all():
         str: "Run"
     """
     return RUN_TYPE_ALL
+
+def run_type_test():
+    """
+    The rules added as `Test` are part of the `//:test` target.
+
+    ```sh
+    spaces run //:test
+    ```
+
+    Returns:
+        str: "Test"
+    """
+    return RUN_TYPE_TEST
+
+def run_type_setup():
+    """
+    The rules added as `Setup` are part of the `//:setup` target.
+
+    ```sh
+    spaces run //:setup
+    ```
+
+    Returns:
+        str: "Setup"
+    """
+    return RUN_TYPE_SETUP
+
+def run_type_precommit():
+    """
+    The rules added as `Precommit` are part of the `//:precommit` target.
+
+    ```sh
+    spaces run //:precommit
+    ```
+
+    Returns:
+        str: "Precommit"
+    """
+    return RUN_TYPE_PRECOMMIT
 
 def run_log_level_app():
     """
@@ -210,7 +260,7 @@ def run_add_exec_setup(
             "deps": deps,
             "platforms": platforms,
             "help": help,
-            "type": "Setup",
+            "type": RUN_TYPE_SETUP,
             "inputs": RUN_INPUTS_ONCE,
         },
         exec = {
@@ -285,6 +335,67 @@ def run_add_exec_test(
         } | EFFECTIVE_TIMEOUT,
     )
 
+def run_add_exec_precommit(
+        name,
+        command,
+        help = None,
+        args = [],
+        env = {},
+        deps = [],
+        inputs = RUN_INPUTS_ALWAYS,
+        working_directory = None,
+        platforms = None,
+        log_level = None,
+        redirect_stdout = None,
+        timeout = None,
+        expect = RUN_EXPECT_SUCCESS):
+    """
+    Adds a command as a pre-commit rule.
+
+    All pre-commit rules can be executed with:
+
+    ```sh
+    spaces run //:pre-commit
+    ```
+
+    Args:
+        name: The name of the rule.
+        command: The command to execute.
+        help: The help message for the rule.
+        args: The arguments to pass to the command
+        deps: The rule dependencies
+        inputs: List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
+        env: key value pairs of environment variables
+        working_directory: The directory to run the command (default is workspace root).
+        platforms: Platforms to run on (default is all).
+        log_level: The log level to use None|App
+        redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
+        timeout: Number of seconds to run before sending a kill signal.
+        expect: The expected result of the command Success|Failure|Any. (default is Success)
+    """
+
+    EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
+
+    run.add_exec(
+        rule = {
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "help": help,
+            "type": RUN_TYPE_PRECOMMIT,
+            "inputs": inputs,
+        },
+        exec = {
+            "command": command,
+            "args": args,
+            "working_directory": working_directory,
+            "env": env,
+            "expect": expect,
+            "log_level": log_level,
+            "redirect_stdout": redirect_stdout,
+        } | EFFECTIVE_TIMEOUT,
+    )
+
 def run_add_exec_clean(
         name,
         command,
@@ -332,7 +443,7 @@ def run_add_exec_clean(
             "deps": deps,
             "platforms": platforms,
             "help": help,
-            "type": "Clean",
+            "type": RUN_TYPE_CLEAN,
             "inputs": inputs,
         },
         exec = {
@@ -364,12 +475,13 @@ def run_add_exec(
     """
     Adds a command to the run dependency graph
 
+
     Args:
         name: The name of the rule.
         command: The command to execute.
         help: The help message for the rule.
         args: The arguments to pass to the command.
-        type: The exec type ("Run"| "Setup" | "Optional")
+        type: The exec type (Run|Setup|Optional (default)|PreCommit|Clean|Test)
         deps: The rule dependencies that must be run before this command
         inputs: List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
         env: key value pairs of environment variables
@@ -423,7 +535,7 @@ def run_add_kill_exec(
         help: The help message for the rule.
         expect: The expected result of the kill. (default is Success)
         deps: Run rule dependencies.
-        type: The exec type ("Run"| "Setup" | "Optional")
+        type: See run_add_exec()
         platforms: Platforms to run on (default is all).
     """
 
@@ -460,7 +572,7 @@ def run_add_target(
         name: The name of the rule.
         deps: List of dependencies for the target.
         platforms: List of platforms to build the target for (default is all).
-        type: The exec type ("Run"| "Setup" | "Optional")
+        type: See run_add_exec()
         help: The help message for the rule.
     """
     run.add_target(
@@ -473,13 +585,61 @@ def run_add_target(
         },
     )
 
+def run_add_target_test(
+        name,
+        deps,
+        help = None,
+        platforms = None):
+    """
+    Adds a target to the workspace that `//:test` will depend on.
+
+    This rule can be used to consolidate test dependencies into a single target.
+
+    Args:
+        name: The name of the rule.
+        deps: List of dependencies for the target.
+        platforms: List of platforms to build the target for (default is all).
+        help: The help message for the rule.
+    """
+    run_add_target(
+        name,
+        deps = deps,
+        help = help,
+        type = "Test",
+        platforms = platforms,
+    )
+
+def run_add_target_precommit(
+        name,
+        deps,
+        help = None,
+        platforms = None):
+    """
+    Adds a target to the workspace that `//:pre-commit` will depend on.
+
+    This rule can be used to consolidate test dependencies into a single target.
+
+    Args:
+        name: The name of the rule.
+        deps: List of dependencies for the target.
+        platforms: List of platforms to build the target for (default is all).
+        help: The help message for the rule.
+    """
+    run_add_target(
+        name,
+        deps = deps,
+        help = help,
+        type = RUN_TYPE_PRECOMMIT,
+        platforms = platforms,
+    )
+
 def run_add_to_all(
         name,
         deps):
     """
     Creates a target rule called name with deps and part of `:all`.
 
-    Targets will run with `spaces run`.
+    Targets will run with `spaces run` or `spaces run //:all`.
 
     Args:
         name: The name of the rule.
