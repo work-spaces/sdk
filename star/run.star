@@ -101,14 +101,14 @@ def run_type_setup():
 
 def run_type_precommit():
     """
-    The rules added as `Precommit` are part of the `//:precommit` target.
+    The rules added as `PreCommit` are part of the `//:pre-commit` target.
 
     ```sh
-    spaces run //:precommit
+    spaces run //:pre-commit
     ```
 
     Returns:
-        str: "Precommit"
+        str: "PreCommit"
     """
     return RUN_TYPE_PRECOMMIT
 
@@ -605,7 +605,7 @@ def run_add_target_test(
         name,
         deps = deps,
         help = help,
-        type = "Test",
+        type = RUN_TYPE_TEST,
         platforms = platforms,
     )
 
@@ -617,7 +617,7 @@ def run_add_target_precommit(
     """
     Adds a target to the workspace that `//:pre-commit` will depend on.
 
-    This rule can be used to consolidate test dependencies into a single target.
+    This rule can be used to consolidate PreCommit dependencies into a single target.
 
     Args:
         name: The name of the rule.
