@@ -14,7 +14,7 @@ def compile_commands_merge(name, output = None):
 
     Args:
         name: `str` The name of the rule.
-        output: `Optional<str>` The output file path. Defaults to "build/compile_commands.json".
+        output: `Optional[str]` The output file path. Defaults to "build/compile_commands.json".
     """
 
     CONFIG_FILE_NAME = checkout_get_compile_commands_spaces_name()
