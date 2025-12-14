@@ -54,7 +54,7 @@ def mv(
     Rename a file or directory from source to destination.
 
     Args:
-        name: The name of the rule.
+        name: `str` The name of the rule.
         source: `str` The source file or directory.
         destination: `str` The destination file or directory.
         options: `[str]` The options for the move command.
@@ -62,7 +62,7 @@ def mv(
         type: `enum` The type of the command.
         inputs: `[str]` The inputs for the command.
         working_directory: `str` The working directory for the command.
-        expect: `enum` Success | Failure
+        expect: `enum` Success|Failure
     """
 
     run_add_exec(
@@ -98,7 +98,7 @@ def ln(
         type: `enum` The type of the command.
         inputs: `[str]` The inputs for the command.
         working_directory: `str` The working directory for the command.
-        expect: `enum` Success | Failure
+        expect: `enum` Success|Failure
     """
 
     run_add_exec(
@@ -132,7 +132,7 @@ def ls(
         type: `enum` The type of the command.
         inputs: `[str]` The inputs for the command.
         working_directory: `str` The working directory for the command.
-        expect: `enum` Success | Failure
+        expect: `enum` Success|Failure
     """
 
     run_add_exec(
@@ -166,7 +166,7 @@ def mkdir(
         type: The type of the command.
         inputs: The inputs for the command.
         working_directory: The working directory for the command.
-        expect: `enum` Success | Failure
+        expect: `enum` Success|Failure
     """
 
     run_add_exec(
@@ -200,7 +200,7 @@ def chmod(
         type: `enum` The type of the command.
         inputs: `[str]` The inputs for the command.
         working_directory: `str` The working directory for the command.
-        expect: `enum` Success | Failure
+        expect: `enum` Success|Failure
     """
 
     run_add_exec(

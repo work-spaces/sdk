@@ -46,20 +46,20 @@ def cmake_add_configure_build_install(
     Add a CMake project to the build
 
     Args:
-        name: The name of the project
-        build_directory: The directory to build the project in (default is build/<name>)
-        source_directory: The directory of the project
-        configure_inputs: The inputs for the configure step. Default uses cmake files in source directory
-        build_inputs: The inputs for the build step. Default uses source directory
-        prefix_paths: The paths to add to the CMAKE_PREFIX_PATH: default is sysroot;build/install (uses absolute paths)
-        configure_args: The arguments to pass to the configure script
-        configure_env: The environment variables to set for the configure step
-        build_args: The arguments to pass to the build command
-        build_env: The environment variables to set for the build step
-        build_artifact_globs: The globs to match when installing build artifacts
-        deps: The dependencies of the project
-        install_path: The path to install the project
-        skip_install: Skip the install step
+        name: `str` The name of the project
+        build_directory: `str` The directory to build the project in (default is build/<name>)
+        source_directory: `str` The directory of the project
+        configure_inputs: `list[str]` The inputs for the configure step. Default uses cmake files in source directory
+        build_inputs: `list[str]` The inputs for the build step. Default uses source directory
+        prefix_paths: `list[str]` The paths to add to the CMAKE_PREFIX_PATH: default is sysroot;build/install (uses absolute paths)
+        configure_args: `list[str]` The arguments to pass to the configure script
+        configure_env: `dict[str, str]` The environment variables to set for the configure step
+        build_args: `list[str]` The arguments to pass to the build command
+        build_env: `dict[str, str]` The environment variables to set for the build step
+        build_artifact_globs: `list[str]` The globs to match when installing build artifacts
+        deps: `list[str]` The dependencies of the project
+        install_path: `str` The path to install the project
+        skip_install: `bool` Skip the install step
     """
 
     CONFIGURE_RULE_NAME = "{}_configure".format(name)
@@ -151,19 +151,19 @@ def cmake_add_repo(
     Add a CMake project to the build
 
     Args:
-        name: The name of the project
-        url: The URL of the repository
-        rev: The revision of the repository
-        install_path: The path to install the project
-        configure_args: The arguments to pass to the configure script
-        build_args: The arguments to pass to the build command
-        build_artifact_globs: The globs to match when installing build artifacts
-        checkout_submodules: Whether to checkout submodules
-        relative_source_directory: The directory of the project (default is the name)
-        clone: The clone type (Worktree, Blobless, Shallow, Default)
+        name: `str` The name of the project
+        url: `str` The URL of the repository
+        rev: `str` The revision of the repository
+        install_path: `str` The path to install the project
+        configure_args: `[str]` The arguments to pass to the configure script
+        build_args: `[str]` The arguments to pass to the build command
+        build_artifact_globs: `[str]` The globs to match when installing build artifacts
+        checkout_submodules: `bool` Whether to checkout submodules
+        relative_source_directory: `str` The directory of the project (default is the name)
+        clone: `str` The clone type (Worktree, Blobless, Shallow, Default)
         checkout_type: `str` use [checkout_type_optional()](#/docs/@star/sdk/star/checkout#checkout_type_optional) to skip rule checkout
-        skip_install: Skip the install step
-        deps: The dependencies of the project
+        skip_install: `bool` Skip the install step
+        deps: `[str]` The dependencies of the project
     """
 
     CHECKOUT_RULE = "{}_source".format(name)
@@ -229,7 +229,7 @@ def cmake_add_source_archive(
         build_artifact_globs: `[str]` The globs to match when installing build artifacts
         deps: `[str]` List of dependencies of the project
         checkout_type: `str` use [checkout_type_optional()](#/docs/@star/sdk/star/checkout#checkout_type_optional) to skip rule checkout
-        skip_install: Skip the install step
+        skip_install: `bool` Skip the install step
     """
 
     checkout_add_archive(

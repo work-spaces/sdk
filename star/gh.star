@@ -20,13 +20,13 @@ def gh_add_publish_archive(
     This can be run on multiple OS's and multiple arch's.
 
     Args:
-        name: Name of the project to publish.
-        input: The workspace path to the folder/file to archive and publish
-        version: Version to publish
-        deploy_repo: The github URL to the repo
-        deps: dependencies for the archive
-        sh: The shell to use for running commands (default: bash)
-        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
+        name: `str` Name of the project to publish.
+        input: `str` The workspace path to the folder/file to archive and publish
+        version: `str` Version to publish
+        deploy_repo: `str` The github URL to the repo
+        deps: `[str]` dependencies for the archive
+        sh: `str` The shell to use for running commands (default: bash)
+        suffix: `str` The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
     """
 
     PLATFORM = info_get_platform_name()

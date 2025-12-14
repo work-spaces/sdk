@@ -10,7 +10,7 @@ def script_print(message):
     function for normal output.
 
     Args:
-        message: The message to print
+        message: `str` The message to print
     """
     script.print(message)
 
@@ -19,7 +19,7 @@ def script_get_arg(offset):
     Get a command line argument
 
     Args:
-        offset: The offset of the argument to get
+        offset: `int` The offset of the argument to get
 
     Returns:
         The argument at the given offset
@@ -44,6 +44,6 @@ def script_set_exit_code(exit_code):
     This does not exit the script. It just sets the exit code.
 
     Args:
-        exit_code: The exit code
+        exit_code: `int` The exit code
     """
     script.set_exit_code(exit_code)

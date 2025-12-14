@@ -21,15 +21,15 @@ def gnu_add_configure_make_install(
     Add an autotools project to the build
 
     Args:
-        name: The name of the project
-        source_directory: The directory of the project
-        autoreconf_args: The arguments to pass to the autoreconf script
-        configure_args: The arguments to pass to the configure script
-        make_args: The arguments to pass to the make command
-        build_artifact_globs: The globs to match the build artifacts
-        deps: The dependencies of the project
-        install_path: The path to install the project
-        skip_install: Whether to skip the install step
+        name: `str` The name of the project
+        source_directory: `str` The directory of the project
+        autoreconf_args: `[str]` The arguments to pass to the autoreconf script
+        configure_args: `[str]` The arguments to pass to the configure script
+        make_args: `[str]` The arguments to pass to the make command
+        build_artifact_globs: `[str]` The globs to match the build artifacts
+        deps: `[str]` The dependencies of the project
+        install_path: `str` The path to install the project
+        skip_install: `bool` Whether to skip the install step
     """
 
     BUILD_DIR = "build/{}".format(name)
@@ -115,15 +115,15 @@ def gnu_add_repo(
     Add an autotools project from a repository
 
     Args:
-        name: The name of the project
-        url: The URL of the repository
-        rev: The revision of the repository
-        autoreconf_args: The arguments to pass to the autoreconf script
-        configure_args: The arguments to pass to the configure script
-        make_args: The arguments to pass to the make
-        checkout_submodules: Whether to checkout submodules
-        deps: The dependencies of the project
-        install_path: The path to install the project
+        name: `str` The name of the project
+        url: `str` The URL of the repository
+        rev: `str` The revision of the repository
+        autoreconf_args: `[str]` The arguments to pass to the autoreconf script
+        configure_args: `[str]` The arguments to pass to the configure script
+        make_args: `[str]` The arguments to pass to the make
+        checkout_submodules: `bool` Whether to checkout submodules
+        deps: `[str]` The dependencies of the project
+        install_path: `str` The path to install the project
     """
 
     CHECKOUT_RULE = "{}_source".format(name)
