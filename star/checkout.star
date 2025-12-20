@@ -484,18 +484,14 @@ def checkout_update_env(
     """
 
     if optional_inherited_vars != None:
-        info_set_required_semver(">=0.15.1")
-        if inherited_vars == None:
-            inherited_vars = []
-        inherited_vars.extend(["{}?".format(var) for var in optional_inherited_vars])
+        info_set_required_semver(">=0.15.17")
 
     if run_inherited_vars != None:
-        info_set_required_semver(">=0.15.6")
-        if inherited_vars == None:
-            inherited_vars = []
-        inherited_vars.extend(["{}!".format(var) for var in run_inherited_vars])
+        info_set_required_semver(">=0.15.17")
 
     effective_inherited_vars = {"inherited_vars": inherited_vars} if inherited_vars != None else {}
+    effective_optional_inherited_vars = {"optional_inherited_vars": optional_inherited_vars} if optional_inherited_vars != None else {}
+    effective_run_inherited_vars = {"run_inherited_vars": run_inherited_vars} if run_inherited_vars != None else {}
 
     checkout.update_env(
         rule = {
@@ -505,10 +501,13 @@ def checkout_update_env(
             "type": type,
         },
         env = {
-            "paths": paths,
-            "vars": vars,
-            "system_paths": system_paths,
-        } | effective_inherited_vars,
+                  "paths": paths,
+                  "vars": vars,
+                  "system_paths": system_paths,
+              } |
+              effective_inherited_vars |
+              effective_optional_inherited_vars |
+              effective_run_inherited_vars,
     )
 
 def checkout_add_which_asset(
