@@ -78,6 +78,38 @@ def workspace_is_env_var_set(name):
     """
     return workspace.is_env_var_set(name)
 
+def workspace_get_env_var_or(name, or_value):
+    """
+    Get the value of an environment variable if it exists. Otherwise,
+    the value passed to `or_value` is returned.
+
+    Args:
+        name: `str`  The name of the environment variable
+        or: `str` Other value to return
+
+    Returns:
+        `str` If available, the value of the environment variable, otherwise `or_value`
+    """
+    if workspace_is_env_var_set(name):
+        return workspace_get_env_var(name)
+
+    return or_value
+
+def workspace_get_env_var_or_none(name):
+    """
+    Get the value of an environment variable if it exists. Otherwise, return `None`
+
+    Args:
+        name: `str`  The name of the environment variable
+
+    Returns:
+        `str` If available, the value of the environment variable, otherwise `None`
+    """
+    if workspace_is_env_var_set(name):
+        return workspace_get_env_var(name)
+
+    return None
+
 def workspace_is_reproducible():
     """
     Check if the workspace is reproducible
