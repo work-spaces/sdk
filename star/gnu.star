@@ -33,6 +33,7 @@ def gnu_add_configure_make_install(
     """
 
     BUILD_DIR = "build/{}".format(name)
+    WORKING_BUILD_DIR = "//{}".format(BUILD_DIR)
     PREPARE_RULE_NAME = "{}_prepare".format(name)
     AUTORECONF_RULE_NAME = "{}_autoreconf".format(name)
     CONFIGURE_RULE_NAME = "{}_configure".format(name)
@@ -68,7 +69,7 @@ def gnu_add_configure_make_install(
         inputs = ["+//{}/configure".format(source_directory)],
         command = "../../{}/configure".format(source_directory),
         args = [PREFIX_ARG] + configure_args,
-        working_directory = BUILD_DIR,
+        working_directory = WORKING_BUILD_DIR,
         help = "Configure {}".format(name),
     )
 
@@ -81,7 +82,7 @@ def gnu_add_configure_make_install(
         ],
         command = "make",
         args = ["-j{}".format(NUM_CPUS)] + make_args,
-        working_directory = BUILD_DIR,
+        working_directory = WORKING_BUILD_DIR,
         help = "Build {}".format(name),
     )
 
@@ -95,7 +96,7 @@ def gnu_add_configure_make_install(
         inputs = build_artifact_globs,
         command = "make",
         args = ["install"],
-        working_directory = BUILD_DIR,
+        working_directory = WORKING_BUILD_DIR,
         help = "Install {}".format(name),
     )
 
