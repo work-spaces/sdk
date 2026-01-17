@@ -140,6 +140,7 @@ def cmake_add_repo(
         install_path = None,
         configure_args = [],
         configure_env = {},
+        configure_inputs = None,
         build_args = [],
         build_env = {},
         build_artifact_globs = [],
@@ -154,18 +155,19 @@ def cmake_add_repo(
     Add a CMake project to the build
 
     Args:
-        name: `str` The name of the project
-        url: `str` The URL of the repository
-        rev: `str` The revision of the repository
-        install_path: `str` The path to install the project
-        configure_args: `[str]` The arguments to pass to the configure script
+        name: The name of the project
+        url: The URL of the repository
+        rev: The revision of the repository
+        install_path: The path to install the project
+        configure_args: The arguments to pass to the configure script
         configure_env: `dict` Additional env values during configure
-        build_args: `[str]` The arguments to pass to the build command
+        configure_inputs: globs to include when checking if configure shoudl re-run
+        build_args: The arguments to pass to the build command
         build_env: `dict` Additional env values during build
-        build_artifact_globs: `[str]` The globs to match when installing build artifacts
-        checkout_submodules: `bool` Whether to checkout submodules
-        relative_source_directory: `str` The directory of the project (default is the name)
-        clone: `str` The clone type (Worktree, Blobless, Shallow, Default)
+        build_artifact_globs: The globs to match when installing build artifacts
+        checkout_submodules: Whether to checkout submodules
+        relative_source_directory: The directory of the project (default is the name)
+        clone: The clone type (Worktree, Blobless, Shallow, Default)
         checkout_type: `str` use [checkout_type_optional()](#/docs/@star/sdk/star/checkout#checkout_type_optional) to skip rule checkout
         skip_install: `bool` Skip the install step
         deps: `[str]` The dependencies of the project
@@ -200,6 +202,7 @@ def cmake_add_repo(
             source_directory = source_directory,
             configure_args = configure_args,
             configure_env = configure_env,
+            configure_inputs = configure_inputs,
             build_args = build_args,
             build_env = build_env,
             build_artifact_globs = build_artifact_globs,
@@ -218,6 +221,7 @@ def cmake_add_source_archive(
         install_path = None,
         configure_args = [],
         configure_env = {},
+        configure_inputs = None,
         build_args = [],
         build_env = {},
         build_artifact_globs = None,
@@ -236,6 +240,7 @@ def cmake_add_source_archive(
         install_path: `str` The path to install the project
         configure_args: `[str]` The arguments to pass to the configure script
         configure_env: `dict` Additional env values during configure
+        configure_inputs: `[str]` globs to include when checking if configure shoudl re-run
         build_args: `[str]` The arguments to pass to the build command
         build_env: `dict` Additional env values during build
         build_artifact_globs: `[str]` The globs to match when installing build artifacts
@@ -258,6 +263,7 @@ def cmake_add_source_archive(
             source_directory,
             configure_args = configure_args,
             configure_env = configure_env,
+            configure_inputs = configure_inputs,
             build_args = build_args,
             build_env = build_env,
             install_path = install_path,
