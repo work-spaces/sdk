@@ -63,6 +63,7 @@ def checkout_sparse_mode_cone():
 def checkout_sparse_mode_no_cone():
     """
     Use `checkout_add_repo(sparse_mode = checkout_sparse_mode_no_cone())` for sparse no-cone mode.
+
     This mode uses gitignore-like expressions for sparse checkout.
 
     Returns:
@@ -100,6 +101,7 @@ def checkout_clone_blobless():
 def checkout_clone_shallow():
     """
     Use `checkout_add_repo(clone = checkout_clone_shallow())` for a shallow clone.
+
     Note: The rev must be a branch, not a tag or commit.
 
     Returns:
@@ -189,7 +191,6 @@ def checkout_add_archive(
         platforms = None,
         type = None,
         headers = None,
-        custom_headers = None,
         deps = []):
     """
     Adds an archive to the workspace.
@@ -618,8 +619,9 @@ def checkout_add_compile_commands_dir(name, path, rule):
     Registers a build directory in the compile_commands.spaces.json file.
 
     Args:
-        name: `str` The name of the rule.
+        name: `str` The name of the checkout rule.
         path: `str` The path to the build directory where compile_commands.json will be found.
+        rule: `str` The name of the rule that is associated with creating the compile_command.json file.
     """
 
     checkout_update_asset(

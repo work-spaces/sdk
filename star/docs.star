@@ -7,7 +7,6 @@ load(
     "checkout.star",
     "checkout_add_asset",
     "checkout_add_hard_link_asset",
-    "checkout_add_soft_link_asset",
 )
 load("shell.star", "cp", "mkdir")
 load("std/fs.star", "fs_exists")
@@ -85,7 +84,6 @@ def docs_cp(
         deps: Dependencies for the rule.
         type: The type of the rule.
         inputs: Rules inputs to determine if run can be skipped.
-        platforms: Platforms for the rule.
         working_directory: The working directory for the `cp` command.
     """
 
