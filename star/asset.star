@@ -1,0 +1,80 @@
+"""
+Helper to create dicts for passing to checkout_add_any_assets()
+"""
+
+ASSET_HARD_LINK = "HardLink"
+ASSET_SOFT_LINK = "SoftLink"
+ASSET_WHICH = "Which"
+ASSET_CONTENT = "Asset"
+
+def asset_hard_link(source, destination):
+    """
+    Creates a hard-link asset that can be passed in the assets list to checkout_add_any_assets()
+
+    Args:
+        source: `str` source of the hard link
+        destination: `str` destination of the hard link
+
+    Returns:
+        dict that can be passed to checkout_add_any_assets()
+    """
+
+    return {
+        "type": ASSET_HARD_LINK,
+        "source": source,
+        "destination": destination,
+    }
+
+def asset_soft_link(source, destination):
+    """
+    Creates a soft-link asset that can be passed in the assets list to checkout_add_any_assets()
+
+    Args:
+        source: `str` source of the hard link
+        destination: `str` destination of the hard link
+
+    Returns:
+        dict that can be passed to checkout_add_any_assets()
+    """
+
+    return {
+        "type": ASSET_SOFT_LINK,
+        "source": source,
+        "destination": destination,
+    }
+
+def asset_content(content, destination):
+    """
+    Creates an asset (file from a starlark string) that can be passed in the assets list to checkout_add_any_assets()
+
+    Args:
+        content: `str` content for populating the asset
+        destination: `str` destination of the asset
+
+    Returns:
+        dict that can be passed to checkout_add_any_assets()
+    """
+
+    return {
+        "type": ASSET_CONTENT,
+        "content": content,
+        "destination": destination,
+    }
+
+def asset_which(which, destination):
+    """
+    Creates an asset by using `which` that can be passed in the assets list to checkout_add_any_assets()
+
+    Args:
+        which: `str` argument to pass to `which` to discover the program
+        destination: `str` destination of the asset
+
+    Returns:
+        `dict` that can be passed to checkout_add_any_assets()
+    """
+
+    return {
+        "type": ASSET_WHICH,
+        "which": which,
+        "destination": destination,
+    }
