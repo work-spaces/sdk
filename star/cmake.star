@@ -138,7 +138,9 @@ def cmake_add_repo(
         rev,
         install_path = None,
         configure_args = [],
+        configure_env = {},
         build_args = [],
+        build_env = {},
         build_artifact_globs = [],
         checkout_submodules = False,
         relative_source_directory = None,
@@ -156,7 +158,9 @@ def cmake_add_repo(
         rev: `str` The revision of the repository
         install_path: `str` The path to install the project
         configure_args: `[str]` The arguments to pass to the configure script
+        configure_env: `dict` Additional env values during configure
         build_args: `[str]` The arguments to pass to the build command
+        build_env: `dict` Additional env values during build
         build_artifact_globs: `[str]` The globs to match when installing build artifacts
         checkout_submodules: `bool` Whether to checkout submodules
         relative_source_directory: `str` The directory of the project (default is the name)
@@ -193,7 +197,9 @@ def cmake_add_repo(
             name,
             source_directory = source_directory,
             configure_args = configure_args,
+            configure_env = configure_env,
             build_args = build_args,
+            build_env = build_env,
             build_artifact_globs = build_artifact_globs,
             deps = deps + SUBMODULE_DEPS,
             install_path = install_path,
@@ -209,7 +215,9 @@ def cmake_add_source_archive(
         filename = None,
         install_path = None,
         configure_args = [],
+        configure_env = {},
         build_args = [],
+        build_env = {},
         build_artifact_globs = None,
         deps = [],
         checkout_type = None,
@@ -225,7 +233,9 @@ def cmake_add_source_archive(
         filename: `str` The filename of the source archive
         install_path: `str` The path to install the project
         configure_args: `[str]` The arguments to pass to the configure script
+        configure_env: `dict` Additional env values during configure
         build_args: `[str]` The arguments to pass to the build command
+        build_env: `dict` Additional env values during build
         build_artifact_globs: `[str]` The globs to match when installing build artifacts
         deps: `[str]` List of dependencies of the project
         checkout_type: `str` use [checkout_type_optional()](#/docs/@star/sdk/star/checkout#checkout_type_optional) to skip rule checkout
@@ -245,7 +255,9 @@ def cmake_add_source_archive(
             name,
             source_directory,
             configure_args = configure_args,
+            configure_env = configure_env,
             build_args = build_args,
+            build_env = build_env,
             install_path = install_path,
             deps = deps,
             build_artifact_globs = build_artifact_globs,
