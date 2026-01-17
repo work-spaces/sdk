@@ -697,3 +697,34 @@ def checkout_update_shell_shortcuts(name, shortcuts, deps = []):
             },
             deps = deps,
         )
+
+def checkout_add_any_assets(
+        name,
+        assets,
+        deps = [],
+        type = None,
+        platforms = None):
+    """
+    Adds a list of any assets to the workspace as a single rule.
+
+    `assets` should be a list of dicts. Use asset.star: asset_hard_link(), asset_soft_link(), etc to create the entries.
+
+    Args:
+        name: `str` The name of the rule.
+        assets: `[dict]` A list of dict's that define assets to add.
+        deps: `[str]` List of dependencies for the rule.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) rule applies to.
+    """
+
+    info_set_required_semver(">=0.15.20")
+
+    checkout.add_any_assets(
+        rule = {
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "type": type,
+        },
+        assets = {"any": assets},
+    )
