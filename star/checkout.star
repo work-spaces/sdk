@@ -717,7 +717,7 @@ def checkout_add_any_assets(
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) rule applies to.
     """
 
-    info_set_required_semver(">=0.15.20")
+    info_set_required_semver(">=0.15.19")
 
     checkout.add_any_assets(
         rule = {
