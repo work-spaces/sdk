@@ -665,6 +665,8 @@ def run_add_archive(
 
     Args:
         name: `str` The name of the rule.
+        archive_name: `str` The base name of the archive that will be created
+        suffix: `str` The archive suffix (tar.gz or zip for examples)
         deps: `[str]` List of dependencies to run with `spaces run`
         version: `str` The version of the archive.
         source_directory: `str` The directory containing the source files to archive.

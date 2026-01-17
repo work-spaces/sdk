@@ -60,6 +60,7 @@ def cmake_add_configure_build_install(
         deps: `[str]` The dependencies of the project
         install_path: `str` The path to install the project
         skip_install: `bool` Skip the install step
+        find_using_cmake_system_path: `bool` Allow cmake to look at system paths
     """
 
     CONFIGURE_RULE_NAME = "{}_configure".format(name)
@@ -168,6 +169,7 @@ def cmake_add_repo(
         checkout_type: `str` use [checkout_type_optional()](#/docs/@star/sdk/star/checkout#checkout_type_optional) to skip rule checkout
         skip_install: `bool` Skip the install step
         deps: `[str]` The dependencies of the project
+        find_using_cmake_system_path: `bool` Allow cmake to look at system paths
     """
 
     CHECKOUT_RULE = "{}_source".format(name)
