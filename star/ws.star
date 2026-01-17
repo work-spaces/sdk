@@ -80,12 +80,13 @@ def workspace_is_env_var_set(name):
 
 def workspace_get_env_var_or(name, or_value):
     """
-    Get the value of an environment variable if it exists. Otherwise,
-    the value passed to `or_value` is returned.
+    Get the value of an environment variable if it exists.
+
+    Otherwise, the value passed to `or_value` is returned.
 
     Args:
         name: `str`  The name of the environment variable
-        or: `str` Other value to return
+        or_value: `str` Other value to return
 
     Returns:
         `str` If available, the value of the environment variable, otherwise `or_value`
@@ -94,6 +95,21 @@ def workspace_get_env_var_or(name, or_value):
         return workspace_get_env_var(name)
 
     return or_value
+
+def workspace_is_env_var_set_to(name, expected):
+    """
+    Returns true if an env variable is set to the expected value.
+
+    Returns false if the env either does not exist or is not set to the expected value.
+
+    Args:
+        name: `str`  The name of the environment variable
+        expected: `str` The expected value stored in the env variable
+    """
+    if workspace_is_env_var_set(name):
+        return workspace_get_env_var(name) == expected
+
+    return False
 
 def workspace_get_env_var_or_none(name):
     """
