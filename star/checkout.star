@@ -458,6 +458,7 @@ def checkout_update_env(
         inherited_vars = None,
         optional_inherited_vars = None,
         run_inherited_vars = None,
+        secret_inherited_vars = None,
         deps = [],
         type = None,
         platforms = None):
@@ -470,6 +471,7 @@ def checkout_update_env(
 
     All vars are fixed at checkout time except vars specified in `run_inherited_vars`. Checkout vars
     are stored in the new workspace in `env.spaces.star`. `run_inherited_vars` are inherited when executing `spaces run`.
+    `secret_inherited_vars` are inherited when executing spaces checkout or run. The values of the secrets are masked in the logs and terminal.
 
     Args:
         name: `str` The name of the rule.
@@ -479,6 +481,7 @@ def checkout_update_env(
         inherited_vars: `[str]` List of variables to inherit from the calling environment and store in `env.spaces.star`.
         optional_inherited_vars: `[str]` List of variables to inherit from the calling environment if they exist and store in `env.spaces.star` (requires spaces >v0.15.1)
         run_inherited_vars: `[str]` List of variables inherited when executing spaces run.
+        secret_inherited_vars: `[str]` List of variables inherited when executing spaces checkout/run. Values will be masked in the logs and terminal.
         deps: `[str]` List of dependencies for the rule.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
@@ -490,9 +493,13 @@ def checkout_update_env(
     if run_inherited_vars != None:
         info_set_required_semver(">=0.15.17")
 
+    if secret_inherited_vars != None:
+        info_set_required_semver(">=0.15.21")
+
     effective_inherited_vars = {"inherited_vars": inherited_vars} if inherited_vars != None else {}
     effective_optional_inherited_vars = {"optional_inherited_vars": optional_inherited_vars} if optional_inherited_vars != None else {}
     effective_run_inherited_vars = {"run_inherited_vars": run_inherited_vars} if run_inherited_vars != None else {}
+    secret_inherited_vars = {"secret_inherited_vars": secret_inherited_vars} if secret_inherited_vars != None else {}
 
     checkout.update_env(
         rule = {
@@ -508,7 +515,8 @@ def checkout_update_env(
               } |
               effective_inherited_vars |
               effective_optional_inherited_vars |
-              effective_run_inherited_vars,
+              effective_run_inherited_vars |
+              secret_inherited_vars,
     )
 
 def checkout_add_which_asset(
