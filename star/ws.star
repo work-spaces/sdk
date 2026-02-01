@@ -148,23 +148,71 @@ def _get_member_requirement(url, rev = None, semver = None):
         "url": url,
     } | version_requirment
 
-def _is_path_to_member_available(
+def workspace_is_path_to_member_available(
         url,
         rev = None,
         semver = None):
+    """
+    Checks if a workspace member is available based on a url.
+
+    It is an error to specify `rev` and `semver`.
+
+    Args:
+        url: `str` The url of the workspace member
+        rev: `str` The revision of the workspace member (or None for any revision)
+        semver: `str` The semantic version of the workspace member (or None for any version)
+
+    Returns:
+        `bool` True if the member is available, False otherwise.
+    """
     info.set_minimum_version("0.14.0")
     return workspace.is_path_to_member_available(
         member = _get_member_requirement(url, rev, semver),
     )
 
-def _get_path_to_member(
-        url,
-        rev = None,
-        semver = None):
-    info.set_minimum_version("0.14.0")
+def workspace_get_path_to_member(url, rev = None, semver = None):
+    """
+    Gets the path in the workspace to a member pulled from url
+
+    If the member is not found, the program will exit with an error.
+
+    It is an error to specify `rev` and `semver`.
+
+    Args:
+        url: `str` The url of the workspace member
+        rev: `str` The revision of the workspace member (or None for any revision)
+        semver: `str` The semantic version of the workspace member (or None for any version)
+
+    Returns:
+        `str` The path to the workspace member.
+    """
     return workspace.get_path_to_member(
         member = _get_member_requirement(url, rev, semver),
     )
+
+def workspace_get_path_to_member_or_none(
+        url,
+        rev = None,
+        semver = None):
+    """
+    Gets the path in the workspace to a member pulled from url
+
+    If the member is not found, returns None.
+
+    It is an error to specify `rev` and `semver`.
+
+    Args:
+        url: `str` The url of the workspace member
+        rev: `str` The revision of the workspace member (or None for any revision)
+        semver: `str` The semantic version of the workspace member (or None for any version)
+
+    Returns:
+        `str` The path to the workspace member or None if not found.
+    """
+    if workspace_is_path_to_member_available(url, rev, semver):
+        return workspace_get_path_to_member(url, rev, semver)
+
+    return None
 
 def workspace_get_path_to_member_with_semver(
         url,
@@ -183,7 +231,7 @@ def workspace_get_path_to_member_with_semver(
     Returns:
         `bool` The path to the workspace member.
     """
-    return _get_path_to_member(
+    return workspace_get_path_to_member(
         url = url,
         semver = semver,
     )
@@ -203,7 +251,7 @@ def workspace_get_path_to_member_with_rev(
     Returns:
         `str` The path to the workspace member.
     """
-    return _get_path_to_member(
+    return workspace_get_path_to_member(
         url = url,
         rev = rev,
     )
@@ -220,7 +268,7 @@ def workspace_check_member_semver(url, semver):
         `bool` True if the workspace member is found satisfying semver, False otherwise
     """
 
-    return _is_path_to_member_available(url, rev = None, semver = semver)
+    return workspace_is_path_to_member_available(url, rev = None, semver = semver)
 
 def workspace_assert_member_semver(url, semver):
     """
@@ -231,7 +279,7 @@ def workspace_assert_member_semver(url, semver):
         semver: `str` The semver requiement assuming the member has a version
     """
 
-    IS_AVAILABLE = _is_path_to_member_available(url, semver = semver)
+    IS_AVAILABLE = workspace_is_path_to_member_available(url, semver = semver)
     if not IS_AVAILABLE:
         info.abort("The workspace member at {} does not satisfy the semver requirement {}".format(url, semver))
 
@@ -244,7 +292,7 @@ def workspace_assert_member_revision(url, rev):
         rev: `str` git/sha256 hash
     """
 
-    IS_AVAILABLE = _is_path_to_member_available(url, rev = rev)
+    IS_AVAILABLE = workspace_is_path_to_member_available(url, rev = rev)
     if not IS_AVAILABLE:
         info.abort("The workspace member at {} does not satisfy the revision requirement {}".format(url, rev))
 
@@ -260,7 +308,7 @@ def workspace_check_member_revision(url, rev):
         `bool` True if the workspace member is found at the specified rev, False otherwise
     """
 
-    return _is_path_to_member_available(url, rev = rev)
+    return workspace_is_path_to_member_available(url, rev = rev)
 
 def workspace_get_build_archive_info(name, archive):
     """
