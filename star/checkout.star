@@ -22,8 +22,64 @@ CHECKOUT_CLONE_WORKTREE = "Worktree"  # stores the bare repository in the spaces
 CHECKOUT_CLONE_BLOBLESS = "Blobless"  # filters unused files from the repo history
 CHECKOUT_CLONE_SHALLOW = "Shallow"  # The rev must be a branch not a tag or commit
 
+CHECKOUT_EXPECT_SUCCESS = "Success"
+CHECKOUT_EXPECT_FAILURE = "Failure"
+CHECKOUT_EXPECT_ANY = "Any"
+
 # This is the only supported value
 CHECKOUT_CLONE_TYPE_REVISION = "Revision"
+
+def checkout_add_exec(
+        name,
+        command,
+        help = None,
+        args = [],
+        env = {},
+        deps = [],
+        working_directory = None,
+        platforms = None,
+        log_level = None,
+        redirect_stdout = None,
+        timeout = None,
+        expect = CHECKOUT_EXPECT_SUCCESS):
+    """
+    Adds a command to the run dependency graph
+
+    Args:
+        name: `str` The name of the rule.
+        command: `str` The command to execute.
+        help: `str` The help message for the rule.
+        args: `[str]` The arguments to pass to the command.
+        deps: `[str]`The rule dependencies that must be run before this command
+        env: `dict` key value pairs of environment variables
+        working_directory: `str` The directory to run the command (default is workspace root).
+        platforms: `[str]` Platforms to run on (default is all).
+        log_level: `str` The log level to use None|App|Passthrough
+        expect: `str` The expected result of the command Success|Failure|Any. (default is Success)
+        redirect_stdout: `str` The file to redirect stdout to (prefer to parse the log file).
+        timeout: `float` Number of seconds to run before sending a kill signal.
+    """
+
+    checkout.add_exec(
+        rule = {
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "help": help,
+            "type": "Run",
+            "inputs": None,
+        },
+        exec = {
+            "command": command,
+            "args": args,
+            "working_directory": working_directory,
+            "env": env,
+            "expect": expect,
+            "log_level": log_level,
+            "redirect_stdout": redirect_stdout,
+            "timeout": timeout,
+        },
+    )
 
 def checkout_get_compile_commands_spaces_name():
     """
