@@ -60,6 +60,9 @@ def checkout_add_exec(
         timeout: `float` Number of seconds to run before sending a kill signal.
     """
 
+    # checkout.add_exec() introduced in 0.15.22
+    info_set_required_semver(">=0.15.22")
+
     checkout.add_exec(
         rule = {
             "name": name,
