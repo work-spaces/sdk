@@ -16,7 +16,8 @@ def gnu_add_configure_make_install(
         build_artifact_globs = None,
         deps = [],
         install_path = None,
-        skip_install = False):
+        skip_install = False,
+        env = {}):
     """
     Add an autotools project to the build
 
@@ -30,6 +31,7 @@ def gnu_add_configure_make_install(
         deps: `[str]` The dependencies of the project
         install_path: `str` The path to install the project
         skip_install: `bool` Whether to skip the install step
+        env: `dict` The environment variables to set during configure, build, and install
     """
 
     BUILD_DIR = "build/{}".format(name)
@@ -48,6 +50,7 @@ def gnu_add_configure_make_install(
         PREPARE_RULE_NAME,
         command = "mkdir",
         args = ["-p", BUILD_DIR],
+        env = env,
     )
 
     autoreconf_deps = [PREPARE_RULE_NAME]
@@ -60,6 +63,7 @@ def gnu_add_configure_make_install(
             args = autoreconf_args,
             working_directory = source_directory,
             help = "autoreconf {}".format(name),
+            env = env,
         )
         autoreconf_deps = [AUTORECONF_RULE_NAME]
 
@@ -71,6 +75,7 @@ def gnu_add_configure_make_install(
         args = [PREFIX_ARG] + configure_args,
         working_directory = WORKING_BUILD_DIR,
         help = "Configure {}".format(name),
+        env = env,
     )
 
     run_add_exec(
@@ -84,6 +89,7 @@ def gnu_add_configure_make_install(
         args = ["-j{}".format(NUM_CPUS)] + make_args,
         working_directory = WORKING_BUILD_DIR,
         help = "Build {}".format(name),
+        env = env,
     )
 
     if skip_install:
@@ -98,6 +104,7 @@ def gnu_add_configure_make_install(
         args = ["install"],
         working_directory = WORKING_BUILD_DIR,
         help = "Install {}".format(name),
+        env = env,
     )
 
     run_add_target(name, deps = [INSTALL_RULE_NAME])
@@ -111,7 +118,8 @@ def gnu_add_repo(
         make_args = [],
         checkout_submodules = False,
         deps = [],
-        install_path = None):
+        install_path = None,
+        env = {}):
     """
     Add an autotools project from a repository
 
@@ -125,6 +133,7 @@ def gnu_add_repo(
         checkout_submodules: `bool` Whether to checkout submodules
         deps: `[str]` The dependencies of the project
         install_path: `str` The path to install the project
+        env: `dict` The environment variables to set during configure, make, and install
     """
 
     CHECKOUT_RULE = "{}_source".format(name)
@@ -154,4 +163,5 @@ def gnu_add_repo(
         make_args = make_args,
         deps = deps + submodule_deps,
         install_path = install_path,
+        env = env,
     )
