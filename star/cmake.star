@@ -41,7 +41,8 @@ def cmake_add_configure_build_install(
         deps = [],
         install_path = None,
         skip_install = False,
-        find_using_cmake_system_path = False):
+        find_using_cmake_system_path = False,
+        env = {}):
     """
     Add a CMake project to the build
 
@@ -61,6 +62,7 @@ def cmake_add_configure_build_install(
         install_path: `str` The path to install the project
         skip_install: `bool` Skip the install step
         find_using_cmake_system_path: `bool` Allow cmake to look at system paths
+        env: `dict[str, str]` The environment variables to set during configure, make, and install
     """
 
     CONFIGURE_RULE_NAME = "{}_configure".format(name)
@@ -101,7 +103,7 @@ def cmake_add_configure_build_install(
             "-B{}".format(EFFECTIVE_BUILD_DIRECTORY),
             "-S{}".format(source_directory),
         ] + configure_args,
-        env = configure_env,
+        env = configure_env | env,
         help = "CMake Configure:{}".format(name),
     )
 
@@ -111,7 +113,7 @@ def cmake_add_configure_build_install(
         inputs = EFFECTIVE_BUILD_INPUTS,
         deps = [CONFIGURE_RULE_NAME],
         args = ["--build", EFFECTIVE_BUILD_DIRECTORY] + build_args,
-        env = build_env,
+        env = build_env | env,
         help = "CMake build:{}".format(name),
     )
 
@@ -124,6 +126,7 @@ def cmake_add_configure_build_install(
             deps = [BUILD_RULE_NAME],
             args = ["--build", EFFECTIVE_BUILD_DIRECTORY, "--target", "install"],
             help = "CMake install:{}".format(name),
+            env = env,
         )
         name_dep = INSTALL_RULE_NAME
 
@@ -150,7 +153,8 @@ def cmake_add_repo(
         checkout_type = None,
         skip_install = False,
         find_using_cmake_system_path = False,
-        deps = []):
+        deps = [],
+        env = {}):
     """
     Add a CMake project to the build
 
@@ -172,6 +176,7 @@ def cmake_add_repo(
         skip_install: `bool` Skip the install step
         deps: `[str]` The dependencies of the project
         find_using_cmake_system_path: `bool` Allow cmake to look at system paths
+        env: `dict` Additional env values during configure, build, install
     """
 
     CHECKOUT_RULE = "{}_source".format(name)
@@ -210,6 +215,7 @@ def cmake_add_repo(
             install_path = install_path,
             skip_install = skip_install,
             find_using_cmake_system_path = find_using_cmake_system_path,
+            env = env,
         )
 
 def cmake_add_source_archive(
@@ -227,7 +233,8 @@ def cmake_add_source_archive(
         build_artifact_globs = None,
         deps = [],
         checkout_type = None,
-        skip_install = False):
+        skip_install = False,
+        env = {}):
     """
     Add a CMake project to the build
 
@@ -247,6 +254,7 @@ def cmake_add_source_archive(
         deps: `[str]` List of dependencies of the project
         checkout_type: `str` use [checkout_type_optional()](#/docs/@star/sdk/star/checkout#checkout_type_optional) to skip rule checkout
         skip_install: `bool` Skip the install step
+        env: `dict` Additional env values during configure, build, and install
     """
 
     checkout_add_archive(
@@ -270,4 +278,5 @@ def cmake_add_source_archive(
             deps = deps,
             build_artifact_globs = build_artifact_globs,
             skip_install = skip_install,
+            env = env,
         )
