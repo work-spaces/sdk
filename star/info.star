@@ -139,3 +139,40 @@ def info_is_ci():
         True if `--ci` is passed when running `spaces`, False otherwise
     """
     return info.is_ci()
+
+def info_get_execution_phase():
+    """
+    Get the execution phase
+
+    Returns:
+        The execution phase
+    """
+    info_set_minimum_version("0.15.23")
+    return info.get_execution_phase()
+
+def info_is_execution_phase_inspect():
+    """
+    Check if the execution phase is inspect
+
+    Returns:
+        True if the execution phase is inspect, False otherwise
+    """
+    return info_get_execution_phase() == "Inspect"
+
+def info_is_execution_phase_run():
+    """
+    Check if the execution phase is run
+
+    Returns:
+        True if the execution phase is run, False otherwise
+    """
+    return info_get_execution_phase() == "Run"
+
+def info_is_execution_phase_checkout():
+    """
+    Check if the execution phase is checkout
+
+    Returns:
+        True if the execution phase is checkout, False otherwise
+    """
+    return info_get_execution_phase() == "Checkout"
