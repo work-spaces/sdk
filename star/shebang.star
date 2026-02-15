@@ -4,7 +4,7 @@ Update the she-bang line for a file
 
 load("run.star", "run_add_exec")
 
-def shebang_add_update(name, input_file, new_shebang, deps):
+def shebang_add_update(name, input_file, new_shebang, deps, visibility = None):
     """
     Update the she-bang for a file
 
@@ -13,6 +13,7 @@ def shebang_add_update(name, input_file, new_shebang, deps):
         input_file: `str` The path to the file to update
         new_shebang: `str` The new she-bang line
         deps: `[str]` The dependencies of the rule
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     run_add_exec(
@@ -24,4 +25,5 @@ def shebang_add_update(name, input_file, new_shebang, deps):
             "--new-shebang={}".format(new_shebang),
         ],
         help = "Update the she-bang line for a shell script",
+        visibility = visibility,
     )

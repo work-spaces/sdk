@@ -21,7 +21,8 @@ def oras_add_publish_archive(
         deps,
         deploy_repo = None,
         layer_info = "application/archive",
-        suffix = "tar.xz"):
+        suffix = "tar.xz",
+        visibility = None):
     """
     Publishes an archive using oras.
 
@@ -35,6 +36,7 @@ def oras_add_publish_archive(
         deploy_repo: `str` The deploy repository to publish the archive to.
         layer_info: `str` The layer info of the archive.
         suffix: `str` The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip).
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     PLATFORM = info.get_platform_name()
@@ -82,12 +84,14 @@ def oras_add_publish_archive(
             ARCHIVE_RULE_NAME,
         ],
         working_directory = "//{}".format(ARCHIVE_OUTPUT_FOLDER),
+        visibility = visibility,
     )
 
     run_add_target(
         name,
         deps = [ORAS_RULE_PUSH_NAME],
         help = "Publish {} using oras".format(name),
+        visibility = visibility,
     )
 
 def oras_add_platform_archive(
@@ -96,7 +100,8 @@ def oras_add_platform_archive(
         artifact,
         tag,
         add_prefix = WORKSPACE_SYSROOT,
-        globs = None):
+        globs = None,
+        visibility = None):
     """
     Checks out an archive using oras.
 
@@ -107,6 +112,7 @@ def oras_add_platform_archive(
         tag: `str` The tag of the oras archive.
         add_prefix: `str` The prefix to add to the archive.
         globs: `[str]` List of globs to include/exclude.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
 
     """
 
@@ -120,4 +126,5 @@ def oras_add_platform_archive(
         tag = tag,
         add_prefix = add_prefix,
         globs = globs,
+        visibility = visibility,
     )

@@ -42,7 +42,8 @@ def cmake_add_configure_build_install(
         install_path = None,
         skip_install = False,
         find_using_cmake_system_path = False,
-        env = {}):
+        env = {},
+        visibility = None):
     """
     Add a CMake project to the build
 
@@ -63,6 +64,7 @@ def cmake_add_configure_build_install(
         skip_install: `bool` Skip the install step
         find_using_cmake_system_path: `bool` Allow cmake to look at system paths
         env: `dict[str, str]` The environment variables to set during configure, make, and install
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     CONFIGURE_RULE_NAME = "{}_configure".format(name)
@@ -105,6 +107,7 @@ def cmake_add_configure_build_install(
         ] + configure_args,
         env = configure_env | env,
         help = "CMake Configure:{}".format(name),
+        visibility = visibility,
     )
 
     run_add_exec(
@@ -115,6 +118,7 @@ def cmake_add_configure_build_install(
         args = ["--build", EFFECTIVE_BUILD_DIRECTORY] + build_args,
         env = build_env | env,
         help = "CMake build:{}".format(name),
+        visibility = visibility,
     )
 
     name_dep = BUILD_RULE_NAME
@@ -127,6 +131,7 @@ def cmake_add_configure_build_install(
             args = ["--build", EFFECTIVE_BUILD_DIRECTORY, "--target", "install"],
             help = "CMake install:{}".format(name),
             env = env,
+            visibility = visibility,
         )
         name_dep = INSTALL_RULE_NAME
 
@@ -134,6 +139,7 @@ def cmake_add_configure_build_install(
         name,
         deps = [name_dep],
         help = "CMake configure/build/install",
+        visibility = visibility,
     )
 
 def cmake_add_repo(
@@ -154,7 +160,8 @@ def cmake_add_repo(
         skip_install = False,
         find_using_cmake_system_path = False,
         deps = [],
-        env = {}):
+        env = {},
+        visibility = None):
     """
     Add a CMake project to the build
 
@@ -177,6 +184,7 @@ def cmake_add_repo(
         deps: `[str]` The dependencies of the project
         find_using_cmake_system_path: `bool` Allow cmake to look at system paths
         env: `dict` Additional env values during configure, build, install
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     CHECKOUT_RULE = "{}_source".format(name)
@@ -186,6 +194,7 @@ def cmake_add_repo(
         rev = rev,
         clone = clone,
         type = checkout_type,
+        visibility = visibility,
     )
 
     if not checkout_type == CHECKOUT_TYPE_OPTIONAL:
@@ -197,6 +206,7 @@ def cmake_add_repo(
                 command = "git",
                 args = ["submodule", "update", "--init", "--recursive"],
                 working_directory = "//{}".format(CHECKOUT_RULE),
+                visibility = visibility,
             )
             SUBMODULE_DEPS = [SUBMODULE_RULE]
 
@@ -216,6 +226,7 @@ def cmake_add_repo(
             skip_install = skip_install,
             find_using_cmake_system_path = find_using_cmake_system_path,
             env = env,
+            visibility = visibility,
         )
 
 def cmake_add_source_archive(
@@ -234,7 +245,8 @@ def cmake_add_source_archive(
         deps = [],
         checkout_type = None,
         skip_install = False,
-        env = {}):
+        env = {},
+        visibility = None):
     """
     Add a CMake project to the build
 
@@ -255,6 +267,7 @@ def cmake_add_source_archive(
         checkout_type: `str` use [checkout_type_optional()](#/docs/@star/sdk/star/checkout#checkout_type_optional) to skip rule checkout
         skip_install: `bool` Skip the install step
         env: `dict` Additional env values during configure, build, and install
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     checkout_add_archive(
@@ -263,6 +276,7 @@ def cmake_add_source_archive(
         sha256 = sha256,
         filename = filename,
         type = checkout_type,
+        visibility = visibility,
     )
 
     if not checkout_type == CHECKOUT_TYPE_OPTIONAL:
@@ -279,4 +293,5 @@ def cmake_add_source_archive(
             build_artifact_globs = build_artifact_globs,
             skip_install = skip_install,
             env = env,
+            visibility = visibility,
         )

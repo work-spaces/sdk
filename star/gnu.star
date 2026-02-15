@@ -17,7 +17,8 @@ def gnu_add_configure_make_install(
         deps = [],
         install_path = None,
         skip_install = False,
-        env = {}):
+        env = {},
+        visibility = None):
     """
     Add an autotools project to the build
 
@@ -32,6 +33,7 @@ def gnu_add_configure_make_install(
         install_path: `str` The path to install the project
         skip_install: `bool` Whether to skip the install step
         env: `dict` The environment variables to set during configure, build, and install
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     BUILD_DIR = "build/{}".format(name)
@@ -51,6 +53,7 @@ def gnu_add_configure_make_install(
         command = "mkdir",
         args = ["-p", BUILD_DIR],
         env = env,
+        visibility = visibility,
     )
 
     autoreconf_deps = [PREPARE_RULE_NAME]
@@ -64,6 +67,7 @@ def gnu_add_configure_make_install(
             working_directory = source_directory,
             help = "autoreconf {}".format(name),
             env = env,
+            visibility = visibility,
         )
         autoreconf_deps = [AUTORECONF_RULE_NAME]
 
@@ -76,6 +80,7 @@ def gnu_add_configure_make_install(
         working_directory = WORKING_BUILD_DIR,
         help = "Configure {}".format(name),
         env = env,
+        visibility = visibility,
     )
 
     run_add_exec(
@@ -90,10 +95,11 @@ def gnu_add_configure_make_install(
         working_directory = WORKING_BUILD_DIR,
         help = "Build {}".format(name),
         env = env,
+        visibility = visibility,
     )
 
     if skip_install:
-        run_add_target(name, deps = [BUILD_RULE_NAME])
+        run_add_target(name, deps = [BUILD_RULE_NAME], visibility = visibility)
         return
 
     run_add_exec(
@@ -105,9 +111,10 @@ def gnu_add_configure_make_install(
         working_directory = WORKING_BUILD_DIR,
         help = "Install {}".format(name),
         env = env,
+        visibility = visibility,
     )
 
-    run_add_target(name, deps = [INSTALL_RULE_NAME])
+    run_add_target(name, deps = [INSTALL_RULE_NAME], visibility = visibility)
 
 def gnu_add_repo(
         name,
@@ -119,7 +126,8 @@ def gnu_add_repo(
         checkout_submodules = False,
         deps = [],
         install_path = None,
-        env = {}):
+        env = {},
+        visibility = None):
     """
     Add an autotools project from a repository
 
@@ -134,6 +142,7 @@ def gnu_add_repo(
         deps: `[str]` The dependencies of the project
         install_path: `str` The path to install the project
         env: `dict` The environment variables to set during configure, make, and install
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     CHECKOUT_RULE = "{}_source".format(name)
@@ -142,6 +151,7 @@ def gnu_add_repo(
         url = url,
         rev = rev,
         clone = "Blobless",
+        visibility = visibility,
     )
 
     SUBMODULE_RULE = "{}_submodules".format(name)
@@ -152,6 +162,7 @@ def gnu_add_repo(
             command = "git",
             args = ["submodule", "update", "--init", "--recursive"],
             working_directory = "//{}".format(CHECKOUT_RULE),
+            visibility = visibility,
         )
         submodule_deps = [SUBMODULE_RULE]
 
@@ -164,4 +175,5 @@ def gnu_add_repo(
         deps = deps + submodule_deps,
         install_path = install_path,
         env = env,
+        visibility = visibility,
     )

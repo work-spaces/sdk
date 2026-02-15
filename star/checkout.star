@@ -2,7 +2,7 @@
 User friendly wrapper functions for the spaces checkout built-in functions.
 """
 
-load("info.star", "info_set_required_semver")
+load("info.star", "info_set_minimum_version", "info_set_required_semver")
 
 _CHECKOUT_SHELL_SPACES_TOML = "shell.spaces.toml"
 
@@ -41,6 +41,7 @@ def checkout_add_exec(
         log_level = None,
         redirect_stdout = None,
         timeout = None,
+        visibility = None,
         expect = CHECKOUT_EXPECT_SUCCESS):
     """
     Adds a command to the run dependency graph
@@ -58,10 +59,15 @@ def checkout_add_exec(
         expect: `str` The expected result of the command Success|Failure|Any. (default is Success)
         redirect_stdout: `str` The file to redirect stdout to (prefer to parse the log file).
         timeout: `float` Number of seconds to run before sending a kill signal.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     # checkout.add_exec() introduced in 0.15.22
     info_set_required_semver(">=0.15.22")
+
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
     checkout.add_exec(
         rule = {
@@ -71,7 +77,7 @@ def checkout_add_exec(
             "help": help,
             "type": "Run",
             "inputs": None,
-        },
+        } | EFFECTIVE_VISIBILITY,
         exec = {
             "command": command,
             "args": args,
@@ -180,7 +186,8 @@ def checkout_add_repo(
         working_directory = None,
         platforms = None,
         type = None,
-        deps = []):
+        deps = [],
+        visibility = None):
     """
     Clones a repository and checks it out at a specific revision.
 
@@ -212,6 +219,7 @@ def checkout_add_repo(
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of platforms to add the repo to.
         working_directory: `str` The working directory to clone the repository into.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EVALUATE_SPACES_MODULES = {
@@ -221,13 +229,17 @@ def checkout_add_repo(
         "sparse_checkout": {"mode": sparse_mode, "list": sparse_list},
     } if sparse_mode != None else {}
 
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
+
     checkout.add_repo(
         rule = {
             "name": name,
             "deps": deps,
             "platforms": platforms,
             "type": type,
-        },
+        } | EFFECTIVE_VISIBILITY,
         repo = {
             "url": url,
             "rev": rev,
@@ -250,7 +262,8 @@ def checkout_add_archive(
         platforms = None,
         type = None,
         headers = None,
-        deps = []):
+        deps = [],
+        visibility = None):
     """
     Adds an archive to the workspace.
 
@@ -270,6 +283,7 @@ def checkout_add_archive(
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         headers: `dict` key-value pairs of headers to use when downloading the archive.
         deps: `[str]` List of dependencies for the rule.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
     if headers != None:
         info_set_required_semver(">=0.15.2")
@@ -278,13 +292,17 @@ def checkout_add_archive(
     if headers != None:
         effective_headers = {"headers": headers}
 
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
+
     checkout.add_archive(
         rule = {
             "name": name,
             "deps": deps,
             "platforms": platforms,
             "type": type,
-        },
+        } | EFFECTIVE_VISIBILITY,
         archive = {
             "url": url,
             "sha256": sha256,
@@ -303,7 +321,8 @@ def checkout_add_asset(
         destination,
         deps = [],
         type = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Adds an asset to the workspace.
 
@@ -316,14 +335,19 @@ def checkout_add_asset(
         deps: `[str]` List of dependencies for the rule.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
+
     checkout.add_asset(
         rule = {
             "name": name,
             "deps": deps,
             "platforms": platforms,
             "type": type,
-        },
+        } | EFFECTIVE_VISIBILITY,
         asset = {
             "content": content,
             "destination": destination,
@@ -337,7 +361,8 @@ def checkout_update_asset(
         format = None,
         deps = [],
         type = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Updates an asset in the workspace.
 
@@ -351,9 +376,14 @@ def checkout_update_asset(
         deps: `[str]` List of dependencies for the asset.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     effective_format = format if format != None else destination.split(".")[-1]
+
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
     checkout.update_asset(
         rule = {
@@ -361,7 +391,7 @@ def checkout_update_asset(
             "deps": deps,
             "platforms": platforms,
             "type": type,
-        },
+        } | EFFECTIVE_VISIBILITY,
         asset = {
             "destination": destination,
             "format": effective_format,
@@ -376,7 +406,8 @@ def checkout_add_cargo_bin(
         bins,
         deps = [],
         type = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Adds a cargo binary to the workspace.
 
@@ -388,14 +419,19 @@ def checkout_add_cargo_bin(
         deps: `[str]` List of dependencies for the rule.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
+
     checkout.add_cargo_bin(
         rule = {
             "name": name,
             "deps": deps,
             "platforms": platforms,
             "type": type,
-        },
+        } | EFFECTIVE_VISIBILITY,
         cargo_bin = {
             "crate": crate,
             "version": version,
@@ -409,7 +445,8 @@ def checkout_add_hard_link_asset(
         destination,
         deps = [],
         type = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Adds a hard link asset to the workspace.
 
@@ -420,14 +457,19 @@ def checkout_add_hard_link_asset(
         deps: `[str]` List of dependencies for the asset.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
+
     checkout.add_hard_link_asset(
         rule = {
             "name": name,
             "deps": deps,
             "platforms": platforms,
             "type": type,
-        },
+        } | EFFECTIVE_VISIBILITY,
         asset = {
             "source": source,
             "destination": destination,
@@ -440,7 +482,8 @@ def checkout_add_soft_link_asset(
         destination,
         deps = [],
         type = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Adds a soft link asset to the workspace.
 
@@ -451,14 +494,19 @@ def checkout_add_soft_link_asset(
         deps: `[str]` List of dependencies for the asset.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
+
     checkout.add_soft_link_asset(
         rule = {
             "name": name,
             "deps": deps,
             "platforms": platforms,
             "type": type,
-        },
+        } | EFFECTIVE_VISIBILITY,
         asset = {
             "source": source,
             "destination": destination,
@@ -469,7 +517,8 @@ def checkout_add_target(
         name,
         deps,
         type = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Adds a target to the workspace.
 
@@ -478,21 +527,27 @@ def checkout_add_target(
         deps: `[str]` List of dependencies for the target.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
+
     checkout.add_target(
         rule = {
             "name": name,
             "deps": deps,
             "platforms": platforms,
             "type": type,
-        },
+        } | EFFECTIVE_VISIBILITY,
     )
 
 def checkout_add_platform_archive(
         name,
         platforms,
         deps = [],
-        type = None):
+        type = None,
+        visibility = None):
     """
     Adds a platform archive to the checkout.
 
@@ -503,9 +558,14 @@ def checkout_add_platform_archive(
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
         deps: `[str]` List of dependencies for the rule.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
+
     checkout.add_platform_archive(
-        rule = {"name": name, "type": type, "deps": deps},
+        rule = {"name": name, "type": type, "deps": deps} | EFFECTIVE_VISIBILITY,
         platforms = platforms,
     )
 
@@ -520,7 +580,8 @@ def checkout_update_env(
         secret_inherited_vars = None,
         deps = [],
         type = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Updates the environment with the given variables and paths.
 
@@ -544,6 +605,7 @@ def checkout_update_env(
         deps: `[str]` List of dependencies for the rule.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     if optional_inherited_vars != None:
@@ -560,13 +622,17 @@ def checkout_update_env(
     effective_run_inherited_vars = {"run_inherited_vars": run_inherited_vars} if run_inherited_vars != None else {}
     secret_inherited_vars = {"secret_inherited_vars": secret_inherited_vars} if secret_inherited_vars != None else {}
 
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
+
     checkout.update_env(
         rule = {
             "name": name,
             "deps": deps,
             "platforms": platforms,
             "type": type,
-        },
+        } | EFFECTIVE_VISIBILITY,
         env = {
                   "paths": paths,
                   "vars": vars,
@@ -584,7 +650,8 @@ def checkout_add_which_asset(
         destination,
         deps = [],
         platforms = None,
-        type = None):
+        type = None,
+        visibility = None):
     """
     Adds an asset to the destintion based on the which command.
 
@@ -597,7 +664,12 @@ def checkout_add_which_asset(
         deps: `[str]` List of dependencies for the asset.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
+
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
     checkout.add_which_asset(
         rule = {
@@ -605,7 +677,7 @@ def checkout_add_which_asset(
             "deps": deps,
             "platforms": platforms,
             "type": type,
-        },
+        } | EFFECTIVE_VISIBILITY,
         asset = {
             "which": which,
             "destination": destination,
@@ -645,7 +717,8 @@ def checkout_add_oras_archive(
         globs = None,
         deps = [],
         type = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Adds an oras archive to the workspace.
 
@@ -661,7 +734,12 @@ def checkout_add_oras_archive(
         deps: `[str]` List of dependencies for the rule.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
+
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
     checkout.add_oras_archive(
         rule = {
@@ -669,7 +747,7 @@ def checkout_add_oras_archive(
             "deps": deps,
             "platforms": platforms,
             "type": type,
-        },
+        } | EFFECTIVE_VISIBILITY,
         oras_archive = {
             "url": url,
             "artifact": artifact,
@@ -770,7 +848,8 @@ def checkout_add_any_assets(
         assets,
         deps = [],
         type = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Adds a list of any assets to the workspace as a single rule.
 
@@ -782,9 +861,14 @@ def checkout_add_any_assets(
         deps: `[str]` List of dependencies for the rule.
         type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
         platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) rule applies to.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     info_set_required_semver(">=0.15.19")
+
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
     checkout.add_any_assets(
         rule = {
@@ -792,6 +876,6 @@ def checkout_add_any_assets(
             "deps": deps,
             "platforms": platforms,
             "type": type,
-        },
+        } | EFFECTIVE_VISIBILITY,
         assets = {"any": assets},
     )

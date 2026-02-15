@@ -9,7 +9,7 @@ so that they can work in the terminal.
 load("checkout.star", "checkout_add_which_asset", "checkout_update_env")
 load("ws.star", "workspace_get_absolute_path")
 
-def spaces_working_env(add_spaces_to_sysroot = False, inherit_terminal = False):
+def spaces_working_env(add_spaces_to_sysroot = False, inherit_terminal = False, visibility = None):
     """
     Sets the spaces working env which provides `/usr/bin` and `/bin` in the `PATH` so that the user can run system commands.
 
@@ -18,6 +18,7 @@ def spaces_working_env(add_spaces_to_sysroot = False, inherit_terminal = False):
     Args:
         add_spaces_to_sysroot: `bool` If True, adds the spaces binary to the sysroot/bin directory.
         inherit_terminal: `bool` If True, inherits terminal variables. This enables `spaces shell` to work well.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
 
     Returns:
         The name of the rule.
@@ -45,6 +46,7 @@ def spaces_working_env(add_spaces_to_sysroot = False, inherit_terminal = False):
         } | ps1,
         inherited_vars = ["HOME", "USER"],
         optional_inherited_vars = terminal_vars if inherit_terminal else [],
+        visibility = visibility,
     )
 
     if add_spaces_to_sysroot:
@@ -52,6 +54,7 @@ def spaces_working_env(add_spaces_to_sysroot = False, inherit_terminal = False):
             "spaces_sysroot_bin",
             which = "spaces",
             destination = "sysroot/bin/spaces",
+            visibility = visibility,
         )
 
     return rule_name
