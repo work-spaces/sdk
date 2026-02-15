@@ -775,7 +775,7 @@ def checkout_add_compile_commands_dir(name, path, rule):
         value = {"{}".format(path): "{}".format(rule)},
     )
 
-def checkout_update_shell(name, shell_path, args = [], deps = []):
+def checkout_update_shell(name, shell_path, args = [], deps = [], visibility = None):
     """
 
     Updates the workspace shell configuration that is used with `spaces shell`
@@ -785,7 +785,8 @@ def checkout_update_shell(name, shell_path, args = [], deps = []):
         shell_path: `str` The path to the shell executable.
         args: `list` The arguments to pass to the shell.
         deps: `list` The dependencies of the rule (allows controlling order of updating the file)
-    """
+        visibility: `visibility` The visibility of the rule.
+        """
     checkout_update_asset(
         name,
         destination = _CHECKOUT_SHELL_SPACES_TOML,
@@ -794,9 +795,16 @@ def checkout_update_shell(name, shell_path, args = [], deps = []):
             "args": args,
         },
         deps = deps,
+        visibility = visibility,
     )
 
-def checkout_update_shell_startup(name, script_name, contents, env_name = None, deps = []):
+def checkout_update_shell_startup(
+        name,
+        script_name,
+        contents,
+        env_name = None,
+        deps = [],
+        visibility = None):
     """
 
     Updates the workspace shell configuration that is used with `spaces shell`
@@ -807,10 +815,10 @@ def checkout_update_shell_startup(name, script_name, contents, env_name = None, 
         contents: `str` The contents of the startup file.
         env_name: `str` If not None, this will be set to point to the workspace shell startup directory `.spaces/shell`.
         deps: `list` The dependencies of the rule (allows controlling order of updating the file)
+        visibility: `list` The visibility of the rule (allows controlling who can see the rule)
     """
 
     effective_env_name = {"env_name": env_name} if env_name else {}
-
     checkout_update_asset(
         name,
         destination = _CHECKOUT_SHELL_SPACES_TOML,
@@ -821,9 +829,10 @@ def checkout_update_shell_startup(name, script_name, contents, env_name = None, 
             } | effective_env_name,
         },
         deps = deps,
+        visibility = visibility,
     )
 
-def checkout_update_shell_shortcuts(name, shortcuts, deps = []):
+def checkout_update_shell_shortcuts(name, shortcuts, deps = [], visibility = None):
     """
 
     Updates the `.spaces/shell/shortcuts.sh` file with shell functions. This file can be source when starting the shell.
@@ -832,6 +841,7 @@ def checkout_update_shell_shortcuts(name, shortcuts, deps = []):
         name: `str` The name of the rule.
         shortcuts: `dict` A dictionary of function names (key) and shell commands to execute (values).
         deps: `list` A list of dependencies that allows override of shortcuts.
+        visibility: `list` The visibility of the rule (allows controlling who can see the rule)
     """
     if shortcuts != None:
         checkout_update_asset(
@@ -841,6 +851,7 @@ def checkout_update_shell_shortcuts(name, shortcuts, deps = []):
                 "shortcuts": shortcuts,
             },
             deps = deps,
+            visibility = visibility,
         )
 
 def checkout_add_any_assets(
