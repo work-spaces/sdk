@@ -282,7 +282,7 @@ def capsule_declare(
         capsule[_OPTIONS][_OPTION_SOURCE_DIRECTORY] = _to_workspace_path(capsule)
     return capsule
 
-def _add_checkout_oras(capsule):
+def _add_checkout_oras(capsule, visibility = None):
     """
     Add the oras capsule to the sysroot.
 
@@ -290,6 +290,7 @@ def _add_checkout_oras(capsule):
 
     Args:
         capsule: return value of capsule_declare()
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
 
     Returns:
         dict: with the platform and the url to download the gh executable
@@ -324,11 +325,12 @@ def _add_checkout_oras(capsule):
         artifact = _to_oras_artifact(capsule),
         tag = _get_option(capsule, _OPTION_VERSION),
         add_prefix = _get_option(capsule, _OPTION_INSTALL_PATH),
+        visibility = visibility,
     )
 
     return CHECKOUT_NAME
 
-def _add_checkout_gh(capsule):
+def _add_checkout_gh(capsule, visibility = None):
     """
     Add the gh executable to the sysroot.
 
@@ -336,6 +338,7 @@ def _add_checkout_gh(capsule):
 
     Args:
         capsule: return value of capsule_declare()
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
 
     Returns:
         str: the name of checkout rule for the platform archive
@@ -399,17 +402,18 @@ def _add_checkout_gh(capsule):
                 "add_prefix": _get_option(capsule, _OPTION_INSTALL_PATH),
             },
         },
+        visibility = visibility,
     )
 
     return CHECKOUT_NAME
 
-def _add_archive(capsule):
+def _add_archive(capsule, visibility = None):
     ORAS_URL = _get_option(capsule, _OPTION_ORAS_URL)
     GH_DEPLOY_REPO = _get_option(capsule, _OPTION_GH_DEPLOY_REPO)
     if ORAS_URL != None:
-        return _add_checkout_oras(capsule)
+        return _add_checkout_oras(capsule, visibility = visibility)
     elif GH_DEPLOY_REPO != None:
-        return _add_checkout_gh(capsule)
+        return _add_checkout_gh(capsule, visibility = visibility)
 
     return None
 
@@ -448,13 +452,14 @@ def capsule_get_workspace_path(capsule):
     """
     return _get_option(capsule, _OPTION_SOURCE_DIRECTORY)
 
-def capsule_get_checkout_type(capsule, run_name):
+def capsule_get_checkout_type(capsule, run_name, visibility = None):
     """
     This will either download pre-built binaries matching the capsule or checkout the source to build the capsule.
 
     Args:
         capsule: return value of capsule_declare()
         run_name: the name of the optional run target to activate if pre-built binaries are not available
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
 
     Returns:
         CHECKOUT_TYPE_OPTIONAL if the binary was downloaded
@@ -479,7 +484,7 @@ def capsule_get_checkout_type(capsule, run_name):
 
     if is_activate_checkout == None:
         if ORAL_URL != None or GH_DEPLOY_REPO != None:
-            is_activate_checkout = _add_archive(capsule) == None
+            is_activate_checkout = _add_archive(capsule, visibility = visibility) == None
         else:
             is_activate_checkout = True
 
@@ -493,11 +498,13 @@ def capsule_get_checkout_type(capsule, run_name):
                 _to_name(capsule): _STATUS_DOWNLOADED if not is_activate_checkout else _STATUS_SOURCE,
             },
         },
+        visibility = visibility,
     )
 
     run_add_target(
         capsule_get_run_name(capsule),
         deps = [run_name] if is_activate_checkout else [],
+        visibility = visibility,
     )
 
     return None if is_activate_checkout else CHECKOUT_TYPE_OPTIONAL
@@ -505,15 +512,17 @@ def capsule_get_checkout_type(capsule, run_name):
 def capsule_checkout_add_repo(
         capsule,
         run_name,
-        clone = "Blobless"):
+        clone = "Blobless",
+        visibility = None):
     GIT_URL = _to_url(capsule)
-    CHECKOUT_RULE_TYPE = capsule_get_checkout_type(capsule, run_name)
+    CHECKOUT_RULE_TYPE = capsule_get_checkout_type(capsule, run_name, visibility = visibility)
     checkout_add_repo(
         capsule_get_workspace_path(capsule),
         url = GIT_URL,
         type = CHECKOUT_RULE_TYPE,
         rev = _get_option(capsule, _OPTION_REV),
         clone = clone,
+        visibility = visibility,
     )
     return CHECKOUT_RULE_TYPE
 
@@ -575,19 +584,21 @@ def capsule_publish(
     else:
         checkout.abort("Must specify either `oras_url` or `gh_deploy_repo`")
 
-def capsule_publish_add_run_target(capsule, run_name):
+def capsule_publish_add_run_target(capsule, run_name, visibility = None):
     """
     Add the checkout and run if the install path does not exist
 
     Args:
         capsule: return value of capsule_declare()
         run_name: The run rule that will build and install (not publish) the target
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     NAME = _to_name(capsule)
     run_add_target(
         "{}_run".format(NAME),
         deps = [run_name],
+        visibility = visibility,
     )
 
 def capsule_get_deps(capsule):

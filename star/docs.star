@@ -16,7 +16,8 @@ def docs_add_hard_link_asset(
         source,
         deps = [],
         type = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Adds content to the workspace @docs content folder using a hard link.
 
@@ -33,6 +34,7 @@ def docs_add_hard_link_asset(
             deps = deps,
             type = type,
             platforms = platforms,
+            visibility = visibility,
         )
 
 def docs_add_asset(
@@ -40,7 +42,8 @@ def docs_add_asset(
         content,
         deps = [],
         type = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Adds string content to the workspace @docs content folder.
 
@@ -58,6 +61,7 @@ def docs_add_asset(
             deps = deps,
             type = type,
             platforms = platforms,
+            visibility = visibility,
         )
 
 def docs_cp(

@@ -6,7 +6,7 @@ load("checkout.star", "checkout_get_compile_commands_spaces_name")
 load("run.star", "run_add_exec")
 load("std/fs.star", "fs_exists", "fs_is_file", "fs_read_json")
 
-def compile_commands_merge(name, output = None):
+def compile_commands_merge(name, output = None, visibility = None):
     """
     Merges compile commands from different directories into a single file.
 
@@ -15,6 +15,7 @@ def compile_commands_merge(name, output = None):
     Args:
         name: `str` The name of the rule.
         output: `Optional[str]` The output file path. Defaults to "build/compile_commands.json".
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     CONFIG_FILE_NAME = checkout_get_compile_commands_spaces_name()
@@ -33,6 +34,7 @@ def compile_commands_merge(name, output = None):
             ],
             deps = CONFIG.values(),
             inputs = INPUTS,
+            visibility = visibility,
             help = """
 Merges the compile_commands.json file in these directories: {}
 """.format(", ".join(CONFIG.keys())),

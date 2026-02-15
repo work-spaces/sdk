@@ -2,7 +2,7 @@
 User friendly wrapper functions for the spaces run built-in functions.
 """
 
-load("info.star", "info_get_platform_name")
+load("info.star", "info_get_platform_name", "info_set_minimum_version")
 load("ws.star", "workspace_get_build_archive_info")
 
 RUN_INPUTS_ONCE = []
@@ -228,6 +228,7 @@ def run_add_exec_setup(
         log_level = None,
         redirect_stdout = None,
         timeout = None,
+        visibility = None,
         expect = RUN_EXPECT_SUCCESS):
     """
     Adds a command as a setup rule. It will run only once and all run rules will depend on it.
@@ -251,9 +252,14 @@ def run_add_exec_setup(
         redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
         expect: The expected result of the command Success|Failure|Any. (default is Success)
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
+
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
     run.add_exec(
         rule = {
@@ -263,7 +269,7 @@ def run_add_exec_setup(
             "help": help,
             "type": RUN_TYPE_SETUP,
             "inputs": RUN_INPUTS_ONCE,
-        },
+        } | EFFECTIVE_VISIBILITY,
         exec = {
             "command": command,
             "args": args,
@@ -288,6 +294,7 @@ def run_add_exec_test(
         log_level = None,
         redirect_stdout = None,
         timeout = None,
+        visibility = None,
         expect = RUN_EXPECT_SUCCESS):
     """
     Adds a command as a test rule.
@@ -312,9 +319,14 @@ def run_add_exec_test(
         redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
         expect: The expected result of the command Success|Failure|Any. (default is Success)
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
+
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
     run.add_exec(
         rule = {
@@ -324,7 +336,7 @@ def run_add_exec_test(
             "help": help,
             "type": "Test",
             "inputs": inputs,
-        },
+        } | EFFECTIVE_VISIBILITY,
         exec = {
             "command": command,
             "args": args,
@@ -349,6 +361,7 @@ def run_add_exec_precommit(
         log_level = None,
         redirect_stdout = None,
         timeout = None,
+        visibility = None,
         expect = RUN_EXPECT_SUCCESS):
     """
     Adds a command as a pre-commit rule.
@@ -373,9 +386,14 @@ def run_add_exec_precommit(
         redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
         expect: The expected result of the command Success|Failure|Any. (default is Success)
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
+
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
     run.add_exec(
         rule = {
@@ -385,7 +403,7 @@ def run_add_exec_precommit(
             "help": help,
             "type": RUN_TYPE_PRECOMMIT,
             "inputs": inputs,
-        },
+        } | EFFECTIVE_VISIBILITY,
         exec = {
             "command": command,
             "args": args,
@@ -410,6 +428,7 @@ def run_add_exec_clean(
         log_level = None,
         redirect_stdout = None,
         timeout = None,
+        visibility = None,
         expect = RUN_EXPECT_SUCCESS):
     """
     Adds a command as a clean rule.
@@ -434,9 +453,14 @@ def run_add_exec_clean(
         redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
         expect: The expected result of the command Success|Failure|Any. (default is Success)
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
+
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
     run.add_exec(
         rule = {
@@ -446,7 +470,7 @@ def run_add_exec_clean(
             "help": help,
             "type": RUN_TYPE_CLEAN,
             "inputs": inputs,
-        },
+        } | EFFECTIVE_VISIBILITY,
         exec = {
             "command": command,
             "args": args,
@@ -472,6 +496,7 @@ def run_add_exec(
         log_level = None,
         redirect_stdout = None,
         timeout = None,
+        visibility = None,
         expect = RUN_EXPECT_SUCCESS):
     """
     Adds a command to the run dependency graph
@@ -491,10 +516,15 @@ def run_add_exec(
         expect: `str` The expected result of the command Success|Failure|Any. (default is Success)
         redirect_stdout: `str` The file to redirect stdout to (prefer to parse the log file).
         timeout: `float` Number of seconds to run before sending a kill signal.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EFFECTIVE_TYPE = type if type != None else RUN_TYPE_DEFAULT
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
+
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
     run.add_exec(
         rule = {
@@ -504,7 +534,7 @@ def run_add_exec(
             "help": help,
             "type": EFFECTIVE_TYPE,
             "inputs": inputs,
-        },
+        } | EFFECTIVE_VISIBILITY,
         exec = {
             "command": command,
             "args": args,
@@ -524,7 +554,8 @@ def run_add_kill_exec(
         expect = RUN_EXPECT_SUCCESS,
         deps = [],
         type = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Adds a target that will send a signal to another target.
 
@@ -537,9 +568,14 @@ def run_add_kill_exec(
         deps: `[str]` Run rule dependencies.
         type: `str` See [run_add_exec()](#run_add_exec)
         platforms: `[str]` Platforms to run on (default is all).
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EFFECTIVE_TYPE = type if type != None else RUN_TYPE_DEFAULT
+
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
     run.add_kill_exec(
         rule = {
@@ -549,7 +585,7 @@ def run_add_kill_exec(
             "help": help,
             "type": EFFECTIVE_TYPE,
             "inputs": None,
-        },
+        } | EFFECTIVE_VISIBILITY,
         kill = {
             "target": target,
             "signal": signal,
@@ -562,7 +598,8 @@ def run_add_target(
         deps,
         help = None,
         type = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Adds a target to the workspace.
 
@@ -574,7 +611,12 @@ def run_add_target(
         platforms: `[str]` List of platforms to build the target for (default is all).
         type: `str` See [run_add_exec()](#run_add_exec)
         help: `str` The help message for the rule.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
+
     run.add_target(
         rule = {
             "name": name,
@@ -582,14 +624,15 @@ def run_add_target(
             "platforms": platforms,
             "type": type,
             "help": help,
-        },
+        } | EFFECTIVE_VISIBILITY,
     )
 
 def run_add_target_test(
         name,
         deps,
         help = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Adds a target to the workspace that `//:test` will depend on.
 
@@ -600,6 +643,7 @@ def run_add_target_test(
         deps: `[str]` List of dependencies for the target.
         platforms: `[str]` List of platforms to build the target for (default is all).
         help: `str` The help message for the rule.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
     run_add_target(
         name,
@@ -607,13 +651,15 @@ def run_add_target_test(
         help = help,
         type = RUN_TYPE_TEST,
         platforms = platforms,
+        visibility = visibility,
     )
 
 def run_add_target_precommit(
         name,
         deps,
         help = None,
-        platforms = None):
+        platforms = None,
+        visibility = None):
     """
     Adds a target to the workspace that `//:pre-commit` will depend on.
 
@@ -624,6 +670,7 @@ def run_add_target_precommit(
         deps: `[str]` List of dependencies for the target.
         platforms: `[str]` List of platforms to build the target for (default is all).
         help: `str` The help message for the rule.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
     run_add_target(
         name,
@@ -631,11 +678,13 @@ def run_add_target_precommit(
         help = help,
         type = RUN_TYPE_PRECOMMIT,
         platforms = platforms,
+        visibility = visibility,
     )
 
 def run_add_to_all(
         name,
-        deps):
+        deps,
+        visibility = None):
     """
     Creates a target rule called name with deps and part of `:all`.
 
@@ -644,9 +693,10 @@ def run_add_to_all(
     Args:
         name: `str` The name of the rule.
         deps: `[str]` List of dependencies to run with `spaces run`
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
-    run_add_target(name, deps, type = RUN_TYPE_ALL)
+    run_add_target(name, deps, type = RUN_TYPE_ALL, visibility = visibility)
 
 def run_add_archive(
         name,
@@ -657,7 +707,8 @@ def run_add_archive(
         suffix = "tar.gz",
         includes = None,
         excludes = None,
-        platform = None):
+        platform = None,
+        visibility = None):
     """
     Adds an archive target to the workspace.
 
@@ -673,6 +724,7 @@ def run_add_archive(
         includes: `[str]` List of globs to include in the archive.
         excludes: `[str]` List of globs to exclude from the archive.
         platform: `str` The platform to build the target for (default is all).
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
 
     Returns:
         A tuple containing (<path to the archive>, <sha256 checksum of the archive>).
@@ -690,8 +742,12 @@ def run_add_archive(
         "excludes": excludes,
     }
 
+    if visibility != None:
+        info_set_minimum_version("0.15.24")
+    EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
+
     run.add_archive(
-        rule = {"name": name, "deps": deps},
+        rule = {"name": name, "deps": deps} | EFFECTIVE_VISIBILITY,
         archive = archive_info,
     )
 

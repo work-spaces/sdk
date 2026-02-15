@@ -14,7 +14,8 @@ def gh_add_publish_archive(
         deploy_repo,
         deps,
         sh = "bash",
-        suffix = "tar.xz"):
+        suffix = "tar.xz",
+        visibility = None):
     """Creates an archive and publishes it to github.
 
     This can be run on multiple OS's and multiple arch's.
@@ -27,6 +28,7 @@ def gh_add_publish_archive(
         deps: `[str]` dependencies for the archive
         sh: `str` The shell to use for running commands (default: bash)
         suffix: `str` The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     PLATFORM = info_get_platform_name()
@@ -76,6 +78,7 @@ def gh_add_publish_archive(
         ),
         shell = sh,
         deps = [ARCHIVE_RULE_NAME],
+        visibility = visibility,
     )
 
     run_add_exec(
@@ -89,6 +92,7 @@ def gh_add_publish_archive(
             ARCHIVE_OUTPUT,
             REPO_ARG,
         ],
+        visibility = visibility,
     )
 
     run_add_exec(
@@ -102,6 +106,11 @@ def gh_add_publish_archive(
             ARCHIVE_SHA256,
             REPO_ARG,
         ],
+        visibility = visibility,
     )
 
-    run_add_target(name, deps = [PUBLISH_BINARY_RULE_NAME, PUBLISH_SHA256_RULE_NAME])
+    run_add_target(
+        name,
+        deps = [PUBLISH_BINARY_RULE_NAME, PUBLISH_SHA256_RULE_NAME],
+        visibility = visibility,
+    )

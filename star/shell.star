@@ -14,6 +14,7 @@ def cp(
         inputs = None,
         help = None,
         working_directory = None,
+        visibility = None,
         expect = RUN_EXPECT_SUCCESS):
     """
     Copy a file or directory from source to destination.
@@ -28,6 +29,7 @@ def cp(
         inputs: `[str]` The inputs for the command.
         help: `str` The help message for the command.
         working_directory: `str` The working directory for the command.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
         expect: `enum` Success | Failure
     """
 
@@ -41,6 +43,7 @@ def cp(
         expect = expect,
         help = help,
         working_directory = working_directory,
+        visibility = visibility,
     )
 
 def mv(
@@ -53,6 +56,7 @@ def mv(
         inputs = None,
         help = None,
         working_directory = None,
+        visibility = None,
         expect = RUN_EXPECT_SUCCESS):
     """
     Rename a file or directory from source to destination.
@@ -67,6 +71,7 @@ def mv(
         inputs: `[str]` The inputs for the command.
         help: `str` The help message for the command.
         working_directory: `str` The working directory for the command.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
         expect: `enum` Success|Failure
     """
 
@@ -80,6 +85,7 @@ def mv(
         expect = expect,
         help = help,
         working_directory = working_directory,
+        visibility = visibility,
     )
 
 def ln(
@@ -92,6 +98,7 @@ def ln(
         inputs = None,
         help = None,
         working_directory = None,
+        visibility = None,
         expect = RUN_EXPECT_SUCCESS):
     """
     Create a link from source to destination.
@@ -106,6 +113,7 @@ def ln(
         inputs: `[str]` The inputs for the command.
         help: `str` The help message for the command.
         working_directory: `str` The working directory for the command.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
         expect: `enum` Success|Failure
     """
 
@@ -119,6 +127,7 @@ def ln(
         expect = expect,
         help = help,
         working_directory = working_directory,
+        visibility = visibility,
     )
 
 def ls(
@@ -130,6 +139,7 @@ def ls(
         inputs = None,
         help = None,
         working_directory = None,
+        visibility = None,
         expect = RUN_EXPECT_SUCCESS):
     """
     Run ls (this can be handy for checking if something exists).
@@ -143,6 +153,7 @@ def ls(
         inputs: `[str]` The inputs for the command.
         help: `str` The help message for the command.
         working_directory: `str` The working directory for the command.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
         expect: `enum` Success|Failure
     """
 
@@ -156,6 +167,7 @@ def ls(
         expect = expect,
         help = help,
         working_directory = working_directory,
+        visibility = visibility,
     )
 
 def mkdir(
@@ -167,6 +179,7 @@ def mkdir(
         inputs = None,
         help = None,
         working_directory = None,
+        visibility = None,
         expect = RUN_EXPECT_SUCCESS):
     """
     Create a new directory.
@@ -180,6 +193,7 @@ def mkdir(
         inputs: The inputs for the command.
         help: `str` The help message for the command.
         working_directory: The working directory for the command.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
         expect: `enum` Success|Failure
     """
 
@@ -193,6 +207,7 @@ def mkdir(
         expect = expect,
         help = help,
         working_directory = working_directory,
+        visibility = visibility,
     )
 
 def chmod(
@@ -204,6 +219,7 @@ def chmod(
         inputs = None,
         help = None,
         working_directory = None,
+        visibility = None,
         expect = RUN_EXPECT_SUCCESS):
     """
     Changes the mode of a file or directory.
@@ -217,6 +233,7 @@ def chmod(
         inputs: `[str]` The inputs for the command.
         help: `str` The help message for the command.
         working_directory: `str` The working directory for the command.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
         expect: `enum` Success|Failure
     """
 
@@ -230,6 +247,7 @@ def chmod(
         expect = expect,
         help = help,
         working_directory = working_directory,
+        visibility = visibility,
     )
 
 def shell(
@@ -242,6 +260,7 @@ def shell(
         inputs = None,
         help = None,
         working_directory = None,
+        visibility = None,
         deps = []):
     """
     Add a run rule that executes a shell script.
@@ -272,6 +291,7 @@ def shell(
         inputs: `[str]` The inputs for the command.
         help: `str` The help message for the command.
         working_directory: `str` working directory (default is workspace root)
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
         deps: `[str]` rule dependencies
     """
 
@@ -284,5 +304,6 @@ def shell(
         inputs = inputs,
         help = help,
         working_directory = working_directory,
+        visibility = visibility,
         expect = expect,
     )
