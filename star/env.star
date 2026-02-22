@@ -2,13 +2,13 @@
 Helper functions for creating environment variables.
 """
 
-def _env_bool(value: bool):
+def _env_bool(value):
     return "Yes" if value else "No"
 
 def env_assign(
-        name: str,
-        value: str,
-        help: str) -> dict:
+        name,
+        value,
+        help):
     """
     Assigns an environment variable to the workspace.
 
@@ -31,10 +31,10 @@ def env_assign(
     }
 
 def env_append(
-        name: str,
-        value: str,
-        help: str,
-        separator: str = ":") -> dict:
+        name,
+        value,
+        help,
+        separator = ":"):
     """
     Appends a value to an environment variable.
 
@@ -60,10 +60,10 @@ def env_append(
     }
 
 def env_prepend(
-        name: str,
-        value: str,
-        help: str,
-        separator: str = ":") -> dict:
+        name,
+        value,
+        help,
+        separator = ":"):
     """
     Prepends a value to an environment variable.
 
@@ -90,11 +90,11 @@ def env_prepend(
 
 def env_inherit(
         name,
-        help: str,
+        help,
         assign_as_default = None,
-        is_secret: bool = False,
-        is_required: bool = False,
-        is_save_at_checkout: bool = False):
+        is_secret = False,
+        is_required = False,
+        is_save_at_checkout = False):
     """
     Inherits an environment variable.
 
