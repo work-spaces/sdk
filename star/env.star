@@ -115,9 +115,9 @@ def env_inherit(
         "value": {
             "Inherit": {
                 "assign_as_default": assign_as_default,
-                "is_secret": is_secret,
-                "is_required": is_required,
-                "is_save_at_checkout": is_save_at_checkout,
+                "is_secret": _env_bool(is_secret),
+                "is_required": _env_bool(is_required),
+                "is_save_at_checkout": _env_bool(is_save_at_checkout),
             },
         },
     }
