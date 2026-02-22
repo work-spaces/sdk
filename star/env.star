@@ -124,3 +124,44 @@ def env_inherit(
             },
         },
     }
+
+def env_script(
+        name,
+        script,
+        help,
+        shell = None,
+        assign_as_default = None,
+        is_secret = False,
+        is_required = False,
+        env = {}):
+    """
+    Evaluates a script to get the value of the environment variable.
+
+    Args:
+        name: The name of the environment variable.
+        script: The script to evaluate to get the value of the variable.
+        shell: The shell to use to evaluate the script.
+        env: Environment variables to pass to script evaluation (no other variables will be passed).
+        assign_as_default: The default value to assign if the variable is not set in the calling environment.
+        is_secret: If true, the value will be redacted in the logs.
+        is_required: If true and no value can be inherited and not default is provided, the operation will fail.
+        help: Help text that will be added to the workspace.
+
+    Returns:
+        A dictionary containing the environment variable.
+    """
+
+    return {
+        "name": name,
+        "help": help,
+        "value": {
+            "Script": {
+                "assign_as_default": assign_as_default,
+                "script": script,
+                "env": env,
+                "shell": shell,
+                "is_secret": _env_bool(is_secret),
+                "is_required": _env_bool(is_required),
+            },
+        },
+    }
