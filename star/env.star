@@ -44,6 +44,7 @@ def env_append(
         name: The name of the environment variable.
         value: The value to append.
         separator: The separator to use.
+        help: Help text that will be added to the workspace.
 
     Returns:
         A dictionary containing the environment variable.
@@ -73,6 +74,7 @@ def env_prepend(
         name: The name of the environment variable.
         value: The value to append.
         separator: The separator to use.
+        help: Help text that will be added to the workspace.
 
     Returns:
         A dictionary containing the environment variable.
@@ -105,6 +107,7 @@ def env_inherit(
         is_secret: If true, the value will be redacted in the logs.
         is_required: If true and no value can be inherited and not default is provided, the operation will fail.
         is_save_at_checkout: Whether the variable should be saved at checkout.
+        help: Help text that will be added to the workspace.
 
     Returns:
         A dictionary containing the environment variable.
