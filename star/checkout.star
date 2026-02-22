@@ -890,3 +890,35 @@ def checkout_add_any_assets(
         } | EFFECTIVE_VISIBILITY,
         assets = {"any": assets},
     )
+
+def checkout_add_env_vars(
+        name,
+        vars,
+        deps = [],
+        type = None,
+        platforms = None,
+        visibility = None):
+    """
+    Adds environment variables to the workspace.
+
+    Args:
+        name: `str` Name of the checkout rule
+        vars: `[env]` list of env objects from env.star
+        deps: `[str]` List of dependencies for the rule.
+        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) rule applies to.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+    """
+
+    checkout.add_env_vars(
+        rule = {
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "type": type,
+            "visibility": visibility,
+        },
+        any_env = {
+            "vars": vars,
+        },
+    )
