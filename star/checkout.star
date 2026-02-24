@@ -910,6 +910,8 @@ def checkout_add_env_vars(
         visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
+    info_set_minimum_version("0.15.27")
+
     checkout.add_env_vars(
         rule = {
             "name": name,
