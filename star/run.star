@@ -490,6 +490,8 @@ def run_add_exec(
         env = {},
         deps = [],
         inputs = RUN_INPUTS_ALWAYS,
+        target_files = None,
+        target_dirs = None,
         type = None,
         working_directory = None,
         platforms = None,
@@ -513,6 +515,8 @@ def run_add_exec(
         working_directory: `str` The directory to run the command (default is workspace root).
         platforms: `[str]` Platforms to run on (default is all).
         log_level: `str` The log level to use None|App|Passthrough
+        target_files: `[str]` A list of files created by this rule
+        target_dirs: `[str]` A list of directories populated by this rule
         expect: `str` The expected result of the command Success|Failure|Any. (default is Success)
         redirect_stdout: `str` The file to redirect stdout to (prefer to parse the log file).
         timeout: `float` Number of seconds to run before sending a kill signal.
@@ -526,6 +530,13 @@ def run_add_exec(
         info_set_minimum_version("0.15.24")
     EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
+    effective_targets = {}
+    if target_files != None or target_dirs != None:
+        info_set_minimum_version("0.15.28")
+        TARGET_FILES = [{"File": file} for file in target_files] if target_files else []
+        TARGET_DIRS = [{"Directory": dir} for dir in target_dirs] if target_dirs else []
+        effective_targets = {"targets": TARGET_FILES + TARGET_DIRS}
+
     run.add_exec(
         rule = {
             "name": name,
@@ -534,7 +545,7 @@ def run_add_exec(
             "help": help,
             "type": EFFECTIVE_TYPE,
             "inputs": inputs,
-        } | EFFECTIVE_VISIBILITY,
+        } | EFFECTIVE_VISIBILITY | effective_targets,
         exec = {
             "command": command,
             "args": args,
