@@ -9,16 +9,16 @@ so that they can work in the terminal.
 load("checkout.star", "checkout_add_which_asset", "checkout_update_env")
 load("ws.star", "workspace_get_absolute_path")
 
-def spaces_working_env(add_spaces_to_sysroot = False, inherit_terminal = False, visibility = None):
+def spaces_working_env(add_spaces_to_sysroot: bool = False, inherit_terminal: bool = False, visibility: str | dict[str, list[str]] | None = None) -> str:
     """
     Sets the spaces working env which provides `/usr/bin` and `/bin` in the `PATH` so that the user can run system commands.
 
     Adding this checkout rule also inherits `HOME` and adds `(spaces)` to the prompt when using `source ./env`.
 
     Args:
-        add_spaces_to_sysroot: `bool` If True, adds the spaces binary to the sysroot/bin directory.
-        inherit_terminal: `bool` If True, inherits terminal variables. This enables `spaces shell` to work well.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        add_spaces_to_sysroot: If True, adds the spaces binary to the sysroot/bin directory.
+        inherit_terminal: If True, inherits terminal variables. This enables `spaces shell` to work well.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
 
     Returns:
         The name of the rule.

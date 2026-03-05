@@ -2,42 +2,42 @@
 Spaces JSON built-in functions
 """
 
-def json_loads(value):
+def json_loads(value: str) -> dict:
     """
     Load a JSON string
 
     Args:
-        value: `str` The JSON string to load
+        value: The JSON string to load
 
     Returns:
-        `dict` The parsed JSON object
+        The parsed JSON object
     """
     return json.string_to_dict(value)
 
-def json_dumps(value, is_pretty = False):
+def json_dumps(value: dict, is_pretty: bool = False) -> str:
     """
     Dump a JSON object to a string
 
     Args:
-        value: `dict` The JSON object to dump
-        is_pretty: `bool` Whether to pretty print the JSON
+        value: The JSON object to dump
+        is_pretty: Whether to pretty print the JSON
 
     Returns:
-        `str` The JSON string
+        The JSON string
     """
     if is_pretty:
         return json.to_string_pretty(value)
     else:
         return json.to_string(value)
 
-def json_is_string_json(value):
+def json_is_string_json(value: str) -> bool:
     """
     Check if a string is a JSON object
 
     Args:
-        value: `str` The string to check
+        value: The string to check
 
     Returns:
-        `bool` True if the string is a JSON object, False otherwise
+        True if the string is a JSON object, False otherwise
     """
     return json.is_string_json(value)

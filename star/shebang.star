@@ -4,16 +4,16 @@ Update the she-bang line for a file
 
 load("run.star", "run_add_exec")
 
-def shebang_add_update(name, input_file, new_shebang, deps, visibility = None):
+def shebang_add_update(name: str, input_file: str, new_shebang: str, deps: list[str], visibility: str | dict[str, list[str]] | None = None):
     """
     Update the she-bang for a file
 
     Args:
-        name: `str` The name of the rule
-        input_file: `str` The path to the file to update
-        new_shebang: `str` The new she-bang line
-        deps: `[str]` The dependencies of the rule
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule
+        input_file: The path to the file to update
+        new_shebang: The new she-bang line
+        deps: The dependencies of the rule
+        visibility: Rule visibility. See visibility.star for more info.
     """
 
     run_add_exec(

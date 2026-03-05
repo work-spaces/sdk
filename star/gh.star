@@ -8,27 +8,27 @@ load("shell.star", "shell")
 load("ws.star", "workspace_get_build_archive_info")
 
 def gh_add_publish_archive(
-        name,
-        input,
-        version,
-        deploy_repo,
-        deps,
-        sh = "bash",
-        suffix = "tar.xz",
-        visibility = None):
+        name: str,
+        input: str,
+        version: str,
+        deploy_repo: str,
+        deps: list[str],
+        sh: str = "bash",
+        suffix: str = "tar.xz",
+        visibility: str | dict[str, list[str]] | None = None):
     """Creates an archive and publishes it to github.
 
     This can be run on multiple OS's and multiple arch's.
 
     Args:
-        name: `str` Name of the project to publish.
-        input: `str` The workspace path to the folder/file to archive and publish
-        version: `str` Version to publish
-        deploy_repo: `str` The github URL to the repo
-        deps: `[str]` dependencies for the archive
-        sh: `str` The shell to use for running commands (default: bash)
-        suffix: `str` The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: Name of the project to publish.
+        input: The workspace path to the folder/file to archive and publish
+        version: Version to publish
+        deploy_repo: The github URL to the repo
+        deps: dependencies for the archive
+        sh: The shell to use for running commands (default: bash)
+        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip)
+        visibility: Rule visibility. See visibility.star for more info.
     """
 
     PLATFORM = info_get_platform_name()

@@ -2,21 +2,21 @@
 Time builtins
 """
 
-def time_now():
+def time_now() -> float:
     """
     Gets the current time in seconds since the epoch.
 
     Returns:
-        `float` the current time in seconds since the epoch.
+        The current time in seconds since the epoch.
     """
     SECONDS, NANOSECONDS = time.now()
     return float(float(SECONDS) + float(NANOSECONDS) / 1e9)
 
-def time_sleep(seconds):
+def time_sleep(seconds: float):
     """
     Sleep for a number of seconds.
 
     Args:
-        seconds: `float` The number of seconds to sleep
+        seconds: The number of seconds to sleep
     """
     time.sleep(int(seconds * 1e9))

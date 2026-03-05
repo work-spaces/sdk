@@ -2,26 +2,26 @@
 Hash std built-in functions
 """
 
-def hash_compute_sha256_from_file(file_path):
+def hash_compute_sha256_from_file(file_path: str) -> str:
     """
     Compute the SHA256 hash of a file
 
     Args:
-        file_path: `str` The path to the file to hash
+        file_path: The path to the file to hash
 
     Returns:
-        `str` The SHA256 hash of the file
+        The SHA256 hash of the file
     """
     return hash.compute_sha256_from_file(file_path)
 
-def compute_sha256_from_string(value):
+def compute_sha256_from_string(value: str) -> str:
     """
     Compute the SHA256 hash of a string
 
     Args:
-        value: `str` The string to hash
+        value: The string to hash
 
     Returns:
-        `str` The SHA256 hash of the string
+        The SHA256 hash of the string
     """
     return hash.compute_sha256_from_string(value)

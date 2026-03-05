@@ -217,19 +217,19 @@ def run_signal_user2():
     return RUN_SIGNAL_USER2
 
 def run_add_exec_setup(
-        name,
-        command,
-        help = None,
-        args = [],
-        env = {},
-        deps = [],
-        working_directory = None,
-        platforms = None,
-        log_level = None,
-        redirect_stdout = None,
-        timeout = None,
-        visibility = None,
-        expect = RUN_EXPECT_SUCCESS):
+        name: str,
+        command: str,
+        help: str | None = None,
+        args: list[str] = [],
+        env: dict = {},
+        deps: list[str] = [],
+        working_directory: str | None = None,
+        platforms: list[str] | None = None,
+        log_level: str | None = None,
+        redirect_stdout: str | None = None,
+        timeout: float | None = None,
+        visibility: str | dict[str, list[str]] | None = None,
+        expect: str = RUN_EXPECT_SUCCESS):
     """
     Adds a command as a setup rule. It will run only once and all run rules will depend on it.
 
@@ -252,7 +252,7 @@ def run_add_exec_setup(
         redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
         expect: The expected result of the command Success|Failure|Any. (default is Success)
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
@@ -282,20 +282,20 @@ def run_add_exec_setup(
     )
 
 def run_add_exec_test(
-        name,
-        command,
-        help = None,
-        args = [],
-        env = {},
-        deps = [],
-        inputs = RUN_INPUTS_ALWAYS,
-        working_directory = None,
-        platforms = None,
-        log_level = None,
-        redirect_stdout = None,
-        timeout = None,
-        visibility = None,
-        expect = RUN_EXPECT_SUCCESS):
+        name: str,
+        command: str,
+        help: str | None = None,
+        args: list[str] = [],
+        env: dict = {},
+        deps: list[str] = [],
+        inputs: list[str] | None = RUN_INPUTS_ALWAYS,
+        working_directory: str | None = None,
+        platforms: list[str] | None = None,
+        log_level: str | None = None,
+        redirect_stdout: str | None = None,
+        timeout: float | None = None,
+        visibility: str | dict[str, list[str]] | None = None,
+        expect: str = RUN_EXPECT_SUCCESS):
     """
     Adds a command as a test rule.
 
@@ -319,7 +319,7 @@ def run_add_exec_test(
         redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
         expect: The expected result of the command Success|Failure|Any. (default is Success)
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
@@ -349,20 +349,20 @@ def run_add_exec_test(
     )
 
 def run_add_exec_precommit(
-        name,
-        command,
-        help = None,
-        args = [],
-        env = {},
-        deps = [],
-        inputs = RUN_INPUTS_ALWAYS,
-        working_directory = None,
-        platforms = None,
-        log_level = None,
-        redirect_stdout = None,
-        timeout = None,
-        visibility = None,
-        expect = RUN_EXPECT_SUCCESS):
+        name: str,
+        command: str,
+        help: str | None = None,
+        args: list[str] = [],
+        env: dict = {},
+        deps: list[str] = [],
+        inputs: list[str] | None = RUN_INPUTS_ALWAYS,
+        working_directory: str | None = None,
+        platforms: list[str] | None = None,
+        log_level: str | None = None,
+        redirect_stdout: str | None = None,
+        timeout: float | None = None,
+        visibility: str | dict[str, list[str]] | None = None,
+        expect: str = RUN_EXPECT_SUCCESS):
     """
     Adds a command as a pre-commit rule.
 
@@ -386,7 +386,7 @@ def run_add_exec_precommit(
         redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
         expect: The expected result of the command Success|Failure|Any. (default is Success)
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
@@ -416,20 +416,20 @@ def run_add_exec_precommit(
     )
 
 def run_add_exec_clean(
-        name,
-        command,
-        help = None,
-        args = [],
-        env = {},
-        deps = [],
-        inputs = RUN_INPUTS_ALWAYS,
-        working_directory = None,
-        platforms = None,
-        log_level = None,
-        redirect_stdout = None,
-        timeout = None,
-        visibility = None,
-        expect = RUN_EXPECT_SUCCESS):
+        name: str,
+        command: str,
+        help: str | None = None,
+        args: list[str] = [],
+        env: dict = {},
+        deps: list[str] = [],
+        inputs: list[str] | None = RUN_INPUTS_ALWAYS,
+        working_directory: str | None = None,
+        platforms: list[str] | None = None,
+        log_level: str | None = None,
+        redirect_stdout: str | None = None,
+        timeout: float | None = None,
+        visibility: str | dict[str, list[str]] | None = None,
+        expect: str = RUN_EXPECT_SUCCESS):
     """
     Adds a command as a clean rule.
 
@@ -453,7 +453,7 @@ def run_add_exec_clean(
         redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
         expect: The expected result of the command Success|Failure|Any. (default is Success)
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
@@ -483,44 +483,44 @@ def run_add_exec_clean(
     )
 
 def run_add_exec(
-        name,
-        command,
-        help = None,
-        args = [],
-        env = {},
-        deps = [],
-        inputs = RUN_INPUTS_ALWAYS,
-        target_files = None,
-        target_dirs = None,
-        type = None,
-        working_directory = None,
-        platforms = None,
-        log_level = None,
-        redirect_stdout = None,
-        timeout = None,
-        visibility = None,
-        expect = RUN_EXPECT_SUCCESS):
+        name: str,
+        command: str,
+        help: str | None = None,
+        args: list[str] = [],
+        env: dict = {},
+        deps: list[str] = [],
+        inputs: list[str] | None = RUN_INPUTS_ALWAYS,
+        target_files: list[str] | None = None,
+        target_dirs: list[str] | None = None,
+        type: str | None = None,
+        working_directory: str | None = None,
+        platforms: list[str] | None = None,
+        log_level: str | None = None,
+        redirect_stdout: str | None = None,
+        timeout: float | None = None,
+        visibility: str | dict[str, list[str]] | None = None,
+        expect: str = RUN_EXPECT_SUCCESS):
     """
     Adds a command to the run dependency graph
 
     Args:
-        name: `str` The name of the rule.
-        command: `str` The command to execute.
-        help: `str` The help message for the rule.
-        args: `[str]` The arguments to pass to the command.
-        type: `str` The exec type (Run|Setup|Optional (default)|PreCommit|Clean|Test)
-        deps: `[str]`The rule dependencies that must be run before this command
-        inputs: `[str]` List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
-        env: `dict` key value pairs of environment variables
-        working_directory: `str` The directory to run the command (default is workspace root).
-        platforms: `[str]` Platforms to run on (default is all).
-        log_level: `str` The log level to use None|App|Passthrough
-        target_files: `[str]` A list of files created by this rule
-        target_dirs: `[str]` A list of directories populated by this rule
-        expect: `str` The expected result of the command Success|Failure|Any. (default is Success)
-        redirect_stdout: `str` The file to redirect stdout to (prefer to parse the log file).
-        timeout: `float` Number of seconds to run before sending a kill signal.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        command: The command to execute.
+        help: The help message for the rule.
+        args: The arguments to pass to the command.
+        type: The exec type (Run|Setup|Optional (default)|PreCommit|Clean|Test)
+        deps: The rule dependencies that must be run before this command
+        inputs: List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
+        env: key value pairs of environment variables
+        working_directory: The directory to run the command (default is workspace root).
+        platforms: Platforms to run on (default is all).
+        log_level: The log level to use None|App|Passthrough
+        target_files: A list of files created by this rule
+        target_dirs: A list of directories populated by this rule
+        expect: The expected result of the command Success|Failure|Any. (default is Success)
+        redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
+        timeout: Number of seconds to run before sending a kill signal.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EFFECTIVE_TYPE = type if type != None else RUN_TYPE_DEFAULT
@@ -558,28 +558,28 @@ def run_add_exec(
     )
 
 def run_add_kill_exec(
-        name,
-        target,
-        signal = RUN_SIGNAL_KILL,
-        help = None,
-        expect = RUN_EXPECT_SUCCESS,
-        deps = [],
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        target: str,
+        signal: str = RUN_SIGNAL_KILL,
+        help: str | None = None,
+        expect: str = RUN_EXPECT_SUCCESS,
+        deps: list[str] = [],
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds a target that will send a signal to another target.
 
     Args:
-        name: `str` The name of the rule.
-        target: `str` The name of the rule to kill.
-        signal: `str` The signal to send to the target.
-        help: `str` The help message for the rule.
-        expect: `str` The expected result of the kill. (default is Success)
-        deps: `[str]` Run rule dependencies.
-        type: `str` See [run_add_exec()](#run_add_exec)
-        platforms: `[str]` Platforms to run on (default is all).
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        target: The name of the rule to kill.
+        signal: The signal to send to the target.
+        help: The help message for the rule.
+        expect: The expected result of the kill. (default is Success)
+        deps: Run rule dependencies.
+        type: See [run_add_exec()](#run_add_exec)
+        platforms: Platforms to run on (default is all).
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EFFECTIVE_TYPE = type if type != None else RUN_TYPE_DEFAULT
@@ -605,24 +605,24 @@ def run_add_kill_exec(
     )
 
 def run_add_target(
-        name,
-        deps,
-        help = None,
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        deps: list[str],
+        help: str | None = None,
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds a target to the workspace.
 
     This rule can be used to consolidate dependencies into a single target.
 
     Args:
-        name: `str` The name of the rule.
-        deps: `[str]` List of dependencies for the target.
-        platforms: `[str]` List of platforms to build the target for (default is all).
-        type: `str` See [run_add_exec()](#run_add_exec)
-        help: `str` The help message for the rule.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        deps: List of dependencies for the target.
+        platforms: List of platforms to build the target for (default is all).
+        type: See [run_add_exec()](#run_add_exec)
+        help: The help message for the rule.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
     if visibility != None:
         info_set_minimum_version("0.15.24")
@@ -639,22 +639,22 @@ def run_add_target(
     )
 
 def run_add_target_test(
-        name,
-        deps,
-        help = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        deps: list[str],
+        help: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds a target to the workspace that `//:test` will depend on.
 
     This rule can be used to consolidate test dependencies into a single target.
 
     Args:
-        name: `str` The name of the rule.
-        deps: `[str]` List of dependencies for the target.
-        platforms: `[str]` List of platforms to build the target for (default is all).
-        help: `str` The help message for the rule.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        deps: List of dependencies for the target.
+        platforms: List of platforms to build the target for (default is all).
+        help: The help message for the rule.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
     run_add_target(
         name,
@@ -666,22 +666,22 @@ def run_add_target_test(
     )
 
 def run_add_target_precommit(
-        name,
-        deps,
-        help = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        deps: list[str],
+        help: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds a target to the workspace that `//:pre-commit` will depend on.
 
     This rule can be used to consolidate PreCommit dependencies into a single target.
 
     Args:
-        name: `str` The name of the rule.
-        deps: `[str]` List of dependencies for the target.
-        platforms: `[str]` List of platforms to build the target for (default is all).
-        help: `str` The help message for the rule.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        deps: List of dependencies for the target.
+        platforms: List of platforms to build the target for (default is all).
+        help: The help message for the rule.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
     run_add_target(
         name,
@@ -693,49 +693,49 @@ def run_add_target_precommit(
     )
 
 def run_add_to_all(
-        name,
-        deps,
-        visibility = None):
+        name: str,
+        deps: list[str],
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Creates a target rule called name with deps and part of `:all`.
 
     Targets will run with `spaces run` or `spaces run //:all`.
 
     Args:
-        name: `str` The name of the rule.
-        deps: `[str]` List of dependencies to run with `spaces run`
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        deps: List of dependencies to run with `spaces run`
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     run_add_target(name, deps, type = RUN_TYPE_ALL, visibility = visibility)
 
 def run_add_archive(
-        name,
-        archive_name,
-        deps,
-        version,
-        source_directory,
-        suffix = "tar.gz",
-        includes = None,
-        excludes = None,
-        platform = None,
-        visibility = None):
+        name: str,
+        archive_name: str,
+        deps: list[str],
+        version: str,
+        source_directory: str,
+        suffix: str = "tar.gz",
+        includes: list[str] | None = None,
+        excludes: list[str] | None = None,
+        platform: str | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds an archive target to the workspace.
 
     This rule can be used to consolidate dependencies into a single target.
 
     Args:
-        name: `str` The name of the rule.
-        archive_name: `str` The base name of the archive that will be created
-        suffix: `str` The archive suffix (tar.gz or zip for examples)
-        deps: `[str]` List of dependencies to run with `spaces run`
-        version: `str` The version of the archive.
-        source_directory: `str` The directory containing the source files to archive.
-        includes: `[str]` List of globs to include in the archive.
-        excludes: `[str]` List of globs to exclude from the archive.
-        platform: `str` The platform to build the target for (default is all).
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        archive_name: The base name of the archive that will be created
+        suffix: The archive suffix (tar.gz or zip for examples)
+        deps: List of dependencies to run with `spaces run`
+        version: The version of the archive.
+        source_directory: The directory containing the source files to archive.
+        includes: List of globs to include in the archive.
+        excludes: List of globs to exclude from the archive.
+        platform: The platform to build the target for (default is all).
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
 
     Returns:
         A tuple containing (<path to the archive>, <sha256 checksum of the archive>).

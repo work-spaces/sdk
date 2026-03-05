@@ -30,36 +30,36 @@ CHECKOUT_EXPECT_ANY = "Any"
 CHECKOUT_CLONE_TYPE_REVISION = "Revision"
 
 def checkout_add_exec(
-        name,
-        command,
-        help = None,
-        args = [],
-        env = {},
-        deps = [],
-        working_directory = None,
-        platforms = None,
-        log_level = None,
-        redirect_stdout = None,
-        timeout = None,
-        visibility = None,
-        expect = CHECKOUT_EXPECT_SUCCESS):
+        name: str,
+        command: str,
+        help: str | None = None,
+        args: list[str] = [],
+        env: dict = {},
+        deps: list[str] = [],
+        working_directory: str | None = None,
+        platforms: list[str] | None = None,
+        log_level: str | None = None,
+        redirect_stdout: str | None = None,
+        timeout: float | None = None,
+        visibility: str | dict[str, list[str]] | None = None,
+        expect: str = CHECKOUT_EXPECT_SUCCESS):
     """
     Adds a command to the run dependency graph
 
     Args:
-        name: `str` The name of the rule.
-        command: `str` The command to execute.
-        help: `str` The help message for the rule.
-        args: `[str]` The arguments to pass to the command.
-        deps: `[str]`The rule dependencies that must be run before this command
-        env: `dict` key value pairs of environment variables
-        working_directory: `str` The directory to run the command (default is workspace root).
-        platforms: `[str]` Platforms to run on (default is all).
-        log_level: `str` The log level to use None|App|Passthrough
-        expect: `str` The expected result of the command Success|Failure|Any. (default is Success)
-        redirect_stdout: `str` The file to redirect stdout to (prefer to parse the log file).
-        timeout: `float` Number of seconds to run before sending a kill signal.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        command: The command to execute.
+        help: The help message for the rule.
+        args: The arguments to pass to the command.
+        deps: The rule dependencies that must be run before this command
+        env: key value pairs of environment variables
+        working_directory: The directory to run the command (default is workspace root).
+        platforms: Platforms to run on (default is all).
+        log_level: The log level to use None|App|Passthrough
+        expect: The expected result of the command Success|Failure|Any. (default is Success)
+        redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
+        timeout: Number of seconds to run before sending a kill signal.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     # checkout.add_exec() introduced in 0.15.22
@@ -90,7 +90,7 @@ def checkout_add_exec(
         },
     )
 
-def checkout_get_compile_commands_spaces_name():
+def checkout_get_compile_commands_spaces_name() -> str:
     """
     Returns the name of the file used with checkout_add_compile_commands_dir().
 
@@ -98,7 +98,7 @@ def checkout_get_compile_commands_spaces_name():
     """
     return "compile_commands.spaces.json"
 
-def checkout_type_optional():
+def checkout_type_optional() -> str:
     """
     Use `checkout_add_repo(type = checkout_type_optional())` to skip checkout
 
@@ -107,7 +107,7 @@ def checkout_type_optional():
     """
     return CHECKOUT_TYPE_OPTIONAL
 
-def checkout_type_default():
+def checkout_type_default() -> None:
     """
     Use `checkout_add_repo(type = checkout_type_default())` to use default checkout behavior
 
@@ -116,7 +116,7 @@ def checkout_type_default():
     """
     return CHECKOUT_TYPE_DEFAULT
 
-def checkout_sparse_mode_cone():
+def checkout_sparse_mode_cone() -> str:
     """
     Use `checkout_add_repo(sparse_mode = checkout_sparse_mode_cone())` for sparse cone mode.
 
@@ -125,7 +125,7 @@ def checkout_sparse_mode_cone():
     """
     return CHECKOUT_SPARSE_MODE_CONE
 
-def checkout_sparse_mode_no_cone():
+def checkout_sparse_mode_no_cone() -> str:
     """
     Use `checkout_add_repo(sparse_mode = checkout_sparse_mode_no_cone())` for sparse no-cone mode.
 
@@ -136,7 +136,7 @@ def checkout_sparse_mode_no_cone():
     """
     return CHECKOUT_SPARSE_MODE_NO_CONE
 
-def checkout_clone_default():
+def checkout_clone_default() -> str:
     """
     Use `checkout_add_repo(clone = checkout_clone_default())` for a normal git clone.
 
@@ -145,7 +145,7 @@ def checkout_clone_default():
     """
     return CHECKOUT_CLONE_DEFAULT
 
-def checkout_clone_worktree():
+def checkout_clone_worktree() -> str:
     """
     Use `checkout_add_repo(clone = checkout_clone_worktree())` to store the bare repository in the spaces store.
 
@@ -154,7 +154,7 @@ def checkout_clone_worktree():
     """
     return CHECKOUT_CLONE_WORKTREE
 
-def checkout_clone_blobless():
+def checkout_clone_blobless() -> str:
     """
     Use `checkout_add_repo(clone = checkout_clone_blobless())` to filter unused files from the repository history.
 
@@ -163,7 +163,7 @@ def checkout_clone_blobless():
     """
     return CHECKOUT_CLONE_BLOBLESS
 
-def checkout_clone_shallow():
+def checkout_clone_shallow() -> str:
     """
     Use `checkout_add_repo(clone = checkout_clone_shallow())` for a shallow clone.
 
@@ -175,19 +175,19 @@ def checkout_clone_shallow():
     return CHECKOUT_CLONE_SHALLOW
 
 def checkout_add_repo(
-        name,
-        url,
-        rev,
-        checkout_type = CHECKOUT_CLONE_TYPE_REVISION,
-        clone = CHECKOUT_CLONE_BLOBLESS,
-        is_evaluate_spaces_modules = None,
-        sparse_mode = None,
-        sparse_list = None,
-        working_directory = None,
-        platforms = None,
-        type = None,
-        deps = [],
-        visibility = None):
+        name: str,
+        url: str,
+        rev: str,
+        checkout_type: str = CHECKOUT_CLONE_TYPE_REVISION,
+        clone: str = CHECKOUT_CLONE_BLOBLESS,
+        is_evaluate_spaces_modules: bool | None = None,
+        sparse_mode: str | None = None,
+        sparse_list: list[str] | None = None,
+        working_directory: str | None = None,
+        platforms: list[str] | None = None,
+        type: str | None = None,
+        deps: list[str] = [],
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Clones a repository and checks it out at a specific revision.
 
@@ -207,19 +207,19 @@ def checkout_add_repo(
     ```
 
     Args:
-        name: `str` The name of the rule. This is also the location of the new repo in the workspace.
-        url: `str` The git repository URL to clone
-        rev: `str` The branch or commit hash to checkout
-        checkout_type: `enum` Revision
-        clone: `enum` [checkout_clone_default()](#checkout_clone_default) | [checkout_clone_blobless()](#checkout_clone_blobless) | [checkout_clone_worktree()](#checkout_clone_worktree)
-        is_evaluate_spaces_modules: `bool` Whether to evaluate spaces.star files in the repo (default is True).
-        sparse_mode: `enum` Cone | NoCone
-        sparse_list: `[str]` List of paths to include/exclude
-        deps: `[str]` List of dependencies for the rule.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        platforms: `[str]` List of platforms to add the repo to.
-        working_directory: `str` The working directory to clone the repository into.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule. This is also the location of the new repo in the workspace.
+        url: The git repository URL to clone
+        rev: The branch or commit hash to checkout
+        checkout_type: Revision
+        clone: [checkout_clone_default()](#checkout_clone_default) | [checkout_clone_blobless()](#checkout_clone_blobless) | [checkout_clone_worktree()](#checkout_clone_worktree)
+        is_evaluate_spaces_modules: Whether to evaluate spaces.star files in the repo (default is True).
+        sparse_mode: Cone | NoCone
+        sparse_list: List of paths to include/exclude
+        deps: List of dependencies for the rule.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: List of platforms to add the repo to.
+        working_directory: The working directory to clone the repository into.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     EVALUATE_SPACES_MODULES = {
@@ -250,40 +250,40 @@ def checkout_add_repo(
     )
 
 def checkout_add_archive(
-        name,
-        url,
-        sha256,
-        link = "Hard",
-        includes = None,
-        excludes = None,
-        strip_prefix = None,
-        add_prefix = "./",
-        filename = None,
-        platforms = None,
-        type = None,
-        headers = None,
-        deps = [],
-        visibility = None):
+        name: str,
+        url: str,
+        sha256: str,
+        link: str = "Hard",
+        includes: list[str] | None = None,
+        excludes: list[str] | None = None,
+        strip_prefix: str | None = None,
+        add_prefix: str = "./",
+        filename: str | None = None,
+        platforms: list[str] | None = None,
+        type: str | None = None,
+        headers: dict | None = None,
+        deps: list[str] = [],
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds an archive to the workspace.
 
     The archive is downloaded to the spaces store and hard-linked to the workspace.
 
     Args:
-        name: `str` The name of the rule.
-        url: `str` The URL of the archive to download.
-        sha256: `str` The SHA256 checksum of the archive.
-        link: `str` Hard | None
-        includes: `[str]` List of globs to include.
-        excludes: `[str]` List of globs to exclude.
-        strip_prefix:`str` Prefix to strip from the archive.
-        add_prefix: `str` Prefix to add to the archive.
-        filename: `str` The filename if it isn't the last part of the URL
-        platforms: `[str]` List of platforms to add the archive to.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        headers: `dict` key-value pairs of headers to use when downloading the archive.
-        deps: `[str]` List of dependencies for the rule.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        url: The URL of the archive to download.
+        sha256: The SHA256 checksum of the archive.
+        link: Hard | None
+        includes: List of globs to include.
+        excludes: List of globs to exclude.
+        strip_prefix: Prefix to strip from the archive.
+        add_prefix: Prefix to add to the archive.
+        filename: The filename if it isn't the last part of the URL
+        platforms: List of platforms to add the archive to.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        headers: key-value pairs of headers to use when downloading the archive.
+        deps: List of dependencies for the rule.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
     if headers != None:
         info_set_required_semver(">=0.15.2")
@@ -316,26 +316,26 @@ def checkout_add_archive(
     )
 
 def checkout_add_asset(
-        name,
-        content,
-        destination,
-        deps = [],
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        content: str,
+        destination: str,
+        deps: list[str] = [],
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds an asset to the workspace.
 
     This will create a file in the workspace with the given content as string value.
 
     Args:
-        name: `str` The name of the rule.
-        content: `str` The content of the file to create.
-        destination: `str` The destination path for the file.
-        deps: `[str]` List of dependencies for the rule.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        content: The content of the file to create.
+        destination: The destination path for the file.
+        deps: List of dependencies for the rule.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
     if visibility != None:
         info_set_minimum_version("0.15.24")
@@ -355,28 +355,28 @@ def checkout_add_asset(
     )
 
 def checkout_update_asset(
-        name,
-        destination,
-        value,
-        format = None,
-        deps = [],
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        destination: str,
+        value: dict | list,
+        format: str | None = None,
+        deps: list[str] = [],
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Updates an asset in the workspace.
 
     This rule will merge the data of an existing JSON, TOML, or YAML file with the given value.
 
     Args:
-        name: `str` The name of the rule.
-        destination: `str` The destination path for the asset.
-        format: `str` The format of the asset (json | toml | yaml). Default will get extension from destination.
-        value: `dict|list` The value of the asset as a dict to merge with the existing file.
-        deps: `[str]` List of dependencies for the asset.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        destination: The destination path for the asset.
+        format: The format of the asset (json | toml | yaml). Default will get extension from destination.
+        value: The value of the asset as a dict to merge with the existing file.
+        deps: List of dependencies for the asset.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     effective_format = format if format != None else destination.split(".")[-1]
@@ -400,26 +400,26 @@ def checkout_update_asset(
     )
 
 def checkout_add_cargo_bin(
-        name,
-        crate,
-        version,
-        bins,
-        deps = [],
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        crate: str,
+        version: str,
+        bins: list[str],
+        deps: list[str] = [],
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds a cargo binary to the workspace.
 
     Args:
-        name: `str` The name of the rule.
-        crate: `str` The name of the crate.
-        version: `str` The version of the crate.
-        bins: `[str]` List of binaries to add.
-        deps: `[str]` List of dependencies for the rule.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        crate: The name of the crate.
+        version: The version of the crate.
+        bins: List of binaries to add.
+        deps: List of dependencies for the rule.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
     if visibility != None:
         info_set_minimum_version("0.15.24")
@@ -440,24 +440,24 @@ def checkout_add_cargo_bin(
     )
 
 def checkout_add_hard_link_asset(
-        name,
-        source,
-        destination,
-        deps = [],
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        source: str,
+        destination: str,
+        deps: list[str] = [],
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds a hard link asset to the workspace.
 
     Args:
-        name: `str` The name of the rule.
-        source: `str` The source path of the asset.
-        destination: `str` The destination path for the asset.
-        deps: `[str]` List of dependencies for the asset.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        source: The source path of the asset.
+        destination: The destination path for the asset.
+        deps: List of dependencies for the asset.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
     if visibility != None:
         info_set_minimum_version("0.15.24")
@@ -477,24 +477,24 @@ def checkout_add_hard_link_asset(
     )
 
 def checkout_add_soft_link_asset(
-        name,
-        source,
-        destination,
-        deps = [],
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        source: str,
+        destination: str,
+        deps: list[str] = [],
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds a soft link asset to the workspace.
 
     Args:
-        name: `str` The name of the rule.
-        source: `str` The source path of the soft link.
-        destination: `str` The relative workspace path of the soft link destination.
-        deps: `[str]` List of dependencies for the asset.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        source: The source path of the soft link.
+        destination: The relative workspace path of the soft link destination.
+        deps: List of dependencies for the asset.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
     if visibility != None:
         info_set_minimum_version("0.15.24")
@@ -514,20 +514,20 @@ def checkout_add_soft_link_asset(
     )
 
 def checkout_add_target(
-        name,
-        deps,
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        deps: list[str],
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds a target to the workspace.
 
     Args:
-        name: `str` The name of the rule.
-        deps: `[str]` List of dependencies for the target.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        deps: List of dependencies for the target.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
     if visibility != None:
         info_set_minimum_version("0.15.24")
@@ -543,22 +543,22 @@ def checkout_add_target(
     )
 
 def checkout_add_platform_archive(
-        name,
-        platforms,
-        deps = [],
-        type = None,
-        visibility = None):
+        name: str,
+        platforms: dict,
+        deps: list[str] = [],
+        type: str | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds a platform archive to the checkout.
 
     Platform archives are used to add binary tools based on the host platform.
 
     Args:
-        name: `str` The name of the rule.
-        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
-        deps: `[str]` List of dependencies for the rule.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        platforms: List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        deps: List of dependencies for the rule.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
     if visibility != None:
         info_set_minimum_version("0.15.24")
@@ -570,18 +570,18 @@ def checkout_add_platform_archive(
     )
 
 def checkout_update_env(
-        name,
-        vars = {},
-        paths = [],
-        system_paths = None,
-        inherited_vars = None,
-        optional_inherited_vars = None,
-        run_inherited_vars = None,
-        secret_inherited_vars = None,
-        deps = [],
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        vars: dict = {},
+        paths: list[str] = [],
+        system_paths: list[str] | None = None,
+        inherited_vars: list[str] | None = None,
+        optional_inherited_vars: list[str] | None = None,
+        run_inherited_vars: list[str] | None = None,
+        secret_inherited_vars: list[str] | None = None,
+        deps: list[str] = [],
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Updates the environment with the given variables and paths.
 
@@ -594,18 +594,18 @@ def checkout_update_env(
     `secret_inherited_vars` are inherited when executing spaces checkout or run. The values of the secrets are masked in the logs and terminal.
 
     Args:
-        name: `str` The name of the rule.
-        vars: `dict` Dictionary of variables to store in `env.spaces.star`.
-        paths: `[str]` List of paths to add to the PATH.
-        system_paths: `[str]` The path to add to the system PATH.
-        inherited_vars: `[str]` List of variables to inherit from the calling environment and store in `env.spaces.star`.
-        optional_inherited_vars: `[str]` List of variables to inherit from the calling environment if they exist and store in `env.spaces.star` (requires spaces >v0.15.1)
-        run_inherited_vars: `[str]` List of variables inherited when executing spaces run.
-        secret_inherited_vars: `[str]` List of variables inherited when executing spaces checkout/run. Values will be masked in the logs and terminal.
-        deps: `[str]` List of dependencies for the rule.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        vars: Dictionary of variables to store in `env.spaces.star`.
+        paths: List of paths to add to the PATH.
+        system_paths: The path to add to the system PATH.
+        inherited_vars: List of variables to inherit from the calling environment and store in `env.spaces.star`.
+        optional_inherited_vars: List of variables to inherit from the calling environment if they exist and store in `env.spaces.star` (requires spaces >v0.15.1)
+        run_inherited_vars: List of variables inherited when executing spaces run.
+        secret_inherited_vars: List of variables inherited when executing spaces checkout/run. Values will be masked in the logs and terminal.
+        deps: List of dependencies for the rule.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     if optional_inherited_vars != None:
@@ -645,26 +645,26 @@ def checkout_update_env(
     )
 
 def checkout_add_which_asset(
-        name,
-        which,
-        destination,
-        deps = [],
-        platforms = None,
-        type = None,
-        visibility = None):
+        name: str,
+        which: str,
+        destination: str,
+        deps: list[str] = [],
+        platforms: list[str] | None = None,
+        type: str | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds an asset to the destintion based on the which command.
 
     Using this function creates system dependencies that may not be reproducible across different systems.
 
     Args:
-        name: `str` The name of the rule.
-        which: `str` The name of the asset to add.
-        destination: `str` The destination path for the asset.
-        deps: `[str]` List of dependencies for the asset.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        which: The name of the asset to add.
+        destination: The destination path for the asset.
+        deps: List of dependencies for the asset.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     if visibility != None:
@@ -685,13 +685,13 @@ def checkout_add_which_asset(
     )
 
 def update_platforms_prefix(
-        platforms,
-        add_prefix):
+        platforms: dict,
+        add_prefix: str) -> dict:
     """
     Updates the prefix of the platforms.
 
     Args:
-        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        platforms: List of [platforms](/docs/builtins/#rule-options) to add the archive to.
         add_prefix: The prefix to set.
 
     Returns:
@@ -707,34 +707,34 @@ def update_platforms_prefix(
     return updated_platforms
 
 def checkout_add_oras_archive(
-        name,
-        url,
-        artifact,
-        tag,
-        add_prefix,
-        manifest_digest_path = "/layers/0/digest",
-        manifest_artifact_path = "/layers/0/annotations/org.opencontainers.image.title",
-        globs = None,
-        deps = [],
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        url: str,
+        artifact: str,
+        tag: str,
+        add_prefix: str,
+        manifest_digest_path: str = "/layers/0/digest",
+        manifest_artifact_path: str = "/layers/0/annotations/org.opencontainers.image.title",
+        globs: list[str] | None = None,
+        deps: list[str] = [],
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds an oras archive to the workspace.
 
     Args:
-        name: `str` The name of the rule.
-        url: `str` The URL of the oras archive to download.
-        artifact: `str` The artifact name of the oras archive.
-        tag: `str` The tag of the oras archive.
-        add_prefix: `str` The prefix to add to the archive.
-        manifest_digest_path: `str` The path to the manifest digest in the oras archive.
-        manifest_artifact_path: `str` The path to the manifest artifact in the oras archive.
-        globs: `[str]` List of globs to include/exclude.
-        deps: `[str]` List of dependencies for the rule.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) to add the archive to.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        url: The URL of the oras archive to download.
+        artifact: The artifact name of the oras archive.
+        tag: The tag of the oras archive.
+        add_prefix: The prefix to add to the archive.
+        manifest_digest_path: The path to the manifest digest in the oras archive.
+        manifest_artifact_path: The path to the manifest artifact in the oras archive.
+        globs: List of globs to include/exclude.
+        deps: List of dependencies for the rule.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: List of [platforms](/docs/builtins/#rule-options) to add the archive to.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     if visibility != None:
@@ -759,14 +759,14 @@ def checkout_add_oras_archive(
         },
     )
 
-def checkout_add_compile_commands_dir(name, path, rule):
+def checkout_add_compile_commands_dir(name: str, path: str, rule: str):
     """
     Registers a build directory in the compile_commands.spaces.json file.
 
     Args:
-        name: `str` The name of the checkout rule.
-        path: `str` The path to the build directory where compile_commands.json will be found.
-        rule: `str` The name of the rule that is associated with creating the compile_command.json file.
+        name: The name of the checkout rule.
+        path: The path to the build directory where compile_commands.json will be found.
+        rule: The name of the rule that is associated with creating the compile_command.json file.
     """
 
     checkout_update_asset(
@@ -775,17 +775,17 @@ def checkout_add_compile_commands_dir(name, path, rule):
         value = {"{}".format(path): "{}".format(rule)},
     )
 
-def checkout_update_shell(name, shell_path, args = [], deps = [], visibility = None):
+def checkout_update_shell(name: str, shell_path: str, args: list[str] = [], deps: list[str] = [], visibility: str | dict[str, list[str]] | None = None):
     """
 
     Updates the workspace shell configuration that is used with `spaces shell`
 
     Args:
-        name: `str` The name of the rule.
-        shell_path: `str` The path to the shell executable.
-        args: `list` The arguments to pass to the shell.
-        deps: `list` The dependencies of the rule (allows controlling order of updating the file)
-        visibility: `visibility` The visibility of the rule.
+        name: The name of the rule.
+        shell_path: The path to the shell executable.
+        args: The arguments to pass to the shell.
+        deps: The dependencies of the rule (allows controlling order of updating the file)
+        visibility: The visibility of the rule.
         """
     checkout_update_asset(
         name,
@@ -799,23 +799,23 @@ def checkout_update_shell(name, shell_path, args = [], deps = [], visibility = N
     )
 
 def checkout_update_shell_startup(
-        name,
-        script_name,
-        contents,
-        env_name = None,
-        deps = [],
-        visibility = None):
+        name: str,
+        script_name: str,
+        contents: str,
+        env_name: str | None = None,
+        deps: list[str] = [],
+        visibility: str | dict[str, list[str]] | None = None):
     """
 
     Updates the workspace shell configuration that is used with `spaces shell`
 
     Args:
-        name: `str` The name of the rule.
-        script_name: `str` The name of the startup file to generate and store at `.spaces/shell/<script_name>` in the workspace.
-        contents: `str` The contents of the startup file.
-        env_name: `str` If not None, this will be set to point to the workspace shell startup directory `.spaces/shell`.
-        deps: `list` The dependencies of the rule (allows controlling order of updating the file)
-        visibility: `list` The visibility of the rule (allows controlling who can see the rule)
+        name: The name of the rule.
+        script_name: The name of the startup file to generate and store at `.spaces/shell/<script_name>` in the workspace.
+        contents: The contents of the startup file.
+        env_name: If not None, this will be set to point to the workspace shell startup directory `.spaces/shell`.
+        deps: The dependencies of the rule (allows controlling order of updating the file)
+        visibility: The visibility of the rule (allows controlling who can see the rule)
     """
 
     effective_env_name = {"env_name": env_name} if env_name else {}
@@ -832,16 +832,16 @@ def checkout_update_shell_startup(
         visibility = visibility,
     )
 
-def checkout_update_shell_shortcuts(name, shortcuts, deps = [], visibility = None):
+def checkout_update_shell_shortcuts(name: str, shortcuts: dict, deps: list[str] = [], visibility: str | dict[str, list[str]] | None = None):
     """
 
     Updates the `.spaces/shell/shortcuts.sh` file with shell functions. This file can be source when starting the shell.
 
     Args:
-        name: `str` The name of the rule.
-        shortcuts: `dict` A dictionary of function names (key) and shell commands to execute (values).
-        deps: `list` A list of dependencies that allows override of shortcuts.
-        visibility: `list` The visibility of the rule (allows controlling who can see the rule)
+        name: The name of the rule.
+        shortcuts: A dictionary of function names (key) and shell commands to execute (values).
+        deps: A list of dependencies that allows override of shortcuts.
+        visibility: The visibility of the rule (allows controlling who can see the rule)
     """
     if shortcuts != None:
         checkout_update_asset(
@@ -855,24 +855,24 @@ def checkout_update_shell_shortcuts(name, shortcuts, deps = [], visibility = Non
         )
 
 def checkout_add_any_assets(
-        name,
-        assets,
-        deps = [],
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        assets: list[dict],
+        deps: list[str] = [],
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds a list of any assets to the workspace as a single rule.
 
     `assets` should be a list of dicts. Use asset.star: asset_hard_link(), asset_soft_link(), etc to create the entries.
 
     Args:
-        name: `str` The name of the rule.
-        assets: `[dict]` A list of dict's that define assets to add.
-        deps: `[str]` List of dependencies for the rule.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) rule applies to.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        assets: A list of dict's that define assets to add.
+        deps: List of dependencies for the rule.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: List of [platforms](/docs/builtins/#rule-options) rule applies to.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     info_set_required_semver(">=0.15.19")
@@ -892,22 +892,22 @@ def checkout_add_any_assets(
     )
 
 def checkout_add_env_vars(
-        name,
-        vars,
-        deps = [],
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        vars: list[dict],
+        deps: list[str] = [],
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds environment variables to the workspace.
 
     Args:
-        name: `str` Name of the checkout rule
-        vars: `[env]` list of env objects from env.star
-        deps: `[str]` List of dependencies for the rule.
-        type: `str` use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
-        platforms: `[str]` List of [platforms](/docs/builtins/#rule-options) rule applies to.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: Name of the checkout rule
+        vars: list of env objects from env.star
+        deps: List of dependencies for the rule.
+        type: use [checkout_type_optional()](#checkout_type_optional) to skip rule checkout
+        platforms: List of [platforms](/docs/builtins/#rule-options) rule applies to.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     info_set_minimum_version("0.15.27")
