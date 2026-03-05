@@ -5,32 +5,32 @@ Shell functions
 load("run.star", "RUN_EXPECT_SUCCESS", "run_add_exec")
 
 def cp(
-        name,
-        source,
-        destination,
-        options = [],
-        deps = [],
-        type = None,
-        inputs = None,
-        help = None,
-        working_directory = None,
-        visibility = None,
-        expect = RUN_EXPECT_SUCCESS):
+        name: str,
+        source: str,
+        destination: str,
+        options: list[str] = [],
+        deps: list[str] = [],
+        type: str | None = None,
+        inputs: list[str] | None = None,
+        help: str | None = None,
+        working_directory: str | None = None,
+        visibility: str | dict[str, list[str]] | None = None,
+        expect: str = RUN_EXPECT_SUCCESS):
     """
     Copy a file or directory from source to destination.
 
     Args:
-        name: `str` The name of the rule.
-        source: `str` The source file or directory.
-        destination: `str` The destination file or directory.
-        options: `[str]` The options for the copy command.
-        deps: `[str]` The dependencies for the copy command.
-        type: `enum` The type of the command.
-        inputs: `[str]` The inputs for the command.
-        help: `str` The help message for the command.
-        working_directory: `str` The working directory for the command.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
-        expect: `enum` Success | Failure
+        name: The name of the rule.
+        source: The source file or directory.
+        destination: The destination file or directory.
+        options: The options for the copy command.
+        deps: The dependencies for the copy command.
+        type: The type of the command.
+        inputs: The inputs for the command.
+        help: The help message for the command.
+        working_directory: The working directory for the command.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        expect: Success | Failure
     """
 
     run_add_exec(
@@ -47,32 +47,32 @@ def cp(
     )
 
 def mv(
-        name,
-        source,
-        destination,
-        options = [],
-        deps = [],
-        type = None,
-        inputs = None,
-        help = None,
-        working_directory = None,
-        visibility = None,
-        expect = RUN_EXPECT_SUCCESS):
+        name: str,
+        source: str,
+        destination: str,
+        options: list[str] = [],
+        deps: list[str] = [],
+        type: str | None = None,
+        inputs: list[str] | None = None,
+        help: str | None = None,
+        working_directory: str | None = None,
+        visibility: str | dict[str, list[str]] | None = None,
+        expect: str = RUN_EXPECT_SUCCESS):
     """
     Rename a file or directory from source to destination.
 
     Args:
-        name: `str` The name of the rule.
-        source: `str` The source file or directory.
-        destination: `str` The destination file or directory.
-        options: `[str]` The options for the move command.
-        deps: `[str]` The dependencies for the move command.
-        type: `enum` The type of the command.
-        inputs: `[str]` The inputs for the command.
-        help: `str` The help message for the command.
-        working_directory: `str` The working directory for the command.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
-        expect: `enum` Success|Failure
+        name: The name of the rule.
+        source: The source file or directory.
+        destination: The destination file or directory.
+        options: The options for the move command.
+        deps: The dependencies for the move command.
+        type: The type of the command.
+        inputs: The inputs for the command.
+        help: The help message for the command.
+        working_directory: The working directory for the command.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        expect: Success|Failure
     """
 
     run_add_exec(
@@ -89,32 +89,32 @@ def mv(
     )
 
 def ln(
-        name,
-        source,
-        destination,
-        options = [],
-        deps = [],
-        type = None,
-        inputs = None,
-        help = None,
-        working_directory = None,
-        visibility = None,
-        expect = RUN_EXPECT_SUCCESS):
+        name: str,
+        source: str,
+        destination: str,
+        options: list[str] = [],
+        deps: list[str] = [],
+        type: str | None = None,
+        inputs: list[str] | None = None,
+        help: str | None = None,
+        working_directory: str | None = None,
+        visibility: str | dict[str, list[str]] | None = None,
+        expect: str = RUN_EXPECT_SUCCESS):
     """
     Create a link from source to destination.
 
     Args:
-        name: `str` The name of the rule.
-        source: `str` The source file or directory.
-        destination: `str` destination or target (to be created).
-        options: `[str]` The options for the copy command.
-        deps: `[str]` The dependencies for the copy command.
-        type: `enum` The type of the command.
-        inputs: `[str]` The inputs for the command.
-        help: `str` The help message for the command.
-        working_directory: `str` The working directory for the command.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
-        expect: `enum` Success|Failure
+        name: The name of the rule.
+        source: The source file or directory.
+        destination: destination or target (to be created).
+        options: The options for the copy command.
+        deps: The dependencies for the copy command.
+        type: The type of the command.
+        inputs: The inputs for the command.
+        help: The help message for the command.
+        working_directory: The working directory for the command.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        expect: Success|Failure
     """
 
     run_add_exec(
@@ -131,30 +131,30 @@ def ln(
     )
 
 def ls(
-        name,
-        path,
-        options = [],
-        deps = [],
-        type = None,
-        inputs = None,
-        help = None,
-        working_directory = None,
-        visibility = None,
-        expect = RUN_EXPECT_SUCCESS):
+        name: str,
+        path: str,
+        options: list[str] = [],
+        deps: list[str] = [],
+        type: str | None = None,
+        inputs: list[str] | None = None,
+        help: str | None = None,
+        working_directory: str | None = None,
+        visibility: str | dict[str, list[str]] | None = None,
+        expect: str = RUN_EXPECT_SUCCESS):
     """
     Run ls (this can be handy for checking if something exists).
 
     Args:
-        name: `str` The name of the rule.
-        path: `str` The directory to list.
-        options: `[str]` The options for the ls command.
-        deps: `[str]` The dependencies for the ls command.
-        type: `enum` The type of the command.
-        inputs: `[str]` The inputs for the command.
-        help: `str` The help message for the command.
-        working_directory: `str` The working directory for the command.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
-        expect: `enum` Success|Failure
+        name: The name of the rule.
+        path: The directory to list.
+        options: The options for the ls command.
+        deps: The dependencies for the ls command.
+        type: The type of the command.
+        inputs: The inputs for the command.
+        help: The help message for the command.
+        working_directory: The working directory for the command.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        expect: Success|Failure
     """
 
     run_add_exec(
@@ -171,16 +171,16 @@ def ls(
     )
 
 def mkdir(
-        name,
-        path,
-        options = [],
-        deps = [],
-        type = None,
-        inputs = None,
-        help = None,
-        working_directory = None,
-        visibility = None,
-        expect = RUN_EXPECT_SUCCESS):
+        name: str,
+        path: str,
+        options: list[str] = [],
+        deps: list[str] = [],
+        type: str | None = None,
+        inputs: list[str] | None = None,
+        help: str | None = None,
+        working_directory: str | None = None,
+        visibility: str | dict[str, list[str]] | None = None,
+        expect: str = RUN_EXPECT_SUCCESS):
     """
     Create a new directory.
 
@@ -191,10 +191,10 @@ def mkdir(
         deps: The dependencies for the copy command.
         type: The type of the command.
         inputs: The inputs for the command.
-        help: `str` The help message for the command.
+        help: The help message for the command.
         working_directory: The working directory for the command.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
-        expect: `enum` Success|Failure
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        expect: Success|Failure
     """
 
     run_add_exec(
@@ -211,30 +211,30 @@ def mkdir(
     )
 
 def chmod(
-        name,
-        mode,
-        path,
-        deps = [],
-        type = None,
-        inputs = None,
-        help = None,
-        working_directory = None,
-        visibility = None,
-        expect = RUN_EXPECT_SUCCESS):
+        name: str,
+        mode: str,
+        path: str,
+        deps: list[str] = [],
+        type: str | None = None,
+        inputs: list[str] | None = None,
+        help: str | None = None,
+        working_directory: str | None = None,
+        visibility: str | dict[str, list[str]] | None = None,
+        expect: str = RUN_EXPECT_SUCCESS):
     """
     Changes the mode of a file or directory.
 
     Args:
-        name: `str` The name of the rule.
+        name: The name of the rule.
         mode: The source file or directory.
-        path: `str` The path/file to change permissions for.
-        deps: `[str]` The dependencies for the copy command.
-        type: `enum` The type of the command.
-        inputs: `[str]` The inputs for the command.
-        help: `str` The help message for the command.
-        working_directory: `str` The working directory for the command.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
-        expect: `enum` Success|Failure
+        path: The path/file to change permissions for.
+        deps: The dependencies for the copy command.
+        type: The type of the command.
+        inputs: The inputs for the command.
+        help: The help message for the command.
+        working_directory: The working directory for the command.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        expect: Success|Failure
     """
 
     run_add_exec(
@@ -251,17 +251,17 @@ def chmod(
     )
 
 def shell(
-        name,
-        script,
-        shell = "bash",
-        options = ["-c"],
-        expect = RUN_EXPECT_SUCCESS,
-        type = None,
-        inputs = None,
-        help = None,
-        working_directory = None,
-        visibility = None,
-        deps = []):
+        name: str,
+        script: str,
+        shell: str = "bash",
+        options: list[str] = ["-c"],
+        expect: str = RUN_EXPECT_SUCCESS,
+        type: str | None = None,
+        inputs: list[str] | None = None,
+        help: str | None = None,
+        working_directory: str | None = None,
+        visibility: str | dict[str, list[str]] | None = None,
+        deps: list[str] = []):
     """
     Add a run rule that executes a shell script.
 
@@ -282,17 +282,17 @@ def shell(
     ```
 
     Args:
-        name: `str` name of the rule
-        script: `str` text of the script to run
-        shell: `str` shell to use (default is `bash`)
-        options: `[str]` options to pass before script default is `-c`
-        expect: `enum` Success | Failure
-        type: `enum` Optional | All (default is Optional)
-        inputs: `[str]` The inputs for the command.
-        help: `str` The help message for the command.
-        working_directory: `str` working directory (default is workspace root)
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
-        deps: `[str]` rule dependencies
+        name: name of the rule
+        script: text of the script to run
+        shell: shell to use (default is `bash`)
+        options: options to pass before script default is `-c`
+        expect: Success | Failure
+        type: Optional | All (default is Optional)
+        inputs: The inputs for the command.
+        help: The help message for the command.
+        working_directory: working directory (default is workspace root)
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        deps: rule dependencies
     """
 
     run_add_exec(

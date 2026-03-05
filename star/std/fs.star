@@ -2,132 +2,132 @@
 Spaces Filesystem built-in functions
 """
 
-def fs_read_directory(path):
+def fs_read_directory(path: str) -> list[str]:
     """
     Read a directory
 
     Args:
-        path: `str` path to the directory
+        path: path to the directory
 
     Returns:
-        `[str]` A list of files and directories in the directory
+        A list of files and directories in the directory
     """
     return fs.read_directory(path)
 
-def fs_exists(path):
+def fs_exists(path: str) -> bool:
     """
     Check if a file or directory exists
 
     Args:
-        path: `str` path to the file or directory
+        path: path to the file or directory
 
     Returns:
-       `bool`  True if the file or directory exists, False otherwise
+        True if the file or directory exists, False otherwise
     """
     return fs.exists(path)
 
-def fs_is_file(path):
+def fs_is_file(path: str) -> bool:
     """
     Check if a path is a file
 
     Args:
-        path: `str` path to the file
+        path: path to the file
 
     Returns:
-        `bool` True if the path is a file, False otherwise
+        True if the path is a file, False otherwise
     """
     return fs.is_file(path)
 
-def fs_is_directory(path):
+def fs_is_directory(path: str) -> bool:
     """
     Check if a path is a directory
 
     Args:
-        path: `str` path to the directory
+        path: path to the directory
 
     Returns:
-        `bool` True if the path is a directory, False otherwise
+        True if the path is a directory, False otherwise
     """
     return fs.is_directory(path)
 
-def fs_is_symlink(path):
+def fs_is_symlink(path: str) -> bool:
     """
     Check if a path is a symbolic link
 
     Args:
-        path: `str` path to the symbolic link
+        path: path to the symbolic link
 
     Returns:
-        `bool` True if the path is a symbolic link, False otherwise
+        True if the path is a symbolic link, False otherwise
     """
     return fs.is_symlink(path)
 
-def fs_is_text_file(path):
+def fs_is_text_file(path: str) -> bool:
     """
     Check if a file is a text file
 
     Args:
-        path: `str` path to the file
+        path: path to the file
 
     Returns:
-        `bool` True if the file is a text file, False otherwise
+        True if the file is a text file, False otherwise
     """
     return fs.is_text_file(path)
 
-def fs_read_toml(path):
+def fs_read_toml(path: str) -> dict:
     """
     Read a TOML file
 
     Args:
-        path: `str` path to the TOML file
+        path: path to the TOML file
 
     Returns:
-        `dict` The parsed TOML object
+        The parsed TOML object
     """
     return fs.read_toml_to_dict(path)
 
-def fs_read_yaml(path):
+def fs_read_yaml(path: str) -> dict:
     """
     Read a YAML file
 
     Args:
-        path: `str` path to the YAML file
+        path: path to the YAML file
 
     Returns:
-        `dict` The parsed YAML object
+        The parsed YAML object
     """
     return fs.read_yaml_to_dict(path)
 
-def fs_read_json(path):
+def fs_read_json(path: str) -> dict:
     """
     Read a JSON file
 
     Args:
-        path: `str` path to the JSON file
+        path: path to the JSON file
 
     Returns:
-        `dict` The parsed JSON object
+        The parsed JSON object
     """
     return fs.read_json_to_dict(path)
 
-def fs_read_text(path):
+def fs_read_text(path: str) -> str:
     """
     Read a text file
 
     Args:
-        path: `str` path to the text file
+        path: path to the text file
 
     Returns:
-        `str` The content of the text file
+        The content of the text file
     """
     return fs.read_file_to_string(path)
 
-def fs_write_text(path, content):
+def fs_write_text(path: str, content: str):
     """
     Write a text file
 
     Args:
-        path: `str` path to the text file
-        content: `str` content to write to the text file
+        path: path to the text file
+        content: content to write to the text file
     """
     return fs.write_string_to_file(path = path, content = content)

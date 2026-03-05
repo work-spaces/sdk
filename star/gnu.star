@@ -8,32 +8,32 @@ load("run.star", "run_add_exec", "run_add_target")
 load("ws.star", "workspace_get_absolute_path")
 
 def gnu_add_configure_make_install(
-        name,
-        source_directory,
-        autoreconf_args = None,
-        configure_args = [],
-        make_args = [],
-        build_artifact_globs = None,
-        deps = [],
-        install_path = None,
-        skip_install = False,
-        env = {},
-        visibility = None):
+        name: str,
+        source_directory: str,
+        autoreconf_args: list[str] | None = None,
+        configure_args: list[str] = [],
+        make_args: list[str] = [],
+        build_artifact_globs: list[str] | None = None,
+        deps: list[str] = [],
+        install_path: str | None = None,
+        skip_install: bool = False,
+        env: dict[str, str] = {},
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Add an autotools project to the build
 
     Args:
-        name: `str` The name of the project
-        source_directory: `str` The directory of the project
-        autoreconf_args: `[str]` The arguments to pass to the autoreconf script
-        configure_args: `[str]` The arguments to pass to the configure script
-        make_args: `[str]` The arguments to pass to the make command
-        build_artifact_globs: `[str]` The globs to match the build artifacts
-        deps: `[str]` The dependencies of the project
-        install_path: `str` The path to install the project
-        skip_install: `bool` Whether to skip the install step
-        env: `dict` The environment variables to set during configure, build, and install
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the project
+        source_directory: The directory of the project
+        autoreconf_args: The arguments to pass to the autoreconf script
+        configure_args: The arguments to pass to the configure script
+        make_args: The arguments to pass to the make command
+        build_artifact_globs: The globs to match the build artifacts
+        deps: The dependencies of the project
+        install_path: The path to install the project
+        skip_install: Whether to skip the install step
+        env: The environment variables to set during configure, build, and install
+        visibility: Rule visibility. See visibility.star for more info.
     """
 
     BUILD_DIR = "build/{}".format(name)
@@ -117,32 +117,32 @@ def gnu_add_configure_make_install(
     run_add_target(name, deps = [INSTALL_RULE_NAME], visibility = visibility)
 
 def gnu_add_repo(
-        name,
-        url,
-        rev,
-        autoreconf_args = None,
-        configure_args = [],
-        make_args = [],
-        checkout_submodules = False,
-        deps = [],
-        install_path = None,
-        env = {},
-        visibility = None):
+        name: str,
+        url: str,
+        rev: str,
+        autoreconf_args: list[str] | None = None,
+        configure_args: list[str] = [],
+        make_args: list[str] = [],
+        checkout_submodules: bool = False,
+        deps: list[str] = [],
+        install_path: str | None = None,
+        env: dict[str, str] = {},
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Add an autotools project from a repository
 
     Args:
-        name: `str` The name of the project
-        url: `str` The URL of the repository
-        rev: `str` The revision of the repository
-        autoreconf_args: `[str]` The arguments to pass to the autoreconf script
-        configure_args: `[str]` The arguments to pass to the configure script
-        make_args: `[str]` The arguments to pass to the make
-        checkout_submodules: `bool` Whether to checkout submodules
-        deps: `[str]` The dependencies of the project
-        install_path: `str` The path to install the project
-        env: `dict` The environment variables to set during configure, make, and install
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the project
+        url: The URL of the repository
+        rev: The revision of the repository
+        autoreconf_args: The arguments to pass to the autoreconf script
+        configure_args: The arguments to pass to the configure script
+        make_args: The arguments to pass to the make
+        checkout_submodules: Whether to checkout submodules
+        deps: The dependencies of the project
+        install_path: The path to install the project
+        env: The environment variables to set during configure, make, and install
+        visibility: Rule visibility. See visibility.star for more info.
     """
 
     CHECKOUT_RULE = "{}_source".format(name)

@@ -2,13 +2,13 @@
 Helper functions for creating environment variables.
 """
 
-def _env_bool(value):
+def _env_bool(value: bool) -> str:
     return "Yes" if value else "No"
 
 def env_assign(
-        name,
-        value,
-        help):
+        name: str,
+        value: str,
+        help: str) -> dict:
     """
     Assigns an environment variable to the workspace.
 
@@ -31,10 +31,10 @@ def env_assign(
     }
 
 def env_append(
-        name,
-        value,
-        help,
-        separator = ":"):
+        name: str,
+        value: str,
+        help: str,
+        separator: str = ":") -> dict:
     """
     Appends a value to an environment variable.
 
@@ -61,10 +61,10 @@ def env_append(
     }
 
 def env_prepend(
-        name,
-        value,
-        help,
-        separator = ":"):
+        name: str,
+        value: str,
+        help: str,
+        separator: str = ":") -> dict:
     """
     Prepends a value to an environment variable.
 
@@ -91,12 +91,12 @@ def env_prepend(
     }
 
 def env_inherit(
-        name,
-        help,
-        assign_as_default = None,
-        is_secret = False,
-        is_required = False,
-        is_save_at_checkout = False):
+        name: str,
+        help: str,
+        assign_as_default: str | None = None,
+        is_secret: bool = False,
+        is_required: bool = False,
+        is_save_at_checkout: bool = False) -> dict:
     """
     Inherits an environment variable.
 
@@ -126,14 +126,14 @@ def env_inherit(
     }
 
 def env_script(
-        name,
-        script,
-        help,
-        shell = None,
-        assign_as_default = None,
-        is_secret = False,
-        is_required = False,
-        env = {}):
+        name: str,
+        script: str,
+        help: str,
+        shell: str | None = None,
+        assign_as_default: str | None = None,
+        is_secret: bool = False,
+        is_required: bool = False,
+        env: dict = {}) -> dict:
     """
     Evaluates a script to get the value of the environment variable.
 

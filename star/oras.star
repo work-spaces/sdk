@@ -6,37 +6,37 @@ load("checkout.star", "checkout_add_oras_archive")
 load("run.star", "run_add_exec", "run_add_target")
 load("ws.star", "WORKSPACE_SYSROOT")
 
-def _get_oras_command():
+def _get_oras_command() -> str:
     return "{}/sysroot/bin/oras".format(info.get_path_to_spaces_tools())
 
-def _get_oras_label(url, artifact, tag):
+def _get_oras_label(url: str, artifact: str, tag: str) -> str:
     return "{}/{}:{}".format(url, artifact.lower(), tag)
 
 def oras_add_publish_archive(
-        name,
-        url,
-        artifact,
-        tag,
-        input,
-        deps,
-        deploy_repo = None,
-        layer_info = "application/archive",
-        suffix = "tar.xz",
-        visibility = None):
+        name: str,
+        url: str,
+        artifact: str,
+        tag: str,
+        input: str,
+        deps: list[str],
+        deploy_repo: str | None = None,
+        layer_info: str = "application/archive",
+        suffix: str = "tar.xz",
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Publishes an archive using oras.
 
     Args:
-        name: `str` Name of the project to publish.
-        url: `str` The URL of the oras archive to publish.
-        artifact: `str` The artifact name of the oras archive.
-        tag: `str` The tag of the oras archive.
-        input: `str` The workspace path to the folder/file to archive and publish.
-        deps: `[str]` Dependencies for the archive.
-        deploy_repo: `str` The deploy repository to publish the archive to.
-        layer_info: `str` The layer info of the archive.
-        suffix: `str` The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip).
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: Name of the project to publish.
+        url: The URL of the oras archive to publish.
+        artifact: The artifact name of the oras archive.
+        tag: The tag of the oras archive.
+        input: The workspace path to the folder/file to archive and publish.
+        deps: Dependencies for the archive.
+        deploy_repo: The deploy repository to publish the archive to.
+        layer_info: The layer info of the archive.
+        suffix: The suffix of the archive file (tar.gz, tar.xz, tar.bz2, zip).
+        visibility: Rule visibility. See visibility.star for more info.
     """
 
     PLATFORM = info.get_platform_name()
@@ -95,24 +95,24 @@ def oras_add_publish_archive(
     )
 
 def oras_add_platform_archive(
-        name,
-        url,
-        artifact,
-        tag,
-        add_prefix = WORKSPACE_SYSROOT,
-        globs = None,
-        visibility = None):
+        name: str,
+        url: str,
+        artifact: str,
+        tag: str,
+        add_prefix: str = WORKSPACE_SYSROOT,
+        globs: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Checks out an archive using oras.
 
     Args:
-        name: `str` Name of the rule.
-        url: `str` The URL of the oras archive to download.
-        artifact: `str` The artifact name of the oras archive (platform will be appended to artifact name)
-        tag: `str` The tag of the oras archive.
-        add_prefix: `str` The prefix to add to the archive.
-        globs: `[str]` List of globs to include/exclude.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: Name of the rule.
+        url: The URL of the oras archive to download.
+        artifact: The artifact name of the oras archive (platform will be appended to artifact name)
+        tag: The tag of the oras archive.
+        add_prefix: The prefix to add to the archive.
+        globs: List of globs to include/exclude.
+        visibility: Rule visibility. See visibility.star for more info.
 
     """
 

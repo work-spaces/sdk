@@ -2,7 +2,7 @@
 Spaces info built-ins
 """
 
-def info_set_max_queue_count(max_queue_count):
+def info_set_max_queue_count(max_queue_count: int):
     """
     Set the maximum number of jobs that can be queued.
 
@@ -11,16 +11,16 @@ def info_set_max_queue_count(max_queue_count):
     """
     info.set_max_queue_count(max_queue_count)
 
-def info_set_minimum_version(version):
+def info_set_minimum_version(version: str):
     """
     Set the minimum version of Spaces required to run the workflow
 
     Args:
-        version: `str` The minimum version of Spaces required to run the workflow
+        version: The minimum version of Spaces required to run the workflow
     """
     info.set_minimum_version(version)
 
-def info_get_cpu_count():
+def info_get_cpu_count() -> int:
     """
     Get the number of CPUs available
 
@@ -29,7 +29,7 @@ def info_get_cpu_count():
     """
     return info.get_cpu_count()
 
-def info_get_path_to_store():
+def info_get_path_to_store() -> str:
     """
     Gets the path to the spaces store
 
@@ -38,7 +38,7 @@ def info_get_path_to_store():
     """
     return info.get_path_to_store()
 
-def info_is_platform_x86_64():
+def info_is_platform_x86_64() -> bool:
     """
     Check if the platform is x86_64
 
@@ -47,7 +47,7 @@ def info_is_platform_x86_64():
     """
     return info.is_platform_x86_64()
 
-def info_is_platform_aarch64():
+def info_is_platform_aarch64() -> bool:
     """
     Check if the platform is aarch64
 
@@ -56,7 +56,7 @@ def info_is_platform_aarch64():
     """
     return info.is_platform_aarch64()
 
-def info_is_platform_linux():
+def info_is_platform_linux() -> bool:
     """
     Check if the platform is Linux
 
@@ -65,7 +65,7 @@ def info_is_platform_linux():
     """
     return info.is_platform_linux()
 
-def info_is_platform_macos():
+def info_is_platform_macos() -> bool:
     """
     Check if the platform is macOS
 
@@ -74,7 +74,7 @@ def info_is_platform_macos():
     """
     return info.is_platform_macos()
 
-def info_is_platform_windows():
+def info_is_platform_windows() -> bool:
     """
     Check if the platform is Windows
 
@@ -83,7 +83,7 @@ def info_is_platform_windows():
     """
     return info.is_platform_windows()
 
-def info_get_platform_name():
+def info_get_platform_name() -> str:
     """
     Get the platform name
 
@@ -92,7 +92,7 @@ def info_get_platform_name():
     """
     return info.get_platform_name()
 
-def info_get_supported_platforms():
+def info_get_supported_platforms() -> list[str]:
     """
     Get the supported platforms
 
@@ -101,7 +101,7 @@ def info_get_supported_platforms():
     """
     return info.get_supported_platforms()
 
-def info_get_path_to_spaces_tools():
+def info_get_path_to_spaces_tools() -> str:
     """
     Get the path to the Spaces tools folder
 
@@ -110,28 +110,28 @@ def info_get_path_to_spaces_tools():
     """
     return info.get_path_to_spaces_tools()
 
-def info_parse_log_file(path):
+def info_parse_log_file(path: str) -> dict:
     """
     Parses a log file
 
     Args:
-        path: `str` path to the log file
+        path: path to the log file
 
     Returns:
-        dict: with members `header` and lines
+        dict with members `header` and lines
     """
     return info.parse_log_file(path)
 
-def info_set_required_semver(required):
+def info_set_required_semver(required: str):
     """
     Set the required `spaces` semver for the workflow
 
     Args:
-        required: `str` The required semver for the workflow
+        required: The required semver for the workflow
     """
     info.set_required_semver(required)
 
-def info_is_ci():
+def info_is_ci() -> bool:
     """
     Check if the workflow is running in a CI environment.
 
@@ -140,7 +140,7 @@ def info_is_ci():
     """
     return info.is_ci()
 
-def info_get_execution_phase():
+def info_get_execution_phase() -> str:
     """
     Get the execution phase
 
@@ -150,7 +150,7 @@ def info_get_execution_phase():
     info_set_minimum_version("0.15.23")
     return info.get_execution_phase()
 
-def info_is_execution_phase_inspect():
+def info_is_execution_phase_inspect() -> bool:
     """
     Check if the execution phase is inspect
 
@@ -159,7 +159,7 @@ def info_is_execution_phase_inspect():
     """
     return info_get_execution_phase() == "Inspect"
 
-def info_is_execution_phase_run():
+def info_is_execution_phase_run() -> bool:
     """
     Check if the execution phase is run
 
@@ -168,7 +168,7 @@ def info_is_execution_phase_run():
     """
     return info_get_execution_phase() == "Run"
 
-def info_is_execution_phase_checkout():
+def info_is_execution_phase_checkout() -> bool:
     """
     Check if the execution phase is checkout
 

@@ -2,13 +2,13 @@
 Defines a glob expression object used with deps and targets.
 """
 
-def glob(includes, excludes = []):
+def glob(includes: list[str], excludes: list[str] = []) -> dict:
     """
     Creates a glob expression object used with deps and targets
 
     Args:
-        includes: `[str]` list of glob expressions to include
-        excludes: `[str]` list of glob expressions to exclude
+        includes: list of glob expressions to include
+        excludes: list of glob expressions to exclude
 
     Returns:
         glob dict that can be passed to create deps and targets.

@@ -7,13 +7,13 @@ ASSET_SOFT_LINK = "SoftLink"
 ASSET_WHICH = "Which"
 ASSET_CONTENT = "Asset"
 
-def asset_hard_link(source, destination):
+def asset_hard_link(source: str, destination: str) -> dict:
     """
     Creates a hard-link asset that can be passed in the assets list to checkout_add_any_assets()
 
     Args:
-        source: `str` source of the hard link
-        destination: `str` destination of the hard link
+        source: source of the hard link
+        destination: destination of the hard link
 
     Returns:
         dict that can be passed to checkout_add_any_assets()
@@ -25,13 +25,13 @@ def asset_hard_link(source, destination):
         "destination": destination,
     }
 
-def asset_soft_link(source, destination):
+def asset_soft_link(source: str, destination: str) -> dict:
     """
     Creates a soft-link asset that can be passed in the assets list to checkout_add_any_assets()
 
     Args:
-        source: `str` source of the hard link
-        destination: `str` destination of the hard link
+        source: source of the hard link
+        destination: destination of the hard link
 
     Returns:
         dict that can be passed to checkout_add_any_assets()
@@ -43,13 +43,13 @@ def asset_soft_link(source, destination):
         "destination": destination,
     }
 
-def asset_content(content, destination):
+def asset_content(content: str, destination: str) -> dict:
     """
     Creates an asset (file from a starlark string) that can be passed in the assets list to checkout_add_any_assets()
 
     Args:
-        content: `str` content for populating the asset
-        destination: `str` destination of the asset
+        content: content for populating the asset
+        destination: destination of the asset
 
     Returns:
         dict that can be passed to checkout_add_any_assets()
@@ -61,16 +61,16 @@ def asset_content(content, destination):
         "destination": destination,
     }
 
-def asset_which(which, destination):
+def asset_which(which: str, destination: str) -> dict:
     """
     Creates an asset by using `which` that can be passed in the assets list to checkout_add_any_assets()
 
     Args:
-        which: `str` argument to pass to `which` to discover the program
-        destination: `str` destination of the asset
+        which: argument to pass to `which` to discover the program
+        destination: destination of the asset
 
     Returns:
-        `dict` that can be passed to checkout_add_any_assets()
+        dict that can be passed to checkout_add_any_assets()
     """
 
     return {

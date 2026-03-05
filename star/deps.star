@@ -15,27 +15,32 @@ Types:
 
 load("glob.star", "glob")
 
-def deps_glob(includes, excludes = []):
+def deps_glob(
+        includes: list[str],
+        excludes: list[str] = []) -> dict:
     """
     Creates a glob that can be passed to deps to create the dependencies.
 
     Args:
-        includes: `[str]` list of glob expressions to include
-        excludes: `[str]` list of glob expressions to exclude
+        includes: list of glob expressions to include
+        excludes: list of glob expressions to exclude
 
     Returns:
         glob dict that can be passed to deps.
     """
     return glob(includes, excludes)
 
-def deps(rules = [], globs = [], files = []):
+def deps(
+        rules: list[str] = [],
+        globs: list[dict] = [],
+        files: list[str] = []) -> list[dict]:
     """
     Create a list of deps using rules, globs and/or targets.
 
     Args:
-        rules: `[str]` list of rules to add as dependencies.
-        globs: `[dict]` list of `deps_glob()` objects defining includes and excludes
-        files: `[str]` list of files to add as dependencies.
+        rules: list of rules to add as dependencies.
+        globs: list of `deps_glob()` objects defining includes and excludes
+        files: list of files to add as dependencies.
 
     Returns:
         List of deps that can be used with run/checkout targets

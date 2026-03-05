@@ -7,7 +7,7 @@ VISIBILITY_PRIVATE = "Private"
 
 _VISIBILITY_RULES = "Rules"
 
-def visibility_public():
+def visibility_public() -> str:
     """
     Get the public visibility string.
 
@@ -16,7 +16,7 @@ def visibility_public():
     """
     return VISIBILITY_PUBLIC
 
-def visibility_private():
+def visibility_private() -> str:
     """
     Get the private visibility string.
 
@@ -25,12 +25,12 @@ def visibility_private():
     """
     return VISIBILITY_PRIVATE
 
-def visibility_rules(rules):
+def visibility_rules(rules: list[str]) -> dict[str, list[str]]:
     """
     Get the rules visibility string.
 
     Args:
-        rules (list): The list of rules as strings.
+        rules: The list of rules as strings.
 
     Returns:
         Object with list of rules that can be passed to visibility arguments.

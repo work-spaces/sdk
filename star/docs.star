@@ -12,12 +12,12 @@ load("shell.star", "cp", "mkdir")
 load("std/fs.star", "fs_exists")
 
 def docs_add_hard_link_asset(
-        name,
-        source,
-        deps = [],
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        source: str,
+        deps: list[str] = [],
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds content to the workspace @docs content folder using a hard link.
 
@@ -38,12 +38,12 @@ def docs_add_hard_link_asset(
         )
 
 def docs_add_asset(
-        name,
-        content,
-        deps = [],
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        content: str,
+        deps: list[str] = [],
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds string content to the workspace @docs content folder.
 
@@ -65,14 +65,14 @@ def docs_add_asset(
         )
 
 def docs_cp(
-        name,
-        source,
-        destination,
-        options = [],
-        deps = [],
-        type = None,
-        inputs = None,
-        working_directory = None):
+        name: str,
+        source: str,
+        destination: str,
+        options: list[str] = [],
+        deps: list[str] = [],
+        type: str | None = None,
+        inputs: list[str] | None = None,
+        working_directory: str | None = None):
     """
     Adds content to the workspace @docs content folder using `cp`.
 

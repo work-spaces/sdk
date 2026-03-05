@@ -3,11 +3,11 @@ Process built-ins
 """
 
 def process_exec(
-        command,
-        args = [],
-        env = {},
-        working_directory = None,
-        stdin = None):
+        command: str,
+        args: list[str] = [],
+        env: dict[str, str] = {},
+        working_directory: str | None = None,
+        stdin: str | None = None) -> dict:
     """
     Executes a command when the script is evaluated.
 
@@ -29,14 +29,14 @@ def process_exec(
     ```
 
     Args:
-        command: `str` The command to execute
-        args: `[str]` The arguments to pass to the command
-        env: `dict` The environment variables to set
-        working_directory: `str` The working directory to execute the command in
-        stdin: `str` The standard input to pass to the command
+        command: The command to execute
+        args: The arguments to pass to the command
+        env: The environment variables to set
+        working_directory: The working directory to execute the command in
+        stdin: The standard input to pass to the command
 
     Returns:
-        dict: with members `status`, `stdout`, and `stderr`
+        A dict with members `status`, `stdout`, and `stderr`
     """
     return process.exec({
         "command": command,

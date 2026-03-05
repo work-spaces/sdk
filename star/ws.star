@@ -8,25 +8,25 @@ the linter treats starlark files with workspace in the name.
 
 WORKSPACE_SYSROOT = "sysroot"
 
-def workspace_get_absolute_path():
+def workspace_get_absolute_path() -> str:
     """
     Get the absolute path to the workspace
 
     Returns:
-        `str` The absolute path to the workspace
+        The absolute path to the workspace
     """
     return workspace.get_absolute_path()
 
-def workspace_get_path_to_checkout():
+def workspace_get_path_to_checkout() -> str:
     """
     Get the path in the workspace where the current module is located
 
     Returns:
-        `str` The path to the checked out repo or archive
+        The path to the checked out repo or archive
     """
     return workspace.get_path_to_checkout()
 
-def workspace_get_path_to_log_file(name):
+def workspace_get_path_to_log_file(name: str) -> str:
     """
     Gets the path to the log file for a given target.
 
@@ -35,98 +35,98 @@ def workspace_get_path_to_log_file(name):
     the log path location changes with every run.
 
     Args:
-        name: `str` The name of the rule
+        name: The name of the rule
 
     Returns:
-        `str` The relative workspace path to the log file
+        The relative workspace path to the log file
     """
 
     return workspace.get_path_to_log_file(name)
 
-def workspace_get_cpu_count():
+def workspace_get_cpu_count() -> int:
     """
     Get the number of CPUs available
 
     Use info_get_cpu_count(). This will be removed in a future release.
 
     Returns:
-        `int` The number of CPUs available
+        The number of CPUs available
     """
     return workspace.get_cpu_count()
 
-def workspace_get_env_var(name):
+def workspace_get_env_var(name: str) -> str:
     """
     Get the value of an environment variable
 
     Args:
-        name:`str`  The name of the environment variable
+        name: The name of the environment variable
 
     Returns:
-        `str` The value of the environment variable
+        The value of the environment variable
     """
     return workspace.get_env_var(name)
 
-def workspace_is_env_var_set(name):
+def workspace_is_env_var_set(name: str) -> bool:
     """
     Check if an environment variable is set
 
     Args:
-        name: `str` The name of the environment variable
+        name: The name of the environment variable
 
     Returns:
-        `bool` True if the environment variable is set, False otherwise
+        True if the environment variable is set, False otherwise
     """
     return workspace.is_env_var_set(name)
 
-def workspace_get_env_var_or(name, or_value):
+def workspace_get_env_var_or(name: str, or_value: str) -> str:
     """
     Get the value of an environment variable if it exists.
 
     Otherwise, the value passed to `or_value` is returned.
 
     Args:
-        name: `str`  The name of the environment variable
-        or_value: `str` Other value to return
+        name: The name of the environment variable
+        or_value: Other value to return
 
     Returns:
-        `str` If available, the value of the environment variable, otherwise `or_value`
+        If available, the value of the environment variable, otherwise `or_value`
     """
     if workspace_is_env_var_set(name):
         return workspace_get_env_var(name)
 
     return or_value
 
-def workspace_is_env_var_set_to(name, expected):
+def workspace_is_env_var_set_to(name: str, expected: str) -> bool:
     """
     Returns true if an env variable is set to the expected value.
 
     Returns false if the env either does not exist or is not set to the expected value.
 
     Args:
-        name: `str`  The name of the environment variable
-        expected: `str` The expected value stored in the env variable
+        name: The name of the environment variable
+        expected: The expected value stored in the env variable
     """
     if workspace_is_env_var_set(name):
         return workspace_get_env_var(name) == expected
 
     return False
 
-def workspace_get_env_var_or_none(name):
+def workspace_get_env_var_or_none(name: str) -> str | None:
     """
     Get the value of an environment variable if it exists. Otherwise, return `None`
 
     Args:
-        name: `str`  The name of the environment variable
+        name: The name of the environment variable
 
     Returns:
-        `str` If available, the value of the environment variable, otherwise `None`
+        If available, the value of the environment variable, otherwise `None`
     """
     if workspace_is_env_var_set(name):
         return workspace_get_env_var(name)
 
     return None
 
-def workspace_is_reproducible():
+def workspace_is_reproducible() -> bool:
     """
     Check if the workspace is reproducible
 
@@ -134,11 +134,11 @@ def workspace_is_reproducible():
     Use a lock file (see `--create-lock-file`) to ensure reproducibility.
 
     Returns:
-        `bool` True if the workspace is reproducible, False otherwise
+        True if the workspace is reproducible, False otherwise
     """
     return workspace.is_reproducible()
 
-def _get_member_requirement(url, rev = None, semver = None):
+def _get_member_requirement(url: str, rev: str | None = None, semver: str | None = None) -> dict:
     version_requirment = {}
     if rev != None:
         version_requirment = {"required": {"Revision": rev}}
@@ -149,28 +149,28 @@ def _get_member_requirement(url, rev = None, semver = None):
     } | version_requirment
 
 def workspace_is_path_to_member_available(
-        url,
-        rev = None,
-        semver = None):
+        url: str,
+        rev: str | None = None,
+        semver: str | None = None) -> bool:
     """
     Checks if a workspace member is available based on a url.
 
     It is an error to specify `rev` and `semver`.
 
     Args:
-        url: `str` The url of the workspace member
-        rev: `str` The revision of the workspace member (or None for any revision)
-        semver: `str` The semantic version of the workspace member (or None for any version)
+        url: The url of the workspace member
+        rev: The revision of the workspace member (or None for any revision)
+        semver: The semantic version of the workspace member (or None for any version)
 
     Returns:
-        `bool` True if the member is available, False otherwise.
+        True if the member is available, False otherwise.
     """
     info.set_minimum_version("0.14.0")
     return workspace.is_path_to_member_available(
         member = _get_member_requirement(url, rev, semver),
     )
 
-def workspace_get_path_to_member(url, rev = None, semver = None):
+def workspace_get_path_to_member(url: str, rev: str | None = None, semver: str | None = None) -> str:
     """
     Gets the path in the workspace to a member pulled from url
 
@@ -179,21 +179,21 @@ def workspace_get_path_to_member(url, rev = None, semver = None):
     It is an error to specify `rev` and `semver`.
 
     Args:
-        url: `str` The url of the workspace member
-        rev: `str` The revision of the workspace member (or None for any revision)
-        semver: `str` The semantic version of the workspace member (or None for any version)
+        url: The url of the workspace member
+        rev: The revision of the workspace member (or None for any revision)
+        semver: The semantic version of the workspace member (or None for any version)
 
     Returns:
-        `str` The path to the workspace member.
+        The path to the workspace member.
     """
     return workspace.get_path_to_member(
         member = _get_member_requirement(url, rev, semver),
     )
 
 def workspace_get_path_to_member_or_none(
-        url,
-        rev = None,
-        semver = None):
+        url: str,
+        rev: str | None = None,
+        semver: str | None = None) -> str | None:
     """
     Gets the path in the workspace to a member pulled from url
 
@@ -202,12 +202,12 @@ def workspace_get_path_to_member_or_none(
     It is an error to specify `rev` and `semver`.
 
     Args:
-        url: `str` The url of the workspace member
-        rev: `str` The revision of the workspace member (or None for any revision)
-        semver: `str` The semantic version of the workspace member (or None for any version)
+        url: The url of the workspace member
+        rev: The revision of the workspace member (or None for any revision)
+        semver: The semantic version of the workspace member (or None for any version)
 
     Returns:
-        `str` The path to the workspace member or None if not found.
+        The path to the workspace member or None if not found.
     """
     if workspace_is_path_to_member_available(url, rev, semver):
         return workspace_get_path_to_member(url, rev, semver)
@@ -215,8 +215,8 @@ def workspace_get_path_to_member_or_none(
     return None
 
 def workspace_get_path_to_member_with_semver(
-        url,
-        semver):
+        url: str,
+        semver: str) -> str:
     """
     Get the path to a workspace member.
 
@@ -225,11 +225,11 @@ def workspace_get_path_to_member_with_semver(
     or pulled from the git rev (tag).
 
     Args:
-        url: `str` The url of the workspace member
-        semver: `str` The semver requiement assuming the member has a version
+        url: The url of the workspace member
+        semver: The semver requiement assuming the member has a version
 
     Returns:
-        `bool` The path to the workspace member.
+        The path to the workspace member.
     """
     return workspace_get_path_to_member(
         url = url,
@@ -237,96 +237,96 @@ def workspace_get_path_to_member_with_semver(
     )
 
 def workspace_get_path_to_member_with_rev(
-        url,
-        rev):
+        url: str,
+        rev: str) -> str:
     """
     Gets the path to a workspace member with the specified revision.
 
     If the the specified requirement is not found, the program will exit with an error.
 
     Args:
-        url: `str` The url of the workspace member
-        rev: `str` the git or sha256 hash
+        url: The url of the workspace member
+        rev: the git or sha256 hash
 
     Returns:
-        `str` The path to the workspace member.
+        The path to the workspace member.
     """
     return workspace_get_path_to_member(
         url = url,
         rev = rev,
     )
 
-def workspace_check_member_semver(url, semver):
+def workspace_check_member_semver(url: str, semver: str) -> bool:
     """
     Checks if the workspace satifies a requirement
 
     Args:
-        url: `str` The url of the workspace member
-        semver: `str` The semver requiement assuming the member has a version
+        url: The url of the workspace member
+        semver: The semver requiement assuming the member has a version
 
     Returns:
-        `bool` True if the workspace member is found satisfying semver, False otherwise
+        True if the workspace member is found satisfying semver, False otherwise
     """
 
     return workspace_is_path_to_member_available(url, rev = None, semver = semver)
 
-def workspace_assert_member_semver(url, semver):
+def workspace_assert_member_semver(url: str, semver: str):
     """
     Fails if the workspace does not satifies a requirement
 
     Args:
-        url: `str` The url of the workspace member
-        semver: `str` The semver requiement assuming the member has a version
+        url: The url of the workspace member
+        semver: The semver requiement assuming the member has a version
     """
 
     IS_AVAILABLE = workspace_is_path_to_member_available(url, semver = semver)
     if not IS_AVAILABLE:
         info.abort("The workspace member at {} does not satisfy the semver requirement {}".format(url, semver))
 
-def workspace_assert_member_revision(url, rev):
+def workspace_assert_member_revision(url: str, rev: str):
     """
     Checks if the workspace satifies a requirement
 
     Args:
-        url: `str` The url of the workspace member
-        rev: `str` git/sha256 hash
+        url: The url of the workspace member
+        rev: git/sha256 hash
     """
 
     IS_AVAILABLE = workspace_is_path_to_member_available(url, rev = rev)
     if not IS_AVAILABLE:
         info.abort("The workspace member at {} does not satisfy the revision requirement {}".format(url, rev))
 
-def workspace_check_member_revision(url, rev):
+def workspace_check_member_revision(url: str, rev: str) -> bool:
     """
     Checks if the workspace satifies a requirement
 
     Args:
-        url: `str` The url of the workspace member
-        rev: `str` git/sha256 hash
+        url: The url of the workspace member
+        rev: git/sha256 hash
 
     Returns:
-        `bool` True if the workspace member is found at the specified rev, False otherwise
+        True if the workspace member is found at the specified rev, False otherwise
     """
 
     return workspace_is_path_to_member_available(url, rev = rev)
 
-def workspace_get_build_archive_info(name, archive):
+def workspace_get_build_archive_info(name: str, archive: dict) -> dict:
     """
     Gets the archive info the specified rule and archive
 
     Args:
-        name: `str` rule name to get info for
-        archive: `str` archive object containing details of how to create the archive
+        name: rule name to get info for
+        archive: archive object containing details of how to create the archive
 
     Returns:
-        `dict` The archive info
+        The archive info
     """
     return workspace.get_build_archive_info(
         rule_name = name,
         archive = archive,
     )
 
-def workspace_set_always_evaluate(value):
+def workspace_set_always_evaluate(value: bool):
     """
     Set the always evaluate flag for the workspace.
 

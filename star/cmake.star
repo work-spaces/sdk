@@ -11,7 +11,7 @@ load(
 load("run.star", "run_add_exec", "run_add_target")
 load("ws.star", "workspace_get_absolute_path")
 
-def cmake_get_default_prefix_paths(install_path = None):
+def cmake_get_default_prefix_paths(install_path: str | None = None) -> list[str]:
     """
     Get the default prefix paths for CMake
 
@@ -27,44 +27,44 @@ def cmake_get_default_prefix_paths(install_path = None):
     return locations
 
 def cmake_add_configure_build_install(
-        name,
-        source_directory,
-        build_directory = None,
-        prefix_paths = None,
-        configure_inputs = None,
-        build_inputs = None,
-        configure_args = [],
-        configure_env = {},
-        build_args = [],
-        build_env = {},
-        build_artifact_globs = None,
-        deps = [],
-        install_path = None,
-        skip_install = False,
-        find_using_cmake_system_path = False,
-        env = {},
-        visibility = None):
+        name: str,
+        source_directory: str,
+        build_directory: str | None = None,
+        prefix_paths: list[str] | None = None,
+        configure_inputs: list[str] | None = None,
+        build_inputs: list[str] | None = None,
+        configure_args: list[str] = [],
+        configure_env: dict = {},
+        build_args: list[str] = [],
+        build_env: dict = {},
+        build_artifact_globs: list[str] | None = None,
+        deps: list[str] = [],
+        install_path: str | None = None,
+        skip_install: bool = False,
+        find_using_cmake_system_path: bool = False,
+        env: dict = {},
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Add a CMake project to the build
 
     Args:
-        name: `str` The name of the project
-        build_directory: `str` The directory to build the project in (default is build/<name>)
-        source_directory: `str` The directory of the project
-        configure_inputs: `list[str]` The inputs for the configure step. Default uses cmake files in source directory
-        build_inputs: `list[str]` The inputs for the build step. Default uses source directory
-        prefix_paths: `list[str]` The paths to add to the CMAKE_PREFIX_PATH: default is sysroot;build/install (uses absolute paths)
-        configure_args: `list[str]` The arguments to pass to the configure script
-        configure_env: `dict[str, str]` The environment variables to set for the configure step
-        build_args: `list[str]` The arguments to pass to the build command
-        build_env: `dict[str, str]` The environment variables to set for the build step
-        build_artifact_globs: `list[str]` The globs to match when installing build artifacts
-        deps: `[str]` The dependencies of the project
-        install_path: `str` The path to install the project
-        skip_install: `bool` Skip the install step
-        find_using_cmake_system_path: `bool` Allow cmake to look at system paths
-        env: `dict[str, str]` The environment variables to set during configure, make, and install
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the project
+        build_directory: The directory to build the project in (default is build/<name>)
+        source_directory: The directory of the project
+        configure_inputs: The inputs for the configure step. Default uses cmake files in source directory
+        build_inputs: The inputs for the build step. Default uses source directory
+        prefix_paths: The paths to add to the CMAKE_PREFIX_PATH: default is sysroot;build/install (uses absolute paths)
+        configure_args: The arguments to pass to the configure script
+        configure_env: The environment variables to set for the configure step
+        build_args: The arguments to pass to the build command
+        build_env: The environment variables to set for the build step
+        build_artifact_globs: The globs to match when installing build artifacts
+        deps: The dependencies of the project
+        install_path: The path to install the project
+        skip_install: Skip the install step
+        find_using_cmake_system_path: Allow cmake to look at system paths
+        env: The environment variables to set during configure, make, and install
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     CONFIGURE_RULE_NAME = "{}_configure".format(name)
@@ -143,25 +143,25 @@ def cmake_add_configure_build_install(
     )
 
 def cmake_add_repo(
-        name,
-        url,
-        rev,
-        install_path = None,
-        configure_args = [],
-        configure_env = {},
-        configure_inputs = None,
-        build_args = [],
-        build_env = {},
-        build_artifact_globs = [],
-        checkout_submodules = False,
-        relative_source_directory = None,
-        clone = "Default",
-        checkout_type = None,
-        skip_install = False,
-        find_using_cmake_system_path = False,
-        deps = [],
-        env = {},
-        visibility = None):
+        name: str,
+        url: str,
+        rev: str,
+        install_path: str | None = None,
+        configure_args: list[str] = [],
+        configure_env: dict = {},
+        configure_inputs: list[str] | None = None,
+        build_args: list[str] = [],
+        build_env: dict = {},
+        build_artifact_globs: list[str] = [],
+        checkout_submodules: bool = False,
+        relative_source_directory: str | None = None,
+        clone: str = "Default",
+        checkout_type: str | None = None,
+        skip_install: bool = False,
+        find_using_cmake_system_path: bool = False,
+        deps: list[str] = [],
+        env: dict = {},
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Add a CMake project to the build
 
@@ -171,20 +171,20 @@ def cmake_add_repo(
         rev: The revision of the repository
         install_path: The path to install the project
         configure_args: The arguments to pass to the configure script
-        configure_env: `dict` Additional env values during configure
+        configure_env: Additional env values during configure
         configure_inputs: globs to include when checking if configure shoudl re-run
         build_args: The arguments to pass to the build command
-        build_env: `dict` Additional env values during build
+        build_env: Additional env values during build
         build_artifact_globs: The globs to match when installing build artifacts
         checkout_submodules: Whether to checkout submodules
         relative_source_directory: The directory of the project (default is the name)
         clone: The clone type (Worktree, Blobless, Shallow, Default)
-        checkout_type: `str` use [checkout_type_optional()](#/docs/@star/sdk/star/checkout#checkout_type_optional) to skip rule checkout
-        skip_install: `bool` Skip the install step
-        deps: `[str]` The dependencies of the project
-        find_using_cmake_system_path: `bool` Allow cmake to look at system paths
-        env: `dict` Additional env values during configure, build, install
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        checkout_type: use [checkout_type_optional()](#/docs/@star/sdk/star/checkout#checkout_type_optional) to skip rule checkout
+        skip_install: Skip the install step
+        deps: The dependencies of the project
+        find_using_cmake_system_path: Allow cmake to look at system paths
+        env: Additional env values during configure, build, install
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     CHECKOUT_RULE = "{}_source".format(name)
@@ -230,44 +230,44 @@ def cmake_add_repo(
         )
 
 def cmake_add_source_archive(
-        name,
-        url,
-        sha256,
-        source_directory,
-        filename = None,
-        install_path = None,
-        configure_args = [],
-        configure_env = {},
-        configure_inputs = None,
-        build_args = [],
-        build_env = {},
-        build_artifact_globs = None,
-        deps = [],
-        checkout_type = None,
-        skip_install = False,
-        env = {},
-        visibility = None):
+        name: str,
+        url: str,
+        sha256: str,
+        source_directory: str,
+        filename: str | None = None,
+        install_path: str | None = None,
+        configure_args: list[str] = [],
+        configure_env: dict = {},
+        configure_inputs: list[str] | None = None,
+        build_args: list[str] = [],
+        build_env: dict = {},
+        build_artifact_globs: list[str] | None = None,
+        deps: list[str] = [],
+        checkout_type: str | None = None,
+        skip_install: bool = False,
+        env: dict = {},
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Add a CMake project to the build
 
     Args:
-        name: `str` The name of the project
-        url: `str` The URL of the source archive
-        sha256: `str` The SHA256 of the source archive
-        source_directory: `str` The directory of the project
-        filename: `str` The filename of the source archive
-        install_path: `str` The path to install the project
-        configure_args: `[str]` The arguments to pass to the configure script
-        configure_env: `dict` Additional env values during configure
-        configure_inputs: `[str]` globs to include when checking if configure shoudl re-run
-        build_args: `[str]` The arguments to pass to the build command
-        build_env: `dict` Additional env values during build
-        build_artifact_globs: `[str]` The globs to match when installing build artifacts
-        deps: `[str]` List of dependencies of the project
-        checkout_type: `str` use [checkout_type_optional()](#/docs/@star/sdk/star/checkout#checkout_type_optional) to skip rule checkout
-        skip_install: `bool` Skip the install step
-        env: `dict` Additional env values during configure, build, and install
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the project
+        url: The URL of the source archive
+        sha256: The SHA256 of the source archive
+        source_directory: The directory of the project
+        filename: The filename of the source archive
+        install_path: The path to install the project
+        configure_args: The arguments to pass to the configure script
+        configure_env: Additional env values during configure
+        configure_inputs: globs to include when checking if configure shoudl re-run
+        build_args: The arguments to pass to the build command
+        build_env: Additional env values during build
+        build_artifact_globs: The globs to match when installing build artifacts
+        deps: List of dependencies of the project
+        checkout_type: use [checkout_type_optional()](#/docs/@star/sdk/star/checkout#checkout_type_optional) to skip rule checkout
+        skip_install: Skip the install step
+        env: Additional env values during configure, build, and install
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     checkout_add_archive(
