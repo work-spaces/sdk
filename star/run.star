@@ -765,3 +765,38 @@ def run_add_archive(
     archive_output_info = workspace_get_build_archive_info(name, archive = archive_info)
 
     return (archive_output_info["archive_path"], archive_output_info["sha256_path"])
+
+def run_add_from_clone(
+        name: str,
+        clone_from: str,
+        deps: list[str] = [],
+        help: str | None = None,
+        type: str | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
+    """
+    Adds a rule that clones the exec from an existing rule.
+
+    The new rule is merged with the cloned rule: the new rule's fields take precedence,
+    and the exec/target is taken from the cloned rule. Dependencies are extended (not replaced).
+
+    Args:
+        name: The name of the new rule.
+        clone_from: The name of an existing rule to clone the exec from.
+        deps: Additional dependencies to add to the cloned rule's dependencies.
+        help: The help message for the rule (defaults to cloned rule's help).
+        type: The exec type (Run|Setup|Optional (default)|PreCommit|Clean|Test). Defaults to cloned rule's type.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+    """
+
+    info_set_minimum_version("0.15.28")
+
+    run.add_from_clone(
+        rule = {
+            "name": name,
+            "deps": deps,
+            "help": help,
+            "type": type,
+            "visibility": visibility,
+        },
+        clone_from = clone_from,
+    )
