@@ -3,6 +3,7 @@ User friendly wrapper functions for the spaces run built-in functions.
 """
 
 load("info.star", "info_get_platform_name", "info_set_minimum_version")
+load("visibility.star", "visibility_private")
 load("ws.star", "workspace_get_build_archive_info")
 
 RUN_INPUTS_ONCE = []
@@ -799,4 +800,58 @@ def run_add_from_clone(
             "visibility": visibility,
         },
         clone_from = clone_from,
+    )
+
+def run_add_serialized(
+        name: str,
+        rules: list[str],
+        deps: list[str] = [],
+        help: str | None = None,
+        type: str | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
+    """
+    Takes a list of existing rules and creates a serial execution chain.
+
+    The first rule in the list is not cloned. Each subsequent rule is cloned
+    with an additional dependency on the previous rule in the chain, ensuring
+    they execute one after another in order.
+
+    The cloned rules are named `<name>_<index>` where `<index>` is the position
+    in the list (starting from 1).
+
+    Args:
+        name: The base name used to derive cloned rule names (`<name>_1`, `<name>_2`, ...).
+        rules: List of existing rule names to serialize.
+        deps: Additional dependencies to add to every cloned rule.
+        help: The help message for cloned rules (defaults to cloned rule's help).
+        type: The exec type (Run|Setup|Optional (default)|PreCommit|Clean|Test). Defaults to cloned rule's type.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+    """
+
+    if len(rules) == 0:
+        return
+
+    # The first rule is not cloned - it runs as-is
+    previous_rule = rules[0]
+
+    # Each subsequent rule is cloned with a dependency on the previous rule
+    clone_name = None
+    for rule_name in rules[1:]:
+        sanitized = rule_name.replace("/", "_").replace(":", "_")
+        clone_name = "{}_{}".format(name, sanitized)
+        run_add_from_clone(
+            name = clone_name,
+            clone_from = rule_name,
+            deps = [previous_rule] + deps,
+            help = None,
+            visibility = visibility_private(),
+        )
+        previous_rule = clone_name
+
+    run_add_target(
+        name,
+        deps = [clone_name],
+        help = help,
+        type = type,
+        visibility = visibility,
     )
