@@ -253,7 +253,7 @@ def run_add_exec_setup(
         redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
         expect: The expected result of the command Success|Failure|Any. (default is Success)
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
     """
 
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
@@ -320,7 +320,7 @@ def run_add_exec_test(
         redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
         expect: The expected result of the command Success|Failure|Any. (default is Success)
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
     """
 
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
@@ -387,7 +387,7 @@ def run_add_exec_precommit(
         redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
         expect: The expected result of the command Success|Failure|Any. (default is Success)
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
     """
 
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
@@ -454,7 +454,7 @@ def run_add_exec_clean(
         redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
         expect: The expected result of the command Success|Failure|Any. (default is Success)
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
     """
 
     EFFECTIVE_TIMEOUT = {"timeout": timeout} if timeout != None else {}
@@ -521,7 +521,7 @@ def run_add_exec(
         expect: The expected result of the command Success|Failure|Any. (default is Success)
         redirect_stdout: The file to redirect stdout to (prefer to parse the log file).
         timeout: Number of seconds to run before sending a kill signal.
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
     """
 
     EFFECTIVE_TYPE = type if type != None else RUN_TYPE_DEFAULT
@@ -580,7 +580,7 @@ def run_add_kill_exec(
         deps: Run rule dependencies.
         type: See [run_add_exec()](#run_add_exec)
         platforms: Platforms to run on (default is all).
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
     """
 
     EFFECTIVE_TYPE = type if type != None else RUN_TYPE_DEFAULT
@@ -623,7 +623,7 @@ def run_add(
         platforms: List of platforms to build the target for (default is all).
         type: See [run_add_exec()](#run_add_exec)
         help: The help message for the rule.
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
     """
 
     info_set_minimum_version("0.15.28")
@@ -657,7 +657,7 @@ def run_add_target(
         platforms: List of platforms to build the target for (default is all).
         type: See [run_add_exec()](#run_add_exec)
         help: The help message for the rule.
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
     """
     if visibility != None:
         info_set_minimum_version("0.15.24")
@@ -689,7 +689,7 @@ def run_add_target_test(
         deps: List of dependencies for the target.
         platforms: List of platforms to build the target for (default is all).
         help: The help message for the rule.
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
     """
     run_add_target(
         name,
@@ -716,7 +716,7 @@ def run_add_target_precommit(
         deps: List of dependencies for the target.
         platforms: List of platforms to build the target for (default is all).
         help: The help message for the rule.
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
     """
     run_add_target(
         name,
@@ -739,7 +739,7 @@ def run_add_to_all(
     Args:
         name: The name of the rule.
         deps: List of dependencies to run with `spaces run`
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
     """
 
     run_add_target(name, deps, type = RUN_TYPE_ALL, visibility = visibility)
@@ -770,7 +770,7 @@ def run_add_archive(
         includes: List of globs to include in the archive.
         excludes: List of globs to exclude from the archive.
         platform: The platform to build the target for (default is all).
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
 
     Returns:
         A tuple containing (<path to the archive>, <sha256 checksum of the archive>).
@@ -820,7 +820,7 @@ def run_add_from_clone(
         deps: Additional dependencies to add to the cloned rule's dependencies.
         help: The help message for the rule (defaults to cloned rule's help).
         type: The exec type (Run|Setup|Optional (default)|PreCommit|Clean|Test). Defaults to cloned rule's type.
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
     """
 
     info_set_minimum_version("0.15.28")
@@ -859,7 +859,7 @@ def run_add_serialized(
         deps: Additional dependencies to add to every cloned rule.
         help: The help message for cloned rules (defaults to cloned rule's help).
         type: The exec type (Run|Setup|Optional (default)|PreCommit|Clean|Test). Defaults to cloned rule's type.
-        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visibility.star for more info.
     """
 
     if len(rules) == 0:
