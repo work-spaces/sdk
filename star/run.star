@@ -606,12 +606,12 @@ def run_add_kill_exec(
     )
 
 def run_add(
-        name,
-        deps,
-        help = None,
-        type = None,
-        platforms = None,
-        visibility = None):
+        name: str,
+        deps: list[str],
+        help: str | None = None,
+        type: str | None = None,
+        platforms: list[str] | None = None,
+        visibility: str | dict[str, list[str]] | None = None):
     """
     Adds a rule to the workspace with no associated command.
 
