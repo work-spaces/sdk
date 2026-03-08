@@ -605,6 +605,40 @@ def run_add_kill_exec(
         },
     )
 
+def run_add(
+        name,
+        deps,
+        help = None,
+        type = None,
+        platforms = None,
+        visibility = None):
+    """
+    Adds a rule to the workspace with no associated command.
+
+    This rule can be used to consolidate dependencies into a single rule.
+
+    Args:
+        name: `str` The name of the rule.
+        deps: `[str]` List of dependencies for the target.
+        platforms: `[str]` List of platforms to build the target for (default is all).
+        type: `str` See [run_add_exec()](#run_add_exec)
+        help: `str` The help message for the rule.
+        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+    """
+
+    info_set_minimum_version("0.15.28")
+
+    run.add(
+        rule = {
+            "name": name,
+            "deps": deps,
+            "platforms": platforms,
+            "type": type,
+            "help": help,
+            "visibility": visibility,
+        },
+    )
+
 def run_add_target(
         name: str,
         deps: list[str],
