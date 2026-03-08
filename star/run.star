@@ -618,12 +618,12 @@ def run_add(
     This rule can be used to consolidate dependencies into a single rule.
 
     Args:
-        name: `str` The name of the rule.
-        deps: `[str]` List of dependencies for the target.
-        platforms: `[str]` List of platforms to build the target for (default is all).
-        type: `str` See [run_add_exec()](#run_add_exec)
-        help: `str` The help message for the rule.
-        visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
+        name: The name of the rule.
+        deps: List of dependencies for the target.
+        platforms: List of platforms to build the target for (default is all).
+        type: See [run_add_exec()](#run_add_exec)
+        help: The help message for the rule.
+        visibility: Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
     """
 
     info_set_minimum_version("0.15.28")
