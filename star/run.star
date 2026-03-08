@@ -489,7 +489,7 @@ def run_add_exec(
         help: str | None = None,
         args: list[str] = [],
         env: dict = {},
-        deps: list[str] = [],
+        deps: list[str] | list[dict] = [],
         inputs: list[str] | None = RUN_INPUTS_ALWAYS,
         target_files: list[str] | None = None,
         target_dirs: list[str] | None = None,
