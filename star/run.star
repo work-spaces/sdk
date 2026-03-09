@@ -223,7 +223,7 @@ def run_add_exec_setup(
         help: str | None = None,
         args: list[str] = [],
         env: dict = {},
-        deps: list[str] = [],
+        deps: list[str] | list[dict] = [],
         working_directory: str | None = None,
         platforms: list[str] | None = None,
         log_level: str | None = None,
@@ -288,7 +288,7 @@ def run_add_exec_test(
         help: str | None = None,
         args: list[str] = [],
         env: dict = {},
-        deps: list[str] = [],
+        deps: list[str] | list[dict] = [],
         inputs: list[str] | None = RUN_INPUTS_ALWAYS,
         working_directory: str | None = None,
         platforms: list[str] | None = None,
@@ -355,7 +355,7 @@ def run_add_exec_precommit(
         help: str | None = None,
         args: list[str] = [],
         env: dict = {},
-        deps: list[str] = [],
+        deps: list[str] | list[dict] = [],
         inputs: list[str] | None = RUN_INPUTS_ALWAYS,
         working_directory: str | None = None,
         platforms: list[str] | None = None,
@@ -422,7 +422,7 @@ def run_add_exec_clean(
         help: str | None = None,
         args: list[str] = [],
         env: dict = {},
-        deps: list[str] = [],
+        deps: list[str] | list[dict] = [],
         inputs: list[str] | None = RUN_INPUTS_ALWAYS,
         working_directory: str | None = None,
         platforms: list[str] | None = None,
@@ -564,7 +564,7 @@ def run_add_kill_exec(
         signal: str = RUN_SIGNAL_KILL,
         help: str | None = None,
         expect: str = RUN_EXPECT_SUCCESS,
-        deps: list[str] = [],
+        deps: list[str] | list[dict] = [],
         type: str | None = None,
         platforms: list[str] | None = None,
         visibility: str | dict[str, list[str]] | None = None):
@@ -804,7 +804,7 @@ def run_add_archive(
 def run_add_from_clone(
         name: str,
         clone_from: str,
-        deps: list[str] = [],
+        deps: list[str] | list[dict] = [],
         help: str | None = None,
         type: str | None = None,
         visibility: str | dict[str, list[str]] | None = None):
@@ -839,7 +839,7 @@ def run_add_from_clone(
 def run_add_serialized(
         name: str,
         rules: list[str],
-        deps: list[str] = [],
+        deps: list[str] | list[dict] = [],
         help: str | None = None,
         type: str | None = None,
         visibility: str | dict[str, list[str]] | None = None):
