@@ -924,3 +924,18 @@ def checkout_add_env_vars(
             "vars": vars,
         },
     )
+
+def checkout_store_value(name: str, value):
+    """
+    Stores a value that can be retrieved using workspace_load_value().
+
+    Values are persisted across checkout and run phases, allowing data
+    computed during checkout to be accessed later. The value can be any
+    serializable type (dict, list, string, int, float, bool, or None).
+
+    Args:
+        name: The key to store the value under.
+        value: The value to store. Can be any type.
+    """
+
+    checkout.store_value(name, value)
