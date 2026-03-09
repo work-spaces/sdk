@@ -335,3 +335,15 @@ def workspace_set_always_evaluate(value: bool):
 
     """
     return workspace.set_always_evaluate(value)
+
+def workspace_load_value(name: str):
+    """
+    Loads a value stored using checkout_store_value().
+
+    Args:
+        name: The key to load the value under.
+
+    Returns:
+        The stored value, or None if no value is stored under the key.
+    """
+    return workspace.load_value(name)
