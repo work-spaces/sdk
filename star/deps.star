@@ -30,6 +30,18 @@ def deps_glob(
     """
     return glob(includes, excludes)
 
+def deps_run_once(rules: list[str] = []) -> list[dict]:
+    """
+    Creates a deps list that will run once and be skipped.
+
+    Args:
+        rules: list of rules to add as dependencies.
+
+    Returns:
+        List of deps that can be used with run/checkout targets
+    """
+    return [{"Rule": rule} for rule in rules] + [{"Glob": {"Includes": []}}]
+
 def deps(
         rules: list[str] = [],
         globs: list[dict] = [],
