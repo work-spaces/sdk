@@ -347,3 +347,19 @@ def workspace_load_value(name: str):
         The stored value, or None if no value is stored under the key.
     """
     return workspace.load_value(name)
+
+def workspace_load_value_or(name: str, or_value):
+    """
+    Loads a value stored using checkout_store_value(), returning a default if none is stored.
+
+    Args:
+        name: The key to load the value under.
+        or_value: The value to return if no value is stored under the key.
+
+    Returns:
+        The stored value, or or_value if no value is stored under the key.
+    """
+    value = workspace_load_value(name)
+    if value == None:
+        return or_value
+    return value
