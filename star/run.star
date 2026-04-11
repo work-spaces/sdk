@@ -3,7 +3,6 @@ User friendly wrapper functions for the spaces run built-in functions.
 """
 
 load("info.star", "info_get_platform_name", "info_set_minimum_version")
-load("visibility.star", "visibility_private")
 load("ws.star", "workspace_get_build_archive_info")
 
 RUN_INPUTS_ONCE = []
@@ -870,15 +869,28 @@ def run_add_serialized(
 
     # Each subsequent rule is cloned with a dependency on the previous rule
     clone_name = None
+
+    # Determine if deps is list[dict] or list[str] to match format for previous_rule
+    # Note: can't use type() builtin because 'type' parameter shadows it
+    # Instead, iterate over first element: dicts yield keys like "Rule"/"Glob",
+    # strings yield individual characters
+    deps_is_dict_list = False
+    if len(deps) > 0:
+        first_elem_keys = [k for k in deps[0]]
+        deps_is_dict_list = "Rule" in first_elem_keys or "Glob" in first_elem_keys
+
     for rule_name in rules[1:]:
         sanitized = rule_name.replace("/", "_").replace(":", "_")
         clone_name = "{}_{}".format(name, sanitized)
+        if deps_is_dict_list:
+            combined_deps = [{"Rule": previous_rule}] + deps
+        else:
+            combined_deps = [previous_rule] + deps
         run_add_from_clone(
             name = clone_name,
             clone_from = rule_name,
-            deps = [previous_rule] + deps,
+            deps = combined_deps,
             help = None,
-            visibility = visibility_private(),
         )
         previous_rule = clone_name
 
