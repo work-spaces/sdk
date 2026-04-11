@@ -2,6 +2,8 @@
 User friendly wrapper functions for the spaces checkout built-in functions.
 """
 
+load("asset.star", "asset_home")
+load("env.star", "env_assign")
 load("info.star", "info_set_minimum_version", "info_set_required_semver")
 
 _CHECKOUT_SHELL_SPACES_TOML = "shell.spaces.toml"
@@ -939,3 +941,40 @@ def checkout_store_value(name: str, value):
     """
 
     checkout.store_value(name, value)
+
+def checkout_add_home_store_env(name: str):
+    """
+    Assigns HOME to a user specific location in the spaces store.
+
+    Args:
+        name: Name of the checkout rule
+    """
+
+    checkout_add_env_vars(
+        name,
+        vars = [
+            env_assign(
+                "HOME",
+                info.get_path_to_home_store(),
+                help = "Assigns HOME to a user specific location in the spaces store",
+            ),
+        ],
+    )
+
+def checkout_add_home_assets(name: str, assets: list[str]):
+    """
+    Adds home assets to the workspace.
+
+    Each entry in `assets` is a path relative to $HOME. The file is copied into the spaces store
+    under .spaces/store/home/$USER/<source> and hard-linked into the workspace at the same relative path.
+
+    Args:
+        name: Name of the checkout rule
+        assets: list of paths relative to $HOME (e.g. [".ssh/config"])
+    """
+    info_set_minimum_version("0.15.35")
+
+    checkout_add_any_assets(
+        name,
+        assets = [asset_home(source) for source in assets],
+    )

@@ -2,10 +2,13 @@
 Helper to create dicts for passing to checkout_add_any_assets()
 """
 
+load("info.star", "info_set_minimum_version")
+
 ASSET_HARD_LINK = "HardLink"
 ASSET_SOFT_LINK = "SoftLink"
 ASSET_WHICH = "Which"
 ASSET_CONTENT = "Asset"
+ASSET_HOME = "Home"
 
 def asset_hard_link(source: str, destination: str) -> dict:
     """
@@ -77,4 +80,24 @@ def asset_which(which: str, destination: str) -> dict:
         "type": ASSET_WHICH,
         "which": which,
         "destination": destination,
+    }
+
+def asset_home(source: str) -> dict:
+    """
+    Creates an asset by copying a file from $HOME into the spaces store and hard-linking it into the workspace.
+
+    The file is stored under .spaces/store/home/$USER/<source> and linked into the workspace at the same
+    relative path as source.
+
+    Args:
+        source: path relative to $HOME of the file to copy (e.g. ".ssh/config")
+
+    Returns:
+        dict that can be passed to checkout_add_any_assets()
+    """
+    info_set_minimum_version("0.15.35")
+
+    return {
+        "type": ASSET_HOME,
+        "source": source,
     }
