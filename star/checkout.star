@@ -5,6 +5,7 @@ User friendly wrapper functions for the spaces checkout built-in functions.
 load("asset.star", "asset_home")
 load("env.star", "env_assign")
 load("info.star", "info_set_minimum_version", "info_set_required_semver")
+load("ws.star", "workspace_get_absolute_path", "workspace_get_path_to_home")
 
 _CHECKOUT_SHELL_SPACES_TOML = "shell.spaces.toml"
 
@@ -955,7 +956,7 @@ def checkout_add_home_store_env(name: str):
         vars = [
             env_assign(
                 "HOME",
-                info.get_path_to_home_store(),
+                workspace_get_absolute_path() + "/" + workspace_get_path_to_home(),
                 help = "Assigns HOME to a user specific location in the spaces store",
             ),
         ],

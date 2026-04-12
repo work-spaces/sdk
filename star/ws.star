@@ -363,3 +363,13 @@ def workspace_load_value_or(name: str, or_value):
     if value == None:
         return or_value
     return value
+
+def workspace_get_path_to_home() -> str:
+    """
+    Returns the path to the user's home directory in the workspace store.
+
+    Returns:
+        The path to the user's home directory in the workspace store.
+    """
+
+    return workspace.get_path_to_home()
