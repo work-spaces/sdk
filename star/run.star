@@ -41,6 +41,20 @@ RUN_SIGNAL_TERMINATE = "Terminate"
 RUN_SIGNAL_USER1 = "User1"
 RUN_SIGNAL_USER2 = "User2"
 
+def run_load_file_contents(path):
+    """
+    Load the contents of a file and return it as a string.
+
+    The file will be automatically added to the rule dependencies.
+
+    Args:
+        path (str): The path to the file to load.
+
+    Returns:
+        str: The contents of the file.
+    """
+    return "$RUN_LOAD_FILE_CONTENTS{" + path + "}"
+
 # Provide thin wrapper for constants so that they can have docstrings
 def run_inputs_once():
     """
