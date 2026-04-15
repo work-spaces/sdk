@@ -55,6 +55,20 @@ def run_load_file_contents(path):
     """
     return "$RUN_LOAD_FILE_CONTENTS{" + path + "}"
 
+def run_load_exit_code(rule):
+    """
+    Load the exit code of a previous run rule and return it as a string.
+
+    The file will be automatically added to the rule dependencies.
+
+    Args:
+        rule (str): The rule to load the exit code from.
+
+    Returns:
+        str: The contents of the file.
+    """
+    return "$RUN_LOAD_EXIT_VALUE{" + rule + "}"
+
 # Provide thin wrapper for constants so that they can have docstrings
 def run_inputs_once():
     """
