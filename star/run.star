@@ -276,6 +276,7 @@ def run_add_exec_setup(
         args: The arguments to pass to the command
         deps: The rule dependencies
         env: key value pairs of environment variables
+        apply_trailing_args_to: The name of the rule that will receive command line trailing args when this rule is run directly.
         working_directory: The directory to run the command (default is workspace root).
         platforms: Platforms to run on (default is all).
         log_level: The log level to use None|App
@@ -348,6 +349,7 @@ def run_add_exec_test(
         deps: The rule dependencies
         inputs: List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
         env: key value pairs of environment variables
+        apply_trailing_args_to: The name of the rule that will receive command line trailing args when this rule is run directly.
         working_directory: The directory to run the command (default is workspace root).
         platforms: Platforms to run on (default is all).
         log_level: The log level to use None|App
@@ -420,6 +422,7 @@ def run_add_exec_precommit(
         deps: The rule dependencies
         inputs: List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
         env: key value pairs of environment variables
+        apply_trailing_args_to: The name of the rule that will receive command line trailing args when this rule is run directly.
         working_directory: The directory to run the command (default is workspace root).
         platforms: Platforms to run on (default is all).
         log_level: The log level to use None|App
@@ -492,6 +495,7 @@ def run_add_exec_clean(
         deps: The rule dependencies
         inputs: List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
         env: key value pairs of environment variables
+        apply_trailing_args_to: The name of the rule that will receive command line trailing args when this rule is run directly.
         working_directory: The directory to run the command (default is workspace root).
         platforms: Platforms to run on (default is all).
         log_level: The log level to use None|App
@@ -562,6 +566,7 @@ def run_add_exec(
         deps: The rule dependencies that must be run before this command
         inputs: List of globs to specify the inputs. If the inputs are unchanged, the command will not run.
         env: key value pairs of environment variables
+        apply_trailing_args_to: The name of the rule that will receive command line trailing args when this rule is run directly.
         working_directory: The directory to run the command (default is workspace root).
         platforms: Platforms to run on (default is all).
         log_level: The log level to use None|App|Passthrough
@@ -674,7 +679,7 @@ def run_add(
     Args:
         name: The name of the rule.
         deps: List of dependencies for the target.
-        trailing_args_rule: The name of the rule that will get command line trailing args when this rule is run directly.
+        apply_trailing_args_to: The name of the rule that will get command line trailing args when this rule is run directly.
         platforms: List of platforms to build the target for (default is all).
         type: See [run_add_exec()](#run_add_exec)
         help: The help message for the rule.
