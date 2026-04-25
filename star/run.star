@@ -252,6 +252,7 @@ def run_add_exec_setup(
         args: list[str] = [],
         env: dict = {},
         deps: list[str] | list[dict] = [],
+        apply_trailing_args_to: str | None = None,
         working_directory: str | None = None,
         platforms: list[str] | None = None,
         log_level: str | None = None,
@@ -290,6 +291,10 @@ def run_add_exec_setup(
         info_set_minimum_version("0.15.24")
     EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
+    if apply_trailing_args_to != None:
+        info_set_minimum_version("0.15.38")
+    effective_trailing_args = {"apply_trailing_args_to": apply_trailing_args_to} if apply_trailing_args_to != None else {}
+
     run.add_exec(
         rule = {
             "name": name,
@@ -298,7 +303,7 @@ def run_add_exec_setup(
             "help": help,
             "type": RUN_TYPE_SETUP,
             "inputs": RUN_INPUTS_ONCE,
-        } | EFFECTIVE_VISIBILITY,
+        } | EFFECTIVE_VISIBILITY | effective_trailing_args,
         exec = {
             "command": command,
             "args": args,
@@ -318,6 +323,7 @@ def run_add_exec_test(
         env: dict = {},
         deps: list[str] | list[dict] = [],
         inputs: list[str] | None = RUN_INPUTS_ALWAYS,
+        apply_trailing_args_to: str | None = None,
         working_directory: str | None = None,
         platforms: list[str] | None = None,
         log_level: str | None = None,
@@ -357,6 +363,10 @@ def run_add_exec_test(
         info_set_minimum_version("0.15.24")
     EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
+    if apply_trailing_args_to != None:
+        info_set_minimum_version("0.15.38")
+    effective_trailing_args = {"apply_trailing_args_to": apply_trailing_args_to} if apply_trailing_args_to != None else {}
+
     run.add_exec(
         rule = {
             "name": name,
@@ -365,7 +375,7 @@ def run_add_exec_test(
             "help": help,
             "type": "Test",
             "inputs": inputs,
-        } | EFFECTIVE_VISIBILITY,
+        } | EFFECTIVE_VISIBILITY | effective_trailing_args,
         exec = {
             "command": command,
             "args": args,
@@ -385,6 +395,7 @@ def run_add_exec_precommit(
         env: dict = {},
         deps: list[str] | list[dict] = [],
         inputs: list[str] | None = RUN_INPUTS_ALWAYS,
+        apply_trailing_args_to: str | None = None,
         working_directory: str | None = None,
         platforms: list[str] | None = None,
         log_level: str | None = None,
@@ -424,6 +435,10 @@ def run_add_exec_precommit(
         info_set_minimum_version("0.15.24")
     EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
+    if apply_trailing_args_to != None:
+        info_set_minimum_version("0.15.38")
+    effective_trailing_args = {"apply_trailing_args_to": apply_trailing_args_to} if apply_trailing_args_to != None else {}
+
     run.add_exec(
         rule = {
             "name": name,
@@ -432,7 +447,7 @@ def run_add_exec_precommit(
             "help": help,
             "type": RUN_TYPE_PRECOMMIT,
             "inputs": inputs,
-        } | EFFECTIVE_VISIBILITY,
+        } | EFFECTIVE_VISIBILITY | effective_trailing_args,
         exec = {
             "command": command,
             "args": args,
@@ -452,6 +467,7 @@ def run_add_exec_clean(
         env: dict = {},
         deps: list[str] | list[dict] = [],
         inputs: list[str] | None = RUN_INPUTS_ALWAYS,
+        apply_trailing_args_to: str | None = None,
         working_directory: str | None = None,
         platforms: list[str] | None = None,
         log_level: str | None = None,
@@ -491,6 +507,10 @@ def run_add_exec_clean(
         info_set_minimum_version("0.15.24")
     EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
+    if apply_trailing_args_to != None:
+        info_set_minimum_version("0.15.38")
+    effective_trailing_args = {"apply_trailing_args_to": apply_trailing_args_to} if apply_trailing_args_to != None else {}
+
     run.add_exec(
         rule = {
             "name": name,
@@ -499,7 +519,7 @@ def run_add_exec_clean(
             "help": help,
             "type": RUN_TYPE_CLEAN,
             "inputs": inputs,
-        } | EFFECTIVE_VISIBILITY,
+        } | EFFECTIVE_VISIBILITY | effective_trailing_args,
         exec = {
             "command": command,
             "args": args,
@@ -519,6 +539,7 @@ def run_add_exec(
         env: dict = {},
         deps: list[str] | list[dict] = [],
         inputs: list[str] | None = RUN_INPUTS_ALWAYS,
+        apply_trailing_args_to: str | None = None,
         target_files: list[str] | None = None,
         target_dirs: list[str] | None = None,
         type: str | None = None,
@@ -559,6 +580,10 @@ def run_add_exec(
         info_set_minimum_version("0.15.24")
     EFFECTIVE_VISIBILITY = {"visibility": visibility} if visibility != None else {}
 
+    if apply_trailing_args_to != None:
+        info_set_minimum_version("0.15.38")
+    effective_trailing_args = {"apply_trailing_args_to": apply_trailing_args_to} if apply_trailing_args_to != None else {}
+
     effective_targets = {}
     if target_files != None or target_dirs != None:
         info_set_minimum_version("0.15.28")
@@ -574,7 +599,7 @@ def run_add_exec(
             "help": help,
             "type": EFFECTIVE_TYPE,
             "inputs": inputs,
-        } | EFFECTIVE_VISIBILITY | effective_targets,
+        } | EFFECTIVE_VISIBILITY | effective_trailing_args | effective_targets,
         exec = {
             "command": command,
             "args": args,
@@ -636,6 +661,7 @@ def run_add_kill_exec(
 def run_add(
         name: str,
         deps: list[str],
+        apply_trailing_args_to: str | None = None,
         help: str | None = None,
         type: str | None = None,
         platforms: list[str] | None = None,
@@ -648,6 +674,7 @@ def run_add(
     Args:
         name: The name of the rule.
         deps: List of dependencies for the target.
+        trailing_args_rule: The name of the rule that will get command line trailing args when this rule is run directly.
         platforms: List of platforms to build the target for (default is all).
         type: See [run_add_exec()](#run_add_exec)
         help: The help message for the rule.
@@ -655,6 +682,12 @@ def run_add(
     """
 
     info_set_minimum_version("0.15.28")
+
+    if apply_trailing_args_to != None:
+        info_set_minimum_version("0.15.38")
+        effective_trailing_args = {"apply_trailing_args_to": apply_trailing_args_to}
+    else:
+        effective_trailing_args = {}
 
     run.add(
         rule = {
@@ -664,7 +697,7 @@ def run_add(
             "type": type,
             "help": help,
             "visibility": visibility,
-        },
+        } | effective_trailing_args,
     )
 
 def run_add_target(
