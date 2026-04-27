@@ -250,6 +250,66 @@ def hash_sha512_file(file_path: str) -> str:
     return hash.sha512_file(file_path)
 
 # ============================================================================
+# BLAKE3 - Fast cryptographic hash function
+# ============================================================================
+
+def hash_blake3(data: str) -> str:
+    """
+    Compute the BLAKE3 hash of a string.
+
+    BLAKE3 is a modern cryptographic hash function that is significantly faster
+    than SHA-256/SHA-512 while providing equivalent security guarantees. It
+    produces a 256-bit (64 hexadecimal character) digest by default.
+
+    Args:
+        data: The string to hash
+
+    Returns:
+        str: The BLAKE3 hash as a hexadecimal-encoded string (64 characters)
+
+    Raises:
+        Error: If hashing fails
+
+    Examples:
+        # Hash a simple string
+        digest = hash_blake3("my-data")
+        print(f"BLAKE3: {digest}")
+
+        # Use as a fast integrity fingerprint
+        fingerprint = hash_blake3("artifact-v1.2.3")
+    """
+    return hash.blake3_string(data)
+
+def hash_blake3_file(file_path: str) -> str:
+    """
+    Compute the BLAKE3 hash of a file.
+
+    Reads the file in 64 KiB streaming chunks so large files never cause
+    excessive memory consumption.  Returns a 256-bit (64 hexadecimal
+    character) digest.
+
+    Args:
+        file_path: Path to the file to hash (relative to workspace root)
+
+    Returns:
+        str: The BLAKE3 hash as a hexadecimal-encoded string (64 characters)
+
+    Raises:
+        Error: If the file cannot be read or hashing fails
+
+    Examples:
+        # Compute BLAKE3 checksum of a large artifact
+        digest = hash_blake3_file("downloads/toolchain.tar.gz")
+        print(f"BLAKE3: {digest}")
+
+        # Verify file integrity
+        expected = "d74981efa70a0c880b8d8c1985d075dbcbf679b99a5f9914e5aaf96b831a9e24"
+        if hash_blake3_file("release.zip") == expected:
+            print("File is valid")
+    """
+    return hash.blake3_file(file_path)
+
+# ============================================================================
 # MD5 - Message Digest Algorithm 5
 # ============================================================================
 
