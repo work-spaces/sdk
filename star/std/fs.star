@@ -584,7 +584,7 @@ def fs_copy(src: str, dst: str, recursive: bool = False, overwrite: bool = False
         fs_copy("new_config.json", "config.json", overwrite=True)
 
         # Copy entire directory tree
-        fs_copy("src", "backup/src", recursive=True, exist_ok=True)
+        fs_copy("src", "backup/src", recursive=True, overwrite=True)
     """
     return fs.copy(src, dst, recursive = recursive, overwrite = overwrite, follow_symlinks = follow_symlinks)
 
@@ -852,7 +852,7 @@ def fs_chmod(path: str, spec: str) -> None:
 
     Args:
         path: Path to the file (relative to workspace root)
-        spec: Chmod specification as string (3 characters: [ugo][+-=][rwx])
+        spec: Chmod specification as string ([ugoa][+-=][rwx]+), e.g., "u+x", "u+rx", "a-w"
 
     Returns:
         None
