@@ -102,7 +102,7 @@ def path_dirname(filepath: str) -> str:
 
         # Trailing slash handling
         directory = path_dirname("/usr/local/bin/")
-        # Result: "/usr/local/bin"
+        # Result: "/usr/local"  (trailing slash is stripped; "bin" becomes the last component)
     """
     return path.dirname(filepath)
 
@@ -215,7 +215,7 @@ def path_stem(filepath: str) -> str:
 
         # Hidden file on Unix
         stem = path_stem(".bashrc")
-        # Result: "" (hidden files with no other dots have empty stem)
+        # Result: ".bashrc"  (leading-dot files with no further dots: whole name is the stem)
     """
     return path.stem(filepath)
 
