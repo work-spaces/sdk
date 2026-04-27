@@ -488,7 +488,9 @@ def process_wait(handle: int, timeout_ms = None) -> dict:
         result = process_wait(handle, timeout_ms = 1)  # Will likely timeout
         # Error: wait timed out after 1ms
     """
-    return process.wait(handle, timeout_ms)
+    if timeout_ms != None:
+        return process.wait(handle, timeout_ms)
+    return process.wait(handle)
 
 # ============================================================================
 # Command Pipelines

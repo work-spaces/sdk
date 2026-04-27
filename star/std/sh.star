@@ -1,17 +1,105 @@
 """
 Spaces Shell (sh) Module
 
-This module provides ergonomic wrappers around shell scripting operations. It supports:
-- Simple command execution with full control over output handling
-- Output capture (single string or lines)
-- Exit code checking and error handling
-- Optional working directory specification
+This module provides ergonomic wrappers around the built-in ``sh`` namespace,
+which executes command strings through the **platform shell**:
 
-All functions are designed to be easy to use while providing fine-grained control
-when needed. By default, commands fail hard on non-zero exit codes, making it easy
-to catch errors early.
+- Unix    : ``/bin/sh -c <command>``
+- Windows : ``cmd.exe /C <command>``
 
-Examples:
+Because the command is interpreted by a shell, the full shell syntax is
+available: pipes (``|``), redirections (``>``, ``2>&1``), semicolons,
+environment-variable expansion, globs, and so on.
+
+--------------------------------------------------------------------------------
+Choosing between ``sh`` and ``process``
+--------------------------------------------------------------------------------
+
++------------------------------------------+------------------+------------------+
+| Concern                                  | Use ``sh``       | Use ``process``  |
++==========================================+==================+==================+
+| Need pipes, globs, redirects             | ✓                |                  |
++------------------------------------------+------------------+------------------+
+| Need a timeout                           |                  | ✓  (``run``)     |
++------------------------------------------+------------------+------------------+
+| Need to set environment variables        |                  | ✓  (``exec``/    |
+|                                          |                  | ``run``)         |
++------------------------------------------+------------------+------------------+
+| Need to supply stdin                     |                  | ✓  (``exec``/    |
+|                                          |                  | ``run``)         |
++------------------------------------------+------------------+------------------+
+| Need async / background execution        |                  | ✓  (``spawn``)   |
++------------------------------------------+------------------+------------------+
+| Avoid shell-injection risk               |                  | ✓  (argv list)   |
++------------------------------------------+------------------+------------------+
+| Quick one-liner or shell pipeline        | ✓                |                  |
++------------------------------------------+------------------+------------------+
+
+``process`` functions accept an explicit argv list and never invoke a shell, so
+they are immune to shell injection.  ``sh`` trades that safety guarantee for the
+convenience of full shell syntax.
+
+--------------------------------------------------------------------------------
+⚠  Shell-Injection Hazard
+--------------------------------------------------------------------------------
+
+The ``command`` string is forwarded **as-is** to the shell.
+**Never interpolate untrusted or externally-supplied data into the command
+string.**  Doing so allows arbitrary command execution.
+
+    # UNSAFE — user_input could be "foo; rm -rf /"
+    sh_run("process " + user_input)
+
+    # SAFE — use process_exec / process_run with an explicit argv list
+    process_exec({"command": "process", "args": [user_input]})
+
+If you must embed a dynamic value in a shell command, shell-quote it first —
+for example, wrap it in single quotes and escape any embedded single quotes as
+``'\''``.
+
+--------------------------------------------------------------------------------
+Quoting rules
+--------------------------------------------------------------------------------
+
+Because the command goes through the shell, normal shell quoting applies:
+
+- **Single quotes** (``'…'``) pass every character literally — no variable
+  expansion or backslash interpretation inside.
+- **Double quotes** (``"…"``) allow ``$VAR`` and ``\\`` escapes but protect
+  spaces.
+- **Unquoted** tokens are subject to word-splitting and glob expansion.
+
+Example — count log files whose names may contain spaces::
+
+    result = sh_run("find . -name '*.log' | wc -l", check=True)
+
+--------------------------------------------------------------------------------
+Windows notes
+--------------------------------------------------------------------------------
+
+On Windows the underlying shell is ``cmd.exe /C``.  Several POSIX constructs
+are not available or behave differently:
+
+- Use ``%VAR%`` for environment-variable expansion (not ``$VAR``).
+- The ``test`` builtin does not exist; use ``if exist <file>`` instead.
+- ``true`` / ``false`` do not exist; use ``exit /b 0`` / ``exit /b 1``.
+- ``2>&1`` redirection works the same way as on Unix.
+
+For cross-platform scripts consider using ``process_exec`` with explicit
+arguments, or guard shell-specific code with ``sys.platform()``.
+
+--------------------------------------------------------------------------------
+Known limitations
+--------------------------------------------------------------------------------
+
+- **No explicit ``env`` parameter** — environment variables can be set inline
+  on POSIX (``FOO=bar command``) but that syntax is not portable to Windows.
+  Use ``process_exec`` / ``process_run`` when you need explicit env control.
+- **No ``stdin``** — use ``process_exec`` when stdin must be provided.
+- **No timeout** — use ``process_run`` (with ``timeout_ms``) when you need one.
+
+Examples::
+
     # Run a command and capture its output
     output = sh_capture("git rev-parse HEAD")
     print(output)  # Single trimmed line
@@ -40,29 +128,55 @@ def sh_run(command: str, check: bool = False, cwd = None) -> dict:
     """
     Run a shell command and capture its complete output and status.
 
-    This is the most flexible shell execution function. It runs the command through
-    the platform shell (`/bin/sh -c` on Unix, `cmd.exe /C` on Windows) and returns
-    the exit status, stdout, and stderr.
+    This is the most flexible shell execution function.  It runs the command
+    through the platform shell (``/bin/sh -c`` on Unix, ``cmd.exe /C`` on
+    Windows) and returns the exit status, stdout, and stderr as a dict.
+
+    .. warning::
+        ``command`` is passed verbatim to the shell.  **Do not interpolate
+        untrusted input.**  See the module docstring for details.
 
     Args:
-        command: Shell command string to execute. This is passed directly to the
-            platform shell, so pipes, redirections, and other shell features work.
-        check: If True, raise an error when the command exits with non-zero status.
-            If False (default), return the result regardless of exit code.
-        cwd: Optional working directory for the command. If not specified, the
-            command runs in the current working directory.
+        command: Shell command string to execute.  Pipes, redirections, and
+            other shell features work because the string is interpreted by the
+            platform shell.
+        check: If ``True``, raise an error when the command exits with a
+            non-zero status.  If ``False`` (the default), return the result
+            regardless of exit code.
+        cwd: Optional working directory for the command.  If ``None`` (the
+            default), the command runs in the current working directory.
 
     Returns:
         dict: A result dictionary with the following keys:
-            - status (int): Exit code of the command (0 = success)
-            - stdout (str): Captured standard output
-            - stderr (str): Captured standard error
+
+        - **status** (``int``): Exit code of the command (0 = success).
+        - **stdout** (``str``): Captured standard output.
+        - **stderr** (``str``): Captured standard error.
 
     Raises:
-        Error: If check=True and the command exits with non-zero status, or if
-               the command cannot be executed.
+        Error: If ``check=True`` and the command exits with a non-zero status,
+               or if the command cannot be executed.
 
-    Examples:
+    Note:
+        ``sh_run`` defaults ``check=False`` so that callers always receive the
+        full result dict and can inspect status, stdout, and stderr themselves.
+        For a "fail fast" convenience call, prefer ``sh_capture`` or
+        ``sh_lines`` (which default to ``check=True``).
+
+        To merge stderr into stdout use the shell redirection ``2>&1``::
+
+            result = sh_run("some_tool 2>&1")
+
+        To set environment variables for the subprocess on POSIX use inline
+        assignment syntax::
+
+            result = sh_run("MY_VAR=hello sh -c 'echo $MY_VAR'")
+
+        For portable env-var control across platforms use ``process_run``
+        instead.
+
+    Examples::
+
         # Simple command execution
         result = sh_run("echo 'Hello, World!'")
         print(result["status"])   # 0
@@ -72,19 +186,18 @@ def sh_run(command: str, check: bool = False, cwd = None) -> dict:
         result = sh_run("ls *.py | wc -l")
         print("Python files:", result["stdout"])
 
-        # Run with check=True to error on non-zero exit
+        # Run with check=True to raise on non-zero exit
         result = sh_run("cargo build", check=True)
-        # Will raise error if build fails
 
         # Run in a specific directory
         result = sh_run("npm test", cwd="/path/to/project")
         print(result["stdout"])
 
         # Capture both stdout and stderr
-        result = sh_run("some_command 2>&1")  # Merge stderr to stdout
+        result = sh_run("some_command 2>&1")
         print(result["stdout"])
     """
-    if cwd:
+    if cwd != None:
         return sh.run(command, check = check, cwd = cwd)
     else:
         return sh.run(command, check = check)
@@ -97,47 +210,49 @@ def sh_capture(command: str, check: bool = True, cwd = None) -> str:
     """
     Run a shell command and return its trimmed stdout as a string.
 
-    This is the most convenient function for capturing command output. The output
-    is automatically trimmed of trailing newlines and whitespace. By default, it
-    will raise an error if the command fails, making it safe for scripts where
-    failure should abort.
+    This is the most convenient function for capturing command output.  The
+    output is automatically trimmed of trailing newlines and carriage returns.
+    By default it will raise an error if the command fails, making it safe for
+    scripts where failure should abort execution immediately.
+
+    .. warning::
+        ``command`` is passed verbatim to the shell.  **Do not interpolate
+        untrusted input.**  See the module docstring for details.
 
     Args:
         command: Shell command string to execute.
-        check: If True (default), raise an error when the command exits with
-            non-zero status. Set to False to ignore command failures.
+        check: If ``True`` (the default), raise an error when the command exits
+            with a non-zero status.  Set to ``False`` to ignore command
+            failures and return whatever output was produced.
         cwd: Optional working directory for the command.
 
     Returns:
         str: The command's stdout, trimmed of trailing whitespace and newlines.
 
     Raises:
-        Error: If check=True and the command exits with non-zero status, or if
-               the command cannot be executed.
+        Error: If ``check=True`` and the command exits with a non-zero status,
+               or if the command cannot be executed.
 
-    Examples:
+    Examples::
+
         # Get the current git branch
         branch = sh_capture("git rev-parse --abbrev-ref HEAD")
-        print(f"Current branch: {branch}")
+        print("Current branch:", branch)
 
-        # Get a single value
+        # Get a single numeric value
         count = int(sh_capture("find . -name '*.py' | wc -l"))
-        print(f"Found {count} Python files")
+        print("Found", count, "Python files")
 
-        # List project version from a tool
-        version = sh_capture("cargo metadata --format-version 1 | jq -r .packages[0].version")
-        print(f"Version: {version}")
-
-        # Ignore errors and use a default
+        # Ignore errors and fall back to a default
         output = sh_capture("git rev-parse HEAD", check=False)
         if not output:
             print("Not in a git repository")
 
-        # Get output from a command in a specific directory
-        files = sh_capture("ls -1", cwd="/path/to/directory")
-        print(files)
+        # Capture output from a command in a specific directory
+        listing = sh_capture("ls -1", cwd="/path/to/directory")
+        print(listing)
     """
-    if cwd:
+    if cwd != None:
         return sh.capture(command, check = check, cwd = cwd)
     else:
         return sh.capture(command, check = check)
@@ -146,54 +261,61 @@ def sh_lines(command: str, check: bool = True, cwd = None) -> list:
     """
     Run a shell command and return its output split into individual lines.
 
-    This function runs a command and automatically splits its stdout into lines,
-    stripping trailing newlines. Empty trailing lines are not returned, making
-    it convenient for iterating over command output.
+    This function runs a command and automatically splits its stdout into a
+    list of strings, one per line.  A trailing empty line (the newline after
+    the last output line) is **not** included in the result, making it
+    convenient for iterating over command output without handling trailing
+    empty strings.
+
+    .. warning::
+        ``command`` is passed verbatim to the shell.  **Do not interpolate
+        untrusted input.**  See the module docstring for details.
 
     Args:
         command: Shell command string to execute.
-        check: If True (default), raise an error when the command exits with
-            non-zero status. Set to False to ignore command failures.
+        check: If ``True`` (the default), raise an error when the command exits
+            with a non-zero status.  Set to ``False`` to ignore failures.
         cwd: Optional working directory for the command.
 
     Returns:
-        list: A list of strings, one per line of output. Empty list if the
-              command produces no output.
+        list: A list of strings, one per line of output.  Returns an empty
+              list if the command produces no output.
 
     Raises:
-        Error: If check=True and the command exits with non-zero status, or if
-               the command cannot be executed.
+        Error: If ``check=True`` and the command exits with a non-zero status,
+               or if the command cannot be executed.
 
-    Examples:
+    Note:
+        Prefer ``printf`` over ``echo -e`` / ``echo -n`` in the command string.
+        The behaviour of ``echo`` flags varies across POSIX shells — on macOS
+        ``/bin/sh`` (bash 3.2 compiled with ``xpg_echo``), ``echo`` expands
+        ``\\n`` by default and does **not** treat ``-e`` or ``-n`` as flags,
+        printing them literally instead.
+
+    Examples::
+
         # List files in a directory
         files = sh_lines("ls -1")
         for f in files:
-            print(f"File: {f}")
+            print("File:", f)
 
         # Get git tags
         tags = sh_lines("git tag --list 'v*'")
         latest = tags[-1] if tags else None
-        print(f"Latest tag: {latest}")
+        print("Latest tag:", latest)
 
-        # Filter and process output
-        processes = sh_lines("ps aux | grep python | grep -v grep")
-        print(f"Found {len(processes)} Python processes")
-        for line in processes:
-            print(line)
-
-        # Find Python files and process each
-        py_files = sh_lines("find . -name '*.py' -type f")
-        for file in py_files:
-            print(f"Processing: {file}")
-
-        # Safely handle commands that might not produce output
-        matching = sh_lines("grep -l 'pattern' *.txt", check=False)
+        # Filter output — safely handle commands that may produce nothing
+        matching = sh_lines("grep -rl 'TODO' src/", check=False)
         if matching:
-            print(f"Found pattern in: {matching}")
+            print("TODOs found in:", matching)
         else:
-            print("No matches found")
+            print("No TODOs")
+
+        # Produce lines portably with printf (avoid echo -e)
+        items = sh_lines("printf 'alpha\\nbeta\\ngamma\\n'")
+        # items == ["alpha", "beta", "gamma"]
     """
-    if cwd:
+    if cwd != None:
         return sh.lines(command, check = check, cwd = cwd)
     else:
         return sh.lines(command, check = check)
@@ -206,23 +328,38 @@ def sh_exit_code(command: str, cwd = None) -> int:
     """
     Run a shell command and return only its numeric exit code.
 
-    This function is useful for conditional logic where you need to know whether
-    a command succeeded or failed without capturing its output. Unlike other
-    functions, this never raises an error for command failures - it only fails
-    if the process cannot be spawned or waited on.
+    This function is useful for conditional logic where you need to know
+    whether a command succeeded or failed without capturing its output.
+    Unlike the other ``sh_*`` functions, this **never raises an error** for a
+    non-zero command exit status — it only fails if the process cannot be
+    spawned or waited on.
+
+    .. warning::
+        ``command`` is passed verbatim to the shell.  **Do not interpolate
+        untrusted input.**  See the module docstring for details.
 
     Args:
         command: Shell command string to execute.
         cwd: Optional working directory for the command.
 
     Returns:
-        int: The command's exit code (0 = success, non-zero = failure)
+        int: The command's exit code (0 = success, non-zero = failure).
+             Returns ``1`` if the process terminates without a numeric exit
+             code (e.g. killed by a signal on Unix).
 
     Raises:
-        Error: Only if the command cannot be spawned or the process cannot be waited on.
+        Error: Only if the command cannot be spawned or the process cannot be
+               waited on.
 
-    Examples:
-        # Check if a file exists using test command
+    Note:
+        On POSIX, ``test -f <path>`` checks whether ``<path>`` is a **regular
+        file** (not a directory, symlink target that is a directory, or special
+        file such as ``/dev/null``).  Use ``test -e`` to test for existence of
+        any filesystem entry, or ``test -d`` for directories.
+
+    Examples::
+
+        # Check if a regular file exists
         status = sh_exit_code("test -f config.json")
         if status == 0:
             print("Config file exists")
@@ -234,26 +371,21 @@ def sh_exit_code(command: str, cwd = None) -> int:
         if status == 0:
             print("Python 3 is available")
 
-        # Conditional build
+        # Detect uncommitted changes
         status = sh_exit_code("git diff --quiet")
         if status != 0:
             print("Changes detected, rebuilding...")
-            # Run build
 
-        # Check multiple conditions
+        # Check for a pattern in a file
         status = sh_exit_code("grep -q 'pattern' file.txt")
         if status == 0:
             print("Pattern found")
         elif status == 1:
             print("Pattern not found")
         else:
-            print(f"Search failed with status {status}")
-
-        # Directory validation
-        status = sh_exit_code("test -d /path/to/dir")
-        is_dir = status == 0
+            print("Search failed with status", status)
     """
-    if cwd:
+    if cwd != None:
         return sh.exit_code(command, cwd = cwd)
     else:
         return sh.exit_code(command)
