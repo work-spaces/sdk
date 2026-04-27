@@ -7,6 +7,7 @@ via environment variables and runtime settings.
 
 Example:
     # Basic logging
+    log_trace("Low-level detail about execution")
     log_debug("Starting process...")
     log_info("Processing file: %s" % filename)
     log_warn("This feature is deprecated")
@@ -36,12 +37,13 @@ def log_set_level(level: str):
     overridden at runtime via the SPACES_ENV_LOG environment variable.
 
     Args:
-        level: One of "debug", "info", "warn", "error", or "trace".
+        level: One of "trace", "debug", "info", "warn", "error", or "off".
                - "trace": Most verbose, includes everything
                - "debug": Detailed diagnostic information
                - "info": Informational messages (default)
                - "warn": Warning messages and above
                - "error": Error messages only
+               - "off": Disable all logging
 
     Returns:
         None
@@ -57,6 +59,28 @@ def log_set_level(level: str):
         >>> log_error("This will be shown")  # Visible
     """
     return log.set_level(level)
+
+def log_trace(message: str):
+    """
+    Logs a trace-level message.
+
+    Trace messages are the most verbose level and are disabled by default.
+    Enable them with ``log_set_level("trace")`` or the ``SPACES_ENV_LOG=trace``
+    environment variable.  Use trace for very fine-grained diagnostic output
+    such as per-iteration loop state or low-level I/O details.
+
+    Args:
+        message: The trace message to log.
+
+    Returns:
+        None
+
+    Examples:
+        >>> log_set_level("trace")
+        >>> log_trace("Entering loop iteration %d" % i)
+        >>> log_trace("Raw bytes: %s" % data)
+    """
+    return log.trace(message)
 
 def log_set_format(format: str):
     """
