@@ -353,13 +353,13 @@ def string_regex_match(pattern: str, s: str):
     """
     Match a regex pattern against a string.
 
-    Attempts to match the regex pattern at the beginning of the string.
-    Returns a dictionary with match details if successful, None otherwise.
+    Searches for the first match of the regex pattern anywhere in the string.
+    Returns a dictionary with match details for the first match found, or None if there is no match.
 
     The returned dictionary contains:
     - 'match': The matched text
-    - 'start': Starting position of the match
-    - 'end': Ending position of the match
+    - 'start': Starting character (Unicode codepoint) index of the match
+    - 'end': Ending character (Unicode codepoint) index of the match
     - 'groups': List of captured groups
     - 'named': Dictionary of named capture groups
     - 'source': The original source string
@@ -408,8 +408,8 @@ def string_regex_find_all(pattern: str, s: str) -> list:
 
     Each element in the returned list contains:
     - 'match': The matched text
-    - 'start': Starting position
-    - 'end': Ending position
+    - 'start': Starting character (Unicode codepoint) index
+    - 'end': Ending character (Unicode codepoint) index
     - 'groups': List of captured groups
     - 'named': Dictionary of named captures
     - 'source': Original source string
