@@ -130,12 +130,12 @@ def time_monotonic() -> int:
     """
     Gets process-local monotonic time in milliseconds.
 
-    Returns elapsed milliseconds since the process started. This clock is
+    Returns elapsed milliseconds since the first call to `time_monotonic()` (effectively process start for most scripts). This clock is
     monotonic, meaning it always moves forward and is not affected by
     system clock adjustments. Ideal for measuring elapsed time and benchmarking.
 
     Returns:
-        int: Milliseconds elapsed since process start
+        int: Milliseconds elapsed since the first call to `time_monotonic()`
 
     Examples:
         # Measure operation duration
@@ -190,6 +190,8 @@ def time_sleep(seconds: float):
                 print(f"Retry in {delay} seconds...")
                 time_sleep(delay)
     """
+    if seconds < 0:
+        fail("time_sleep: seconds must be non-negative, got: " + str(seconds))
     time.sleep(int(seconds * 1e9))
 
 def time_sleep_milliseconds(milliseconds: int):
