@@ -105,8 +105,17 @@ def _validate_type(type_str: str) -> None:
         fail("`type` must be one of: str, int, bool (got `{}`)".format(type_str))
 
 def _default_for_opt(type_str: str, user_default = None):
-    """Returns the default value for an option based on type."""
+    """Returns the default value for an option based on type.
+
+    Validates that user_default, if supplied, matches the declared type.
+    """
     if user_default != None:
+        if type_str == "int" and type(user_default) != "int":
+            fail("Default for `int` option must be an integer, got: {}".format(type(user_default)))
+        if type_str == "bool" and type(user_default) != "bool":
+            fail("Default for `bool` option must be a boolean, got: {}".format(type(user_default)))
+        if type_str == "str" and type(user_default) != "string":
+            fail("Default for `str` option must be a string, got: {}".format(type(user_default)))
         return user_default
     if type_str == "int":
         return 0
@@ -188,6 +197,7 @@ def args_opt(
                  Example: ["dev", "staging", "prod"]. If empty list or None, any value is allowed.
         type: The value type: "str" (default), "int", or "bool".
               Determines how the value is parsed and what default is used if not provided.
+              When type="bool", the command-line value must be one of: true/1/yes/on (True) or false/0/no/off (False).
 
     Returns:
         An option descriptor (dictionary) for use in parser specs.
@@ -247,6 +257,7 @@ def args_list(
         help: Optional help text. Suggestion: mention that option is repeatable.
               Example: "Include a tag (can be used multiple times)"
         choices: Optional list of allowed values. Each occurrence must use an allowed choice.
+                 Note: choices are only supported when type="str" (the default); combining choices with type="int" or type="bool" raises an error.
         type: The value type: "str" (default), "int", or "bool".
               Determines how each value is parsed.
 
@@ -299,6 +310,7 @@ def args_pos(name: str, required: bool = False, variadic: bool = False) -> dict:
               Examples: "source", "destination", "targets", "pattern"
         required: If True, the argument must be provided or parsing fails.
                   Default False allows the argument to be optional.
+                  When False and the argument is not provided, its value in the parsed result is None.
         variadic: If True, this positional consumes all remaining arguments (like *args).
                   Only one positional can be variadic, and it must be the last one.
                   Default False means the positional takes exactly one value.
@@ -336,8 +348,8 @@ def args_pos(name: str, required: bool = False, variadic: bool = False) -> dict:
     return spec
 
 def args_parser(
-        name: str = "",
-        description: str = "",
+        name: str,
+        description: str,
         options = None,
         positional = None) -> dict:
     """
@@ -375,12 +387,12 @@ def args_parser(
         >>> parsed = args_parse(spec)
         >>> print(parsed)
     """
-    return args.parser(
-        name = name if name else None,
-        description = description if description else None,
-        options = options,
-        positional = positional,
-    )
+    return args.parser({
+        "name": name,
+        "description": description,
+        "options": options,
+        "positional": positional,
+    })
 
 def args_parse(spec: dict) -> dict:
     """
