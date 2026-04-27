@@ -1,5 +1,6 @@
 """
-Spaces JSON module - Ergonomic wrappers for JSON serialization and deserialization
+Spaces JSON module - Ergonomic wrappers for JSON serialization, deserialization,
+and file I/O
 
 This module provides clean, well-documented functions for working with JSON data
 in Starlark scripts. All functions handle errors gracefully and provide clear
@@ -195,13 +196,14 @@ def json_encode_pretty(value):
 
     This is a convenience function for creating human-readable JSON output
     with proper indentation and newlines. Equivalent to calling
-    json_encode(value, pretty=True).
+    json_encode(value, pretty=True).  Always uses 2-space indentation; use
+    `json_encode_indented` if you need a different width.
 
     Args:
         value: The dictionary or Starlark value to encode
 
     Returns:
-        A formatted JSON string with indentation and newlines
+        A formatted JSON string with 2-space indentation and newlines
 
     Examples:
         ```starlark
@@ -217,6 +219,55 @@ def json_encode_pretty(value):
         ```
     """
     return json.to_string_pretty(value)
+
+def json_encode_indented(value, indent: int = 2):
+    """
+    Convert a value into a formatted JSON string with a configurable indent width.
+
+    This is the flexible alternative to `json_encode_pretty`, giving you direct
+    control over how many spaces are used for each indentation level.  The
+    `indent` must be between 0 and 16 (inclusive).
+
+    Args:
+        value: The dictionary or Starlark value to encode
+        indent: Number of spaces per indentation level (0–16, default 2).
+                0 adds newlines without indentation; 4 is a common alternative
+                to the default 2-space style.
+
+    Returns:
+        A formatted JSON string using `indent` spaces per level
+
+    Raises:
+        Raises an error if `indent` is outside the range 0–16, or if the
+        value cannot be serialized to JSON (e.g. NaN, Infinity).
+
+    Examples:
+        4-space indentation:
+        ```starlark
+        data = {"key": "value", "nums": [1, 2, 3]}
+        wide = json_encode_indented(data, indent=4)
+        print(wide)
+        # {
+        #     "key": "value",
+        #     "nums": [
+        #         1,
+        #         2,
+        #         3
+        #     ]
+        # }
+        ```
+
+        1-space indentation (compact but readable):
+        ```starlark
+        narrow = json_encode_indented(data, indent=1)
+        ```
+
+        Default (same as json_encode_pretty):
+        ```starlark
+        two_space = json_encode_indented(data)
+        ```
+    """
+    return json.to_string_indented(value, indent = indent)
 
 def json_is_valid(json_string: str):
     """
@@ -275,6 +326,11 @@ def json_try_decode(json_string: str, default = None):
     If the string is not valid JSON, it returns the default value instead
     of raising an exception.
 
+    Internally this calls `json.try_string_to_dict` with the supplied
+    `default`, so the input is parsed only once.  A non-None default lets
+    callers distinguish a successfully decoded JSON `null` (returns `None`)
+    from a parse failure (returns the custom default):
+
     Args:
         json_string: The JSON string to decode.
         default: The value to return if decoding fails. Default is None.
@@ -282,20 +338,89 @@ def json_try_decode(json_string: str, default = None):
     Returns:
         The decoded value if successful, or the default value if decoding fails.
 
-    Example:
+    Examples:
+        Safe parsing with default:
         ```starlark
-        # Safe parsing with default
         result = json_try_decode('invalid json', default={})
         print(result)  # Output: {}
+        ```
 
-        # Safe parsing with successful decode
+        Safe parsing with successful decode:
+        ```starlark
         data = json_try_decode('{"key": "value"}', default={})
         print(data["key"])  # Output: value
         ```
+
+        Distinguishing JSON null from parse failure:
+        ```starlark
+        MISSING = "PARSE_FAILED"
+        result = json_try_decode("null", default=MISSING)
+        # result is None  (valid JSON null, not a failure)
+
+        result = json_try_decode("{bad}", default=MISSING)
+        # result is "PARSE_FAILED"  (parse failed, default returned)
+        ```
     """
-    if json.is_string_json(json_string):
-        return json.string_to_dict(json_string)
-    return default
+    return json.try_string_to_dict(json_string, default = default)
+
+def json_read_file(path: str):
+    """
+    Read and parse a JSON file into a Starlark value.
+
+    This is a convenience wrapper around fs.read_json_to_dict. It reads the
+    file at the given path (relative to the workspace root), parses its contents
+    as JSON, and returns the resulting Starlark value. I/O errors and JSON parse
+    errors are both propagated as exceptions with descriptive messages.
+
+    Args:
+        path: Path to the JSON file, relative to the workspace root
+
+    Returns:
+        The parsed JSON value (dict, list, string, number, bool, or None)
+
+    Raises:
+        Error: If the file cannot be read (I/O error) or contains invalid JSON
+
+    Examples:
+        ```starlark
+        config = json_read_file("config/settings.json")
+        print(config["version"])
+        ```
+    """
+    return fs.read_json_to_dict(path)
+
+def json_write_file(path: str, value, pretty: bool = True):
+    """
+    Serialize a Starlark value to JSON and write it to a file.
+
+    This is a convenience wrapper around fs.write_json_from_dict. It converts
+    the given value to JSON and writes it to the specified file path (relative
+    to the workspace root). By default the output is pretty-printed with
+    indentation. I/O errors and serialization errors are propagated as
+    exceptions with descriptive messages.
+
+    Args:
+        path: Destination file path, relative to the workspace root
+        value: The Starlark value (dict, list, etc.) to serialize
+        pretty: If True (default), write formatted JSON with indentation.
+                If False, write compact JSON with no extra whitespace.
+
+    Returns:
+        None
+
+    Raises:
+        Error: If the value cannot be serialized or the file cannot be written
+
+    Examples:
+        ```starlark
+        # Write pretty JSON (default)
+        json_write_file("output/result.json", {"status": "ok", "count": 42})
+
+        # Write compact JSON
+        json_write_file("output/compact.json", {"x": 1}, pretty=False)
+        ```
+    """
+    return fs.write_json_from_dict(path, value, pretty = pretty)
 
 def json_merge(dict1, dict2):
     """
