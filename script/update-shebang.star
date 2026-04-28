@@ -26,7 +26,7 @@ def _update_shebang(input_file, new_shebang):
             return
 
 args = script.get_args()
-input_file = args["named"]["--input-file"]
-new_shebang = args["named"]["--new-shebang"]
+input_file = args.get("named", {}).get("--input-file", "na")
+new_shebang = args.get("named", {}).get("--new-shebang", "na")
 
 _update_shebang(input_file, new_shebang)

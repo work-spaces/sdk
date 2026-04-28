@@ -2,7 +2,7 @@
 
 """Update the rpaths in an install directory"""
 
-def _update_rpaths(binary_path, install_path, new_base_path):
+def _update_rpaths(binary_path: str, install_path: str, new_base_path: str):
     """
     Update the rpaths in the files to use the new_base_path
 
@@ -50,7 +50,7 @@ def _update_rpaths(binary_path, install_path, new_base_path):
                     script.print("Warning running install_name_tool for {}".format(file))
                     script.print(install_name_result["stderr"])
                     continue
-                script.print("{}: {} -> {}".format(file, change_old, change_new))
+                print("{}: {} -> {}".format(file, change_old, change_new))
 
         file_name = file.split("/")[-1]
 
@@ -62,8 +62,8 @@ def _update_rpaths(binary_path, install_path, new_base_path):
         )
 
         if id_result["status"] != 0:
-            script.print("Warning running install_name_tool for {}".format(file))
-            script.print(id_result["stderr"])
+            print("Warning running install_name_tool for {}".format(file))
+            print(id_result["stderr"])
             continue
 
         process.exec(
@@ -88,8 +88,8 @@ def _update_rpaths(binary_path, install_path, new_base_path):
         )
 
 args = script.get_args()
-binary_path = args["named"]["--binary-path"]
-old_path = args["named"]["--old-path"]
-new_path = args["named"]["--new-path"]
+binary_path = args.get("named", {}).get("--binary-path", "na")
+old_path = args.get("named", {}).get("--old-path", "na")
+new_path = args.get("named", {}).get("--new-path", "na")
 
 _update_rpaths(binary_path, old_path, new_path)
