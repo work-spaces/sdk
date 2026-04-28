@@ -349,10 +349,30 @@ def toml_try_decode(toml_string: str, default = None):
         print(data["name"])  # Output: MyApp
         ```
     """
-    result = toml.try_string_to_dict(toml_string)
-    if result != None:
-        return result
-    return default
+    return toml.try_string_to_dict(toml_string, default = default)
+
+def toml_is_valid(toml_string: str):
+    """
+    Check whether a string is valid TOML without raising an error.
+
+    This is a quick validation helper: it returns True if the string parses
+    as TOML and False otherwise. No decoded data is returned.
+
+    Args:
+        toml_string: The string to validate.
+
+    Returns:
+        True if the string is valid TOML, False otherwise.
+
+    Examples:
+        ```starlark
+        if toml_is_valid(raw):
+            config = toml_decode(raw)
+        else:
+            print("invalid TOML, using defaults")
+        ```
+    """
+    return toml.is_string_toml(toml_string)
 
 def toml_merge(base_dict, override_dict):
     """
