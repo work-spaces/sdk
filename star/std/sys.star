@@ -350,8 +350,9 @@ def sys_info() -> dict:
         >>> if info["os"] == "windows":
         ...     print("Windows configuration needed")
         >>> # Save system info for logs
-        >>> import json
-        >>> json.dump(info, file)
+        >>> load("//@star/sdk/star/std/json.star", "json_encode")
+        >>> load("//@star/sdk/star/std/fs.star", "fs_write_text")
+        >>> fs_write_text("sys-info.json", json_encode(info))
     """
     return {
         "os": sys_os(),
