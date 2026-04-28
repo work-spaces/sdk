@@ -400,8 +400,8 @@ def yaml_encode_pretty(value):
     Convert a value into a formatted YAML string with proper indentation.
 
     This is a convenience function for creating human-readable YAML output.
-    Since YAML is inherently readable, this produces the same formatted output
-    as yaml_encode(). Equivalent to calling yaml_encode(value, pretty=True).
+    Since YAML is inherently readable, this currently produces the same
+    formatted output as yaml_encode().
 
     Args:
         value: The dictionary or Starlark value to encode
