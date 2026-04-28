@@ -149,7 +149,7 @@ def tmp_file(suffix: str = "") -> str:
 # Cleanup Operations
 # ============================================================================
 
-def tmp_cleanup(handle: int) -> None:
+def tmp_cleanup(path: str) -> None:
     """
     Explicitly clean up a single registered temporary resource.
 
@@ -158,22 +158,27 @@ def tmp_cleanup(handle: int) -> None:
     is no longer tracked and cannot be cleaned up again.
 
     Args:
-        handle: The temporary resource ID/handle
+        path: The path string returned by tmp_dir(), tmp_dir_keep(), or
+              tmp_file().  Raises an error if the path is not tracked.
 
     Returns:
         None
 
     Raises:
-        Error: If the temporary resource ID is invalid or the cleanup fails
+        Error: If the path is not tracked or the deletion fails
 
     Examples:
-        # Create and explicitly clean up a temp file when needed
+        # Create and explicitly clean up a temp file
         temp_file = tmp_file(suffix = ".txt")
-        # Use temp_file...
-        # Later, clean up explicitly if desired
-        # tmp_cleanup(handle)  # Note: v0 uses implicit resource tracking
+        # ... use temp_file ...
+        tmp_cleanup(temp_file)
+
+        # Create and explicitly clean up a temp directory
+        work_dir = tmp_dir(prefix = "work-")
+        # ... use work_dir ...
+        tmp_cleanup(work_dir)
     """
-    return tmp.cleanup(handle)
+    return tmp.cleanup(path)
 
 def tmp_cleanup_all() -> None:
     """
