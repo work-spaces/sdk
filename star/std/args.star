@@ -362,9 +362,8 @@ def args_parser(
     to actually parse command-line arguments.
 
     Args:
-        name: Optional name of the program/command. Used in help text.
-              If not provided, the program name from args_program() will be used.
-        description: Optional description of what the program does. Shown at top of help text.
+        name: Name of the program/command. Used in help text.
+        description: Description of what the program does. Shown at top of help text.
         options: List of option descriptors created with args_flag(), args_opt(), or args_list().
                  Default is empty list (no options).
         positional: List of positional descriptors created with args_pos().
