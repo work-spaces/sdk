@@ -164,8 +164,6 @@ def yaml_encode(value):
 
     Args:
         value: The dictionary or Starlark value to encode as YAML
-        pretty: If True, returns formatted YAML with indentation and newlines.
-                If False (default), returns compact YAML.
 
     Returns:
         A YAML-formatted string representation of the input value
@@ -304,10 +302,7 @@ def yaml_try_decode(yaml_string: str, default = None):
         print(data["name"])  # Output: MyApp
         ```
     """
-    result = yaml.try_string_to_dict(yaml_string)
-    if result != None:
-        return result
-    return default
+    return yaml.try_string_to_dict(yaml_string, default = default)
 
 def yaml_merge(base_dict, override_dict):
     """
@@ -457,3 +452,26 @@ def yaml_encode_pretty(value):
         ```
     """
     return yaml.to_string(value)
+
+def yaml_is_valid(yaml_string: str):
+    """
+    Check whether a string is valid YAML without raising an error.
+
+    This is a quick validation helper: it returns True if the string parses
+    as YAML (single-document) and False otherwise. No decoded data is returned.
+
+    Args:
+        yaml_string: The string to validate.
+
+    Returns:
+        True if the string is valid YAML, False otherwise.
+
+    Examples:
+        ```starlark
+        if yaml_is_valid(raw):
+            config = yaml_decode(raw)
+        else:
+            print("invalid YAML, using defaults")
+        ```
+    """
+    return yaml.is_string_yaml(yaml_string)
