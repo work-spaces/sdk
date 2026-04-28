@@ -331,6 +331,8 @@ def args_pos(name: str, required: bool = False, variadic: bool = False) -> dict:
         >>> files_pos = args_pos("files", variadic=True)
         >>> # Use in parser (positional order matters)
         >>> spec = args_parser(
+        ...     name="deploy",
+        ...     description="Deploy a service to one or more targets",
         ...     positional=[service_pos, files_pos]
         ... )
         >>> parsed = args_parse(spec)
