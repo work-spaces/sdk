@@ -776,13 +776,11 @@ def fs_modified(path: str) -> float:
         mtime = fs_modified("config.json")
         print("Last modified: " + str(mtime))
 
-        # Find recently modified files
-        import time
-        now = time.time()
-        hour_ago = now - 3600
-        for f in fs_read_directory("."):
-            if fs_is_file(f) and fs_modified(f) > hour_ago:
-                print("Recently modified: " + f)
+        # Compare modification times
+        config_mtime = fs_modified("config.json")
+        backup_mtime = fs_modified("config.backup.json")
+        if config_mtime > backup_mtime:
+            print("config.json is newer than config.backup.json")
     """
     return fs.modified(path)
 
