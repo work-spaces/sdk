@@ -89,11 +89,6 @@ def args_program() -> str:
     """
     return args.program()
 
-def _validate_long(name: str) -> None:
-    """Validates that name is a valid long option format."""
-    if not name.startswith("--") or len(name) < 3:
-        fail("Long option name must start with `--`, got `{}`".format(name))
-
 def _validate_short(name: str) -> None:
     """Validates that name is a valid short option format."""
     if not name.startswith("-") or name.startswith("--") or len(name) != 2:
@@ -160,7 +155,6 @@ def args_flag(
         >>> if parsed["verbose"]:
         ...     print("Verbose mode enabled")
     """
-    _validate_long(name)
     if short != None:
         _validate_short(short)
 
@@ -219,7 +213,7 @@ def args_opt(
         >>> parsed = args_parse(spec)
         >>> print(f"Env: {parsed['env']}, Output: {parsed['output']}")
     """
-    _validate_long(name)
+
     if short != None:
         _validate_short(short)
     _validate_type(type)
@@ -281,7 +275,6 @@ def args_list(
         >>> for tag in parsed["tag"]:
         ...     print(f"Processing tag: {tag}")
     """
-    _validate_long(name)
     if short != None:
         _validate_short(short)
     _validate_type(type)
@@ -352,8 +345,8 @@ def args_pos(name: str, required: bool = False, variadic: bool = False) -> dict:
 def args_parser(
         name: str,
         description: str,
-        options = None,
-        positional = None) -> dict:
+        options: list[dict] | None = None,
+        positional: list[dict] | None = None) -> dict:
     """
     Creates a parser specification.
 
