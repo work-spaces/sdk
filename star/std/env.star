@@ -11,14 +11,8 @@ Example:
     home = env_get("HOME", default="/tmp")  # -> str with fallback (never None)
 
     # Distinguish "not set" from "set to empty string"
-    env_set("MY_VAR", "")
     env_get("MY_VAR")          # -> ""    (variable is set, value is empty)
     env_get("NOT_SET_VAR")     # -> None  (variable is absent)
-
-    # Set and unset variables
-    env_set("MY_VAR", "value")
-    if env_has("MY_VAR"):
-        env_unset("MY_VAR")
 
     # Work with directories
     original = env_cwd()      # Get current directory
@@ -27,7 +21,6 @@ Example:
 
     # Manipulate PATH
     paths = env_path_list()                        # Split PATH into a list
-    env_set("PATH", env_path_join(["/new"] + paths))  # Prepend /new to PATH
 
     # Find executables
     git_path = env_which("git")          # -> str or empty string
@@ -64,7 +57,6 @@ def env_get(name: str, default: str | None = None) -> str | None:
         >>> env_get("NONEXISTENT")               # -> None
         >>> env_get("NONEXISTENT", default="/tmp")  # -> "/tmp"
         >>> # Distinguish not-set from set-to-empty:
-        >>> env_set("MY_VAR", "")
         >>> env_get("MY_VAR")          # -> ""    (set, but empty)
         >>> env_get("NOT_SET_VAR")     # -> None  (not set at all)
         >>> env_get("MY_VAR") == None  # -> False
@@ -72,55 +64,6 @@ def env_get(name: str, default: str | None = None) -> str | None:
     if default != None:
         return env.get(name, default = default)
     return env.get(name)
-
-def env_set(name: str, value: str):
-    """
-    Sets an environment variable for the current process and child processes.
-
-    This modifies the environment for the current process and any child processes
-    it subsequently spawns. Does not affect parent processes or the system-wide
-    environment. The change is temporary and only lasts for the duration of the
-    process.
-
-    Args:
-        name: The name of the environment variable (e.g., "MY_VAR", "DEBUG")
-        value: The value to set. Must be a string.
-
-    Returns:
-        None
-
-    Examples:
-        >>> env_set("CUSTOM_VAR", "hello")
-        >>> env_get("CUSTOM_VAR")  # -> "hello"
-        >>> env_set("DEBUG", "1")
-        >>> env_set("CONFIG_PATH", "/etc/myapp.conf")
-    """
-    return env.set(name, value)
-
-def env_unset(name: str):
-    """
-    Unsets (removes) an environment variable from the current process.
-
-    This removes the variable from the current process and any child processes.
-    Subsequent calls to `env_get()` will return `None` (or the supplied default).
-    Does not affect parent processes or the system-wide environment.
-    Unsetting a variable that is not set is a safe no-op.
-
-    Args:
-        name: The name of the environment variable to remove
-
-    Returns:
-        None
-
-    Examples:
-        >>> env_set("TEMP_VAR", "temporary")
-        >>> env_has("TEMP_VAR")   # -> True
-        >>> env_unset("TEMP_VAR")
-        >>> env_get("TEMP_VAR")   # -> None
-        >>> env_has("TEMP_VAR")   # -> False
-        >>> env_unset("TEMP_VAR") # no-op, does not error
-    """
-    return env.unset(name)
 
 def env_has(name: str) -> bool:
     """
@@ -151,8 +94,6 @@ def env_all() -> dict[str, str]:
     Returns all environment variables as a dictionary.
 
     Captures a snapshot of all environment variables at the time of the call.
-    Modifications to the returned dictionary do not affect the process environment;
-    use `env_set()` to change variables.
 
     Non-UTF-8 keys or values are included with invalid bytes replaced by the
     Unicode replacement character (U+FFFD), consistent with the lossy conversion
@@ -276,10 +217,8 @@ def env_path_join(entries: list) -> str:
         "/usr/bin:/usr/local/bin"  # Unix/macOS
         >>> # Prepend a new directory to PATH:
         >>> old_paths = env_path_list()
-        >>> env_set("PATH", env_path_join(["/my/new/dir"] + old_paths))
         >>> # Remove a directory from PATH:
         >>> filtered = [p for p in env_path_list() if p != "/unwanted/dir"]
-        >>> env_set("PATH", env_path_join(filtered))
     """
     return env.path_join_entries(entries)
 
