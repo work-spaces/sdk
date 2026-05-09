@@ -389,3 +389,66 @@ def sh_exit_code(command: str, cwd = None) -> int:
         return sh.exit_code(command, cwd = cwd)
     else:
         return sh.exit_code(command)
+
+# ============================================================================
+# Pipeline Execution
+# ============================================================================
+
+def sh_pipe(commands: list, check: bool = True, cwd = None) -> dict:
+    """
+    Run a pipeline of shell commands joined with `` | ``.
+
+    This is a convenience wrapper that takes a list of command strings,
+    joins them with `` | ``, and executes the result through the platform
+    shell. It returns the same dict structure as ``sh_run``.
+
+    .. warning::
+        Each command string is passed verbatim to the shell.  **Do not
+        interpolate untrusted input.**  See the module docstring for details.
+
+    Args:
+        commands: A list of shell command strings to pipe together.
+        check: If ``True`` (the default), raise an error when the pipeline
+            exits with a non-zero status.
+        cwd: Optional working directory for the pipeline.
+
+    Returns:
+        dict: A result dictionary with the following keys:
+
+        - **status** (``int``): Exit code of the last command in the pipeline.
+        - **stdout** (``str``): Captured standard output from the pipeline.
+        - **stderr** (``str``): Captured standard error from the pipeline.
+
+    Raises:
+        Error: If ``check=True`` and the pipeline exits with a non-zero status,
+               or if the command list is empty, or if the pipeline cannot be
+               executed.
+
+    Examples::
+
+        # Simple two-stage pipeline
+        result = sh_pipe(["echo 'hello world'", "tr 'a-z' 'A-Z'"])
+        print(result["stdout"])  # "HELLO WORLD\n"
+
+        # Multi-stage pipeline for filtering and counting
+        result = sh_pipe([
+            "cat *.log",
+            "grep ERROR",
+            "wc -l"
+        ])
+        error_count = int(result["stdout"].strip())
+        print("Found", error_count, "errors")
+
+        # Run pipeline with check=False to inspect errors
+        result = sh_pipe(["ls", "grep pattern"], check=False)
+        if result["status"] != 0:
+            print("Pipeline failed:", result["stderr"])
+
+        # Execute pipeline in a specific directory
+        result = sh_pipe(["find . -name '*.txt'", "head -5"], cwd="/tmp")
+        print(result["stdout"])
+    """
+    if cwd != None:
+        return sh.pipe(commands, check = check, cwd = cwd)
+    else:
+        return sh.pipe(commands, check = check)
