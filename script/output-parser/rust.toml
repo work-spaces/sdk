@@ -1,0 +1,166 @@
+# Rust Compiler Output Parser Rules
+#
+# This TOML file defines patterns for parsing rustc/cargo output into structured
+# diagnostics with actionable hints.
+
+[parser]
+source = "rustc"
+fail_on = "error"
+format = "human"
+dedup = true
+strip_ansi = true
+
+# ============================================================================
+# Rules
+# ============================================================================
+
+# Primary error pattern - captures error code and message
+[[rule]]
+tag = "rust-error"
+pattern = '^error\[(?P<code>E\d+)\]: (?P<message>.*)$'
+severity = "error"
+help = "Primary Rust error line with error code"
+
+# Primary error pattern without code
+[[rule]]
+tag = "rust-error-no-code"
+pattern = '^error: (?P<message>.*)$'
+severity = "error"
+help = "Rust error without error code"
+
+# Location attachment for errors
+[[rule]]
+tag = "rust-location"
+pattern = '^\s*--> (?P<file>[^:]+):(?P<line>\d+):(?P<column>\d+)$'
+attach_to = "rust-error"
+help = "Attaches location info to preceding error"
+
+# Location attachment for no-code errors
+[[rule]]
+tag = "rust-location-no-code"
+pattern = '^\s*--> (?P<file>[^:]+):(?P<line>\d+):(?P<column>\d+)$'
+attach_to = "rust-error-no-code"
+help = "Attaches location info to preceding no-code error"
+
+# Primary warning pattern
+[[rule]]
+tag = "rust-warning"
+pattern = '^warning: (?P<message>.*)$'
+severity = "warning"
+help = "Rust compiler warning"
+
+# Warning location attachment
+[[rule]]
+tag = "rust-warning-location"
+pattern = '^\s*--> (?P<file>[^:]+):(?P<line>\d+):(?P<column>\d+)$'
+attach_to = "rust-warning"
+help = "Attaches location info to preceding warning"
+
+# Note diagnostics
+[[rule]]
+tag = "rust-note"
+pattern = '^\s*= note: (?P<message>.*)$'
+severity = "note"
+help = "Additional note from compiler"
+
+# Help diagnostics
+[[rule]]
+tag = "rust-help"
+pattern = '^\s*= help: (?P<message>.*)$'
+severity = "hint"
+help = "Compiler help suggestion"
+
+# ============================================================================
+# Cause Map - Common Rust Error Causes and Solutions
+# ============================================================================
+
+# E0382: Use of moved value
+[[cause]]
+match_tag = "rust-error"
+when_code = "E0382"
+hint = "Value was moved earlier. Consider borrowing with & or cloning with .clone() before the move."
+url = "https://doc.rust-lang.org/error_codes/E0382.html"
+
+# E0425: Cannot find value
+[[cause]]
+match_tag = "rust-error"
+when_code = "E0425"
+hint = "Identifier not found in scope. Check spelling, imports (use statements), or add the definition."
+url = "https://doc.rust-lang.org/error_codes/E0425.html"
+
+# E0433: Cannot find type in module
+[[cause]]
+match_tag = "rust-error"
+when_code = "E0433"
+hint = "Type not found. Check module path and ensure it's imported with 'use' statement."
+url = "https://doc.rust-lang.org/error_codes/E0433.html"
+
+# E0277: Trait not implemented
+[[cause]]
+match_tag = "rust-error"
+when_code = "E0277"
+hint = "Type doesn't implement required trait. Add trait implementation or derive with #[derive(...)]."
+url = "https://doc.rust-lang.org/error_codes/E0277.html"
+
+# E0308: Mismatched types
+[[cause]]
+match_tag = "rust-error"
+when_code = "E0308"
+hint = "Type mismatch. Check function signatures, variable types, and use type conversions if needed."
+url = "https://doc.rust-lang.org/error_codes/E0308.html"
+
+# E0599: Method not found
+[[cause]]
+match_tag = "rust-error"
+when_code = "E0599"
+hint = "Method doesn't exist for this type. Check trait is in scope or add method to impl block."
+url = "https://doc.rust-lang.org/error_codes/E0599.html"
+
+# E0507: Cannot move out of borrowed content
+[[cause]]
+match_tag = "rust-error"
+when_code = "E0507"
+hint = "Trying to move from a borrowed reference. Use .clone(), take ownership, or work with references."
+url = "https://doc.rust-lang.org/error_codes/E0507.html"
+
+# E0596: Cannot borrow as mutable
+[[cause]]
+match_tag = "rust-error"
+when_code = "E0596"
+hint = "Variable is not declared as mutable. Add 'mut' keyword: let mut x = ..."
+url = "https://doc.rust-lang.org/error_codes/E0596.html"
+
+# Missing crate dependency (pattern-based)
+[[cause]]
+match_tag = "rust-error-no-code"
+match_message_regex = "can't find crate for `(?P<crate>\\w+)`"
+hint = "Crate '{crate}' is not in dependencies. Add it to [dependencies] in Cargo.toml."
+
+[[cause]]
+match_tag = "rust-error"
+match_message_regex = "could not find `(?P<crate>\\w+)` in"
+hint = "Module or crate '{crate}' not found. Check the name, add to Cargo.toml if external, or check module path."
+
+# Unused variable warnings
+[[cause]]
+match_tag = "rust-warning"
+match_message = "unused variable:"
+hint = "Variable is declared but never used. Prefix with _ to silence: _variable, or remove if not needed."
+
+# Dead code warnings
+[[cause]]
+match_tag = "rust-warning"
+match_message = "is never used"
+hint = "Code is never called. Remove it or add #[allow(dead_code)] if intentionally unused."
+
+# Unused import
+[[cause]]
+match_tag = "rust-warning"
+match_message = "unused import:"
+hint = "Import is not used. Remove the import or add #[allow(unused_imports)] if needed for consistency."
+
+# Must use result
+[[cause]]
+match_tag = "rust-warning"
+match_message = "unused `Result` that must be used"
+hint = "Result value should be handled. Use .expect(), .unwrap(), ?, or match to handle the error."

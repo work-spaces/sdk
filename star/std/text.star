@@ -404,6 +404,74 @@ def text_diagnostic(
 
     return text.diagnostic(options, **kwargs)
 
+def text_match_to_diagnostic(
+        match,
+        severity: str = "error",
+        default_message: str = "",
+        default_file: str = "unknown",
+        source = None,
+        related = None):
+    """
+    Convert a regex match result to a diagnostic.
+
+    Takes a regex match result (from text_regex_scan_tagged or similar) and
+    converts it to a diagnostic by extracting named capture groups. This is
+    more efficient than manually extracting fields in Starlark code.
+
+    Named Capture Groups:
+        The function looks for these named groups in the match:
+        - file: File path
+        - line: Line number (1-based)
+        - column: Column number (1-based)
+        - end_line: End line number (1-based)
+        - end_column: End column number (1-based)
+        - code: Error/warning code
+        - message: Diagnostic message
+
+    Args:
+        match: Regex match result from text_regex_scan_tagged or similar
+        severity: Severity level ("error", "warning", "info", "hint", or "note")
+        default_message: Message to use if no "message" capture group exists
+        default_file: File to use if no "file" capture group exists
+        source: Source identifier for the diagnostic (e.g., "eslint", "rustc")
+        related: List of related diagnostics (optional)
+
+    Returns:
+        dict: Diagnostic record that can be rendered with text_render_diagnostics
+
+    Examples:
+        # Parse compiler errors
+        matches = text_regex_scan_tagged(
+            content,
+            [{"tag": "error", "pattern": r"(?P<file>\\S+):(?P<line>\\d+): (?P<message>.*)$"}]
+        )
+        diags = [text_match_to_diagnostic(m, severity="error", source="mycompiler")
+                 for m in matches]
+
+        # With default file for matches without file capture
+        matches = text_regex_scan_tagged(
+            log,
+            [{"tag": "warn", "pattern": r"WARNING: (?P<message>.*)$"}]
+        )
+        diags = [text_match_to_diagnostic(m,
+                                          severity="warning",
+                                          default_file="build.log",
+                                          source="build")
+                 for m in matches]
+    """
+    options = {
+        "match": match,
+        "severity": severity,
+        "default_message": default_message,
+        "default_file": default_file,
+    }
+    if source != None:
+        options["source"] = source
+    if related != None:
+        options["related"] = related
+
+    return text.match_to_diagnostic(options)
+
 def text_dedup_diagnostics(diagnostics: list) -> list:
     """
     Remove duplicate diagnostics.
