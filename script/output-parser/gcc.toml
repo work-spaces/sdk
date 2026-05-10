@@ -1,0 +1,309 @@
+# GCC/G++ Compiler Output Parser Rules
+#
+# This TOML file defines patterns for parsing gcc/g++ output into structured
+# diagnostics with actionable hints.
+
+[parser]
+source = "gcc"
+fail_on = "error"
+format = "human"
+dedup = true
+strip_ansi = true
+
+# ============================================================================
+# Rules
+# ============================================================================
+
+# Primary error pattern - GCC format: file:line:column: error: message
+[[rule]]
+tag = "gcc-error"
+pattern = '^(?P<file>[^:]+):(?P<line>\d+):(?P<column>\d+): error: (?P<message>.*)$'
+severity = "error"
+help = "Primary GCC/G++ error with location"
+
+# Error without column number: file:line: error: message
+[[rule]]
+tag = "gcc-error-no-column"
+pattern = '^(?P<file>[^:]+):(?P<line>\d+): error: (?P<message>.*)$'
+severity = "error"
+help = "GCC/G++ error without column number"
+
+# Fatal error pattern
+[[rule]]
+tag = "gcc-fatal-error"
+pattern = '^(?P<file>[^:]+):(?P<line>\d+):(?P<column>\d+): fatal error: (?P<message>.*)$'
+severity = "error"
+help = "Fatal error that stops compilation"
+
+# Fatal error without column
+[[rule]]
+tag = "gcc-fatal-error-no-column"
+pattern = '^(?P<file>[^:]+):(?P<line>\d+): fatal error: (?P<message>.*)$'
+severity = "error"
+help = "Fatal error without column number"
+
+# Primary warning pattern
+[[rule]]
+tag = "gcc-warning"
+pattern = '^(?P<file>[^:]+):(?P<line>\d+):(?P<column>\d+): warning: (?P<message>.*)$'
+severity = "warning"
+help = "GCC/G++ compiler warning with location"
+
+# Warning without column number
+[[rule]]
+tag = "gcc-warning-no-column"
+pattern = '^(?P<file>[^:]+):(?P<line>\d+): warning: (?P<message>.*)$'
+severity = "warning"
+help = "GCC/G++ warning without column number"
+
+# Note diagnostics (informational context)
+[[rule]]
+tag = "gcc-note"
+pattern = '^(?P<file>[^:]+):(?P<line>\d+):(?P<column>\d+): note: (?P<message>.*)$'
+severity = "note"
+help = "Additional note providing context"
+
+# Note without column
+[[rule]]
+tag = "gcc-note-no-column"
+pattern = '^(?P<file>[^:]+):(?P<line>\d+): note: (?P<message>.*)$'
+severity = "note"
+help = "Additional note without column number"
+
+# Linker errors (ld)
+[[rule]]
+tag = "gcc-linker-error"
+pattern = '''^(?P<file>[^:]+):(?P<line>\d+): undefined reference to [`'](?P<symbol>[^'`]+)['`]$'''
+severity = "error"
+help = "Linker undefined reference error"
+
+# Linker multiple definition error
+[[rule]]
+tag = "gcc-linker-multiple-def"
+pattern = '''^(?P<file>[^:]+):(?P<line>\d+): multiple definition of [`'](?P<symbol>[^'`]+)['`]$'''
+severity = "error"
+help = "Linker multiple definition error"
+
+# Linker errors with /usr/bin/ld prefix and section+offset (e.g., .text+0x45)
+[[rule]]
+tag = "gcc-ld-undefined-reference"
+pattern = '''(?:^|/usr/bin/ld: )(?P<file>[^:]+):\([^)]+\): undefined reference to [`'](?P<symbol>[^'`]+)['`]'''
+severity = "error"
+help = "Linker undefined reference (section+offset format)"
+
+# Linker multiple definition with section+offset
+[[rule]]
+tag = "gcc-ld-multiple-def"
+pattern = '''(?:^|/usr/bin/ld: )(?P<file>[^:]+):\([^)]+\): multiple definition of [`'](?P<symbol>[^'`]+)['`]'''
+severity = "error"
+help = "Linker multiple definition (section+offset format)"
+
+# Linker undefined reference to vtable
+[[rule]]
+tag = "gcc-ld-undefined-vtable"
+pattern = '''(?:^|/usr/bin/ld: )(?P<file>[^:]+):\([^)]+\): undefined reference to [`']vtable for (?P<class>[^'`]+)['`]'''
+severity = "error"
+help = "Linker undefined reference to vtable"
+
+# collect2 linker error
+[[rule]]
+tag = "gcc-collect2-error"
+pattern = '''^collect2: error: ld returned (?P<code>\d+) exit status$'''
+severity = "error"
+help = "Final linker error status"
+
+# ============================================================================
+# Cause Map - Common GCC/G++ Error Causes and Solutions
+# ============================================================================
+
+# Undeclared identifier
+[[cause]]
+match_tag = "gcc-error"
+match_message_regex = '''['`](?P<identifier>\w+)['] (was not declared|undeclared)'''
+hint = "Identifier '{identifier}' not declared. Check spelling, include the correct header file, or add the declaration/definition."
+
+# Undefined reference (linker error)
+[[cause]]
+match_tag = "gcc-linker-error"
+hint = "Symbol is declared but not defined. Ensure the implementation file is compiled and linked, or check library linkage."
+
+# Multiple definition (linker error)
+[[cause]]
+match_tag = "gcc-linker-multiple-def"
+hint = "Symbol is defined more than once. Check for duplicate definitions, or move definition to a .cpp file and use extern in headers."
+
+# Linker undefined reference with section+offset
+[[cause]]
+match_tag = "gcc-ld-undefined-reference"
+hint = "Symbol is declared but not defined. Ensure the implementation file is compiled and linked, or check that required libraries are linked (-l flag)."
+
+# Linker multiple definition with section+offset
+[[cause]]
+match_tag = "gcc-ld-multiple-def"
+hint = "Symbol is defined more than once. Check for duplicate definitions across object files, or move definition to a single .cpp file and use extern in headers."
+
+# Undefined vtable
+[[cause]]
+match_tag = "gcc-ld-undefined-vtable"
+hint = "Undefined vtable usually means a virtual function is declared but not defined. Check that all virtual functions (especially the first virtual function or destructor) are implemented."
+
+# collect2 linker error
+[[cause]]
+match_tag = "gcc-collect2-error"
+hint = "Linker failed. Review the undefined reference or multiple definition errors above to identify the root cause."
+
+# Missing header file
+[[cause]]
+match_tag = "gcc-fatal-error"
+match_message_regex = "(?P<header>[^:]+\\.h(pp|xx)?): No such file or directory"
+hint = "Header file '{header}' not found. Check the #include path, ensure file exists, or add -I flag to include directory."
+
+[[cause]]
+match_tag = "gcc-fatal-error-no-column"
+match_message_regex = "(?P<header>[^:]+\\.h(pp|xx)?): No such file or directory"
+hint = "Header file '{header}' not found. Check the #include path, ensure file exists, or add -I flag to include directory."
+
+# Type mismatch / incompatible types
+[[cause]]
+match_tag = "gcc-error"
+match_message = "cannot convert"
+hint = "Type conversion error. Check if explicit cast is needed, or if types are compatible. Review function signatures and assignments."
+
+[[cause]]
+match_tag = "gcc-error"
+match_message = "invalid conversion"
+hint = "Invalid type conversion. Use explicit cast if intentional: static_cast, reinterpret_cast, or C-style cast with caution."
+
+# Missing semicolon
+[[cause]]
+match_tag = "gcc-error"
+match_message_regex = '''expected [';'] before'''
+hint = "Missing semicolon. Check the line before the error for a missing ';' at the end of a statement or declaration."
+
+# Unmatched braces/parentheses
+[[cause]]
+match_tag = "gcc-error"
+match_message_regex = '''expected ['}'] at end of input'''
+hint = "Unmatched closing brace. Check for missing '}' or mismatched braces in functions, classes, or namespaces."
+
+[[cause]]
+match_tag = "gcc-error"
+match_message_regex = '''expected [')'] before'''
+hint = "Unmatched parenthesis. Check for missing ')' in function calls, conditions, or expressions."
+
+# No matching function
+[[cause]]
+match_tag = "gcc-error"
+match_message = "no matching function for call to"
+hint = "Function call doesn't match any declaration. Check argument types, number of arguments, and function overloads."
+
+# Member access in non-class type
+[[cause]]
+match_tag = "gcc-error"
+match_message_regex = '''request for member ['`](?P<member>\w+)['] in .* which is of non-class type'''
+hint = "Trying to access member '{member}' of non-class/struct type. Check if you're using '.' instead of '->', or if type is incorrect."
+
+# Use of deleted function
+[[cause]]
+match_tag = "gcc-error"
+match_message = "use of deleted function"
+hint = "Function is explicitly deleted (= delete). Check if copy/move constructor is deleted, or provide custom implementation."
+
+# Abstract class instantiation
+[[cause]]
+match_tag = "gcc-error"
+match_message = "cannot declare variable .* to be of abstract type"
+hint = "Cannot instantiate abstract class. Implement all pure virtual functions, or use pointers/references instead."
+
+# Redefinition errors
+[[cause]]
+match_tag = "gcc-error"
+match_message_regex = '''redefinition of ['`](?P<name>\w+)[']'''
+hint = "'{name}' is defined multiple times. Use include guards (#ifndef/#define/#endif) in headers, or move definition to .cpp file."
+
+# Return statement errors
+[[cause]]
+match_tag = "gcc-error"
+match_message = "return-statement with no value"
+hint = "Missing return value. Function expects a return value but return statement is empty. Add a value after 'return'."
+
+[[cause]]
+match_tag = "gcc-error"
+match_message = "return-statement with a value, in function returning void"
+hint = "Function declared as void but returns a value. Remove the return value or change function return type."
+
+# Template errors
+[[cause]]
+match_tag = "gcc-error"
+match_message = "template argument"
+hint = "Template argument mismatch. Check template parameter types, number of arguments, and template specializations."
+
+# Access control errors
+[[cause]]
+match_tag = "gcc-error"
+match_message_regex = '''['`](?P<member>\w+)['] is (private|protected)'''
+hint = "'{member}' is not accessible. It's declared private/protected. Use public interface, friend declaration, or reconsider class design."
+
+# Const correctness
+[[cause]]
+match_tag = "gcc-error"
+match_message = "passing .* as .* discards qualifiers"
+hint = "Const-correctness violation. Cannot pass const object to non-const reference. Make function parameter const, or use non-const object."
+
+[[cause]]
+match_tag = "gcc-error"
+match_message = "assignment of read-only"
+hint = "Cannot modify const or read-only value. Remove const qualifier if modification is intended, or reconsider design."
+
+# Unused variable warnings
+[[cause]]
+match_tag = "gcc-warning"
+match_message = "unused variable"
+hint = "Variable declared but never used. Remove it if unnecessary, or use (void)varname to explicitly mark as intentionally unused."
+
+# Unused parameter warnings
+[[cause]]
+match_tag = "gcc-warning"
+match_message = "unused parameter"
+hint = "Function parameter not used. Remove parameter, comment it out, or omit the name in function definition: void func(int /* unused */)."
+
+# Uninitialized variable warnings
+[[cause]]
+match_tag = "gcc-warning"
+match_message = "may be used uninitialized"
+hint = "Variable potentially used before initialization. Initialize the variable at declaration, or ensure all code paths initialize it."
+
+# Comparison between signed and unsigned
+[[cause]]
+match_tag = "gcc-warning"
+match_message = "comparison (between|of) signed and unsigned"
+hint = "Comparing signed and unsigned integers. Use explicit casts, or change types to match. Consider using size_t for array indices."
+
+# Format string warnings
+[[cause]]
+match_tag = "gcc-warning"
+match_message = "format"
+hint = "Format string mismatch in printf/scanf family. Ensure format specifiers match argument types (%d for int, %s for char*, etc.)."
+
+# Implicit declaration warnings
+[[cause]]
+match_tag = "gcc-warning"
+match_message = "implicit declaration of function"
+hint = "Function used without declaration. Include the appropriate header file, or add function prototype before use."
+
+# Deprecated warnings
+[[cause]]
+match_tag = "gcc-warning"
+match_message = "deprecated"
+hint = "Using deprecated feature. Check documentation for recommended alternative, or use [[deprecated]] attribute for clarity."
+
+# Pointer warnings
+[[cause]]
+match_tag = "gcc-warning"
+match_message = "makes pointer from integer without a cast"
+hint = "Converting integer to pointer without cast. Use explicit cast if intentional: (type*)value, or review pointer usage."
+
+[[cause]]
+match_tag = "gcc-warning"
+match_message = "makes integer from pointer without a cast"
+hint = "Converting pointer to integer without cast. Use reinterpret_cast<intptr_t>(ptr) or (intptr_t)ptr if conversion is intentional."
