@@ -1,0 +1,115 @@
+# CMake Output Parser Rules
+#
+# This TOML file defines patterns for parsing CMake output into structured
+# diagnostics with actionable hints.
+
+[parser]
+source = "cmake"
+fail_on = "error"
+format = "human"
+dedup = true
+strip_ansi = true
+
+# ============================================================================
+# Rules
+# ============================================================================
+
+# CMake Error at file:line
+[[rule]]
+tag = "cmake-error-at"
+pattern = '^CMake Error at (?P<file>[^:]+):(?P<line>\d+) \((?P<command>[^)]+)\):$'
+severity = "error"
+
+# CMake Error (no location)
+[[rule]]
+tag = "cmake-error"
+pattern = '^CMake Error: (?P<message>.*)$'
+severity = "error"
+
+# CMake Error in file
+[[rule]]
+tag = "cmake-error-in"
+pattern = '^CMake Error in (?P<file>[^:]+):$'
+severity = "error"
+
+# CMake Warning at file:line
+[[rule]]
+tag = "cmake-warning-at"
+pattern = '^CMake Warning at (?P<file>[^:]+):(?P<line>\d+) \((?P<command>[^)]+)\):$'
+severity = "warning"
+
+# CMake Warning (no location)
+[[rule]]
+tag = "cmake-warning"
+pattern = '^CMake Warning: (?P<message>.*)$'
+severity = "warning"
+
+# CMake Warning (dev) - developer warnings
+[[rule]]
+tag = "cmake-warning-dev"
+pattern = '^CMake Warning \(dev\) at (?P<file>[^:]+):(?P<line>\d+) \((?P<command>[^)]+)\):$'
+severity = "warning"
+
+# CMake Warning (dev) - no location
+[[rule]]
+tag = "cmake-warning-dev-no-loc"
+pattern = '^CMake Warning \(dev\): (?P<message>.*)$'
+severity = "warning"
+
+# CMake Deprecation Warning
+[[rule]]
+tag = "cmake-deprecation-warning"
+pattern = '^CMake Deprecation Warning at (?P<file>[^:]+):(?P<line>\d+) \((?P<command>[^)]+)\):$'
+severity = "warning"
+
+# Parse error
+[[rule]]
+tag = "cmake-parse-error"
+pattern = '^Parse error\.\s+(?P<message>.*)$'
+severity = "error"
+
+# Fatal error - missing build program
+[[rule]]
+tag = "cmake-fatal-error"
+pattern = '^CMake Error: CMake was unable to find a build program corresponding to "(?P<generator>[^"]+)"'
+severity = "error"
+help = "CMake cannot find the build tool. Install the required build system (make, ninja, etc.) or specify a different generator."
+
+# Configuration not done
+[[rule]]
+tag = "cmake-config-not-done"
+pattern = '^-- Configuring incomplete, errors occurred!$'
+severity = "error"
+
+# Target not found errors
+[[rule]]
+tag = "cmake-target-not-found"
+pattern = '''Cannot specify link libraries for target "(?P<target>[^"]+)" which is not built by this project'''
+severity = "error"
+help = "Target '{target}' not found. Ensure the target is defined with add_executable() or add_library() before linking."
+
+# Unknown argument error
+[[rule]]
+tag = "cmake-unknown-argument"
+pattern = '''Unknown argument:\s+(?P<argument>\S+)'''
+severity = "error"
+
+# Policy warnings
+[[rule]]
+tag = "cmake-policy-warning"
+pattern = '^Policy CMP(?P<policy>\d+) is not set: (?P<message>.*)$'
+severity = "warning"
+help = "CMake policy not set. Set the policy explicitly with cmake_policy(SET CMP{policy} NEW/OLD) or update cmake_minimum_required()."
+
+# Could not find package
+[[rule]]
+tag = "cmake-package-not-found"
+pattern = '''Could not find a package configuration file provided by "(?P<package>[^"]+)"'''
+severity = "error"
+help = "CMake package '{package}' not found. Install the package or set CMAKE_PREFIX_PATH to the installation location."
+
+# Missing required variable
+[[rule]]
+tag = "cmake-missing-variable"
+pattern = '''The following variables are used in this project, but they are set to NOTFOUND[\s\S]*?(?P<variable>\w+)-NOTFOUND'''
+severity = "error"

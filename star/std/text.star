@@ -302,7 +302,7 @@ def text_regex_scan_file(path: str, patterns: list) -> list:
     """
     return text.regex_scan_file(path, patterns)
 
-def text_regex_scan_tagged(content: str, patterns: list) -> list:
+def text_regex_scan_tagged(content: str, patterns: list, first_match_only: bool = False) -> list:
     """
     Scan content for tagged regex patterns.
 
@@ -312,6 +312,7 @@ def text_regex_scan_tagged(content: str, patterns: list) -> list:
     Args:
         content: String content to scan
         patterns: List of dicts with "tag" (str) and "pattern" (str) keys
+        first_match_only: If True, stop after finding the first match (default: False)
 
     Returns:
         list[dict]: Matches with keys: tag, line, column, match, named
@@ -323,20 +324,27 @@ def text_regex_scan_tagged(content: str, patterns: list) -> list:
         ]
         matches = text_regex_scan_tagged(log_content, patterns)
     """
-    return text.regex_scan_tagged(content, patterns)
+    return text.regex_scan_tagged(content, options = {
+        "patterns": patterns,
+        "first_match_only": first_match_only,
+    })
 
-def text_regex_scan_tagged_file(path: str, patterns: list) -> list:
+def text_regex_scan_tagged_file(path: str, patterns: list, first_match_only: bool = False) -> list:
     """
     Scan a file for tagged regex patterns, streaming from disk.
 
     Args:
         path: Path to the file
         patterns: List of dicts with "tag" (str) and "pattern" (str) keys
+        first_match_only: If True, stop after finding the first match (default: False)
 
     Returns:
         list[dict]: Matches with keys: tag, line, column, match, named
     """
-    return text.regex_scan_tagged_file(path, patterns)
+    return text.regex_scan_tagged_file(path, options = {
+        "patterns": patterns,
+        "first_match_only": first_match_only,
+    })
 
 # ============================================================================
 # Diagnostic Functions

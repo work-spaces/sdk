@@ -12,12 +12,11 @@ describing that toolchain's error/warning patterns and common-cause hints.
 load("//@star/sdk/star/std/args.star", "args_flag", "args_opt", "args_parse", "args_parser")
 load("//@star/sdk/star/std/fs.star", "fs_exists", "fs_read_text", "fs_write_text")
 load("//@star/sdk/star/std/log.star", "log_debug", "log_error", "log_info")
-load("//@star/sdk/star/std/string.star", "string_regex_match", "string_replace")
+load("//@star/sdk/star/std/string.star", "string_replace")
 load("//@star/sdk/star/std/sys.star", "sys_exit")
 load(
     "//@star/sdk/star/std/text.star",
     "text_dedup_diagnostics",
-    "text_diagnostic",
     "text_match_to_diagnostic",
     "text_regex_scan_tagged_file",
     "text_render_diagnostics",
@@ -64,7 +63,11 @@ def load_config(path):
     """
     Load and decode the TOML configuration file.
 
-    Returns a dict with keys: parser, rule, cause
+    Args:
+      path: Path to the TOML configuration file.
+
+    Returns:
+      A dict with keys: parser, rule
     """
     assert_on(fs_exists(path), "Rules file not found: " + path)
 
@@ -74,17 +77,18 @@ def load_config(path):
     # Normalize structure
     parser_cfg = cfg.get("parser", {})
     rules = cfg.get("rule", [])
-    causes = cfg.get("cause", [])
 
     return {
         "parser": parser_cfg,
         "rule": rules,
-        "cause": causes,
     }
 
 def validate_rules(rules):
     """
     Validate rule structure and cross-references.
+
+    Args:
+      rules: List of rule dictionaries to validate.
 
     Raises fail() on validation errors with helpful messages.
     """
@@ -130,31 +134,6 @@ def validate_rules(rules):
                 fail("Rule at index %d (tag '%s'): attach_to references unknown tag '%s'" %
                      (idx, rule["tag"], target_tag))
 
-def validate_causes(causes):
-    """
-    Validate cause structure.
-
-    Raises fail() on validation errors.
-    """
-    if not causes:
-        return
-
-    for idx, cause in enumerate(causes):
-        # At least one selector required
-        has_selector = any([
-            "match_tag" in cause,
-            "match_code" in cause,
-            "match_message" in cause,
-            "match_message_regex" in cause,
-        ])
-
-        if not has_selector:
-            fail("Cause at index %d: at least one selector required (match_tag, match_code, match_message, match_message_regex)" % idx)
-
-        # Hint is required
-        if "hint" not in cause or not cause["hint"]:
-            fail("Cause at index %d: missing required field 'hint'" % idx)
-
 # ============================================================================
 # Settings Resolution
 # ============================================================================
@@ -163,8 +142,14 @@ def resolve_settings(args, cfg):
     """
     Resolve effective settings from CLI args and TOML config.
 
+    Args:
+      args: Parsed command-line arguments dict.
+      cfg: Configuration dict loaded from TOML file.
+
     CLI arguments always win over TOML config.
-    Returns a dict with resolved settings.
+
+    Returns:
+      A dict with resolved settings.
     """
     parser_cfg = cfg.get("parser", {})
 
@@ -215,11 +200,16 @@ def stage_input(input_path, strip_ansi):
     """
     Prepare the input file for scanning.
 
+    Args:
+      input_path: Path to the input file or '-' for stdin.
+      strip_ansi: Whether to strip ANSI escape codes from the input.
+
     - If input is '-', read from stdin and stage to temp file
     - If strip_ansi is enabled, strip ANSI escapes to a temp file
     - Otherwise, return input path as-is
 
-    Returns the path to scan.
+    Returns:
+      The path to scan.
     """
 
     # Handle stdin
@@ -271,7 +261,12 @@ def scan_file(path, rules):
     """
     Scan the input file for pattern matches.
 
-    Returns list of matches with: tag, line, column, match, named
+    Args:
+      path: Path to the file to scan.
+      rules: List of rule dictionaries with patterns to match.
+
+    Returns:
+      List of matches with: tag, line, column, match, named
     """
 
     # Build pattern list for text_regex_scan_tagged_file
@@ -287,7 +282,7 @@ def scan_file(path, rules):
         return []
 
     log_debug("Scanning file with %d patterns" % len(patterns))
-    matches = text_regex_scan_tagged_file(path, patterns)
+    matches = text_regex_scan_tagged_file(path, patterns, first_match_only = True)
     log_debug("Found %d matches" % len(matches))
 
     return matches
@@ -300,7 +295,13 @@ def matches_to_diagnostics(matches, rules, default_source):
     """
     Convert matches to diagnostics, handling attach_to merging.
 
-    Returns list of diagnostic dicts.
+    Args:
+      matches: List of pattern matches from scanning.
+      rules: List of rule dictionaries.
+      default_source: Default source identifier for diagnostics.
+
+    Returns:
+      List of diagnostic dicts.
     """
 
     # Build rule lookup by tag
@@ -356,6 +357,15 @@ def matches_to_diagnostics(matches, rules, default_source):
             if "_captures" not in target_diag:
                 target_diag["_captures"] = {}
             target_diag["_captures"].update(named)
+
+            # Add help to related field if present
+            if "help" in rule and rule["help"]:
+                if "related" not in target_diag:
+                    target_diag["related"] = []
+                target_diag["related"].append({
+                    "tag": "help",
+                    "message": rule["help"],
+                })
         else:
             # Create new diagnostic using text_match_to_diagnostic
             severity_val = rule.get("severity", "error")
@@ -377,109 +387,63 @@ def matches_to_diagnostics(matches, rules, default_source):
             diag["_tag"] = tag
             diag["_captures"] = dict(named)
 
+            # Add help to related field if present
+            if "help" in rule and rule["help"]:
+                if "related" not in diag:
+                    diag["related"] = []
+                diag["related"].append({
+                    "tag": "help",
+                    "message": rule["help"],
+                })
+
             diagnostics.append(diag)
             last_diag_by_tag[tag] = diag
 
     return diagnostics
 
 # ============================================================================
-# Cause Mapping
+# Formatting Helpers
 # ============================================================================
 
-def apply_causes(diagnostics, causes):
+def format_human_with_separators(rendered_text):
     """
-    Apply cause hints to diagnostics based on selectors.
+    Add blank lines and separator headers between errors in human format.
 
-    Modifies diagnostics in-place to add related notes.
+    Takes the rendered human format text and reformats it to separate
+    each main diagnostic (not related diagnostics) with blank lines
+    and a separator line of equal signs.
+
+    Args:
+        rendered_text: The human-formatted diagnostic text
+
+    Returns:
+        str: Formatted text with separators between diagnostics
     """
-    if not causes:
-        return diagnostics
+    if not rendered_text:
+        return rendered_text
 
-    for diag in diagnostics:
-        # Try each cause in order
-        for cause in causes:
-            match_result = match_cause(diag, cause)
-            if match_result:
-                # Use hint template directly (no expansion)
-                hint_text = cause["hint"]
+    lines = rendered_text.split("\n")
+    output_lines = []
+    first_diagnostic = True
 
-                # Create related diagnostic (note)
-                note = text_diagnostic(
-                    file = diag.get("file", ""),
-                    severity = "note",
-                    message = hint_text,
-                    line = diag.get("line"),
-                    column = diag.get("column"),
-                )
+    for line in lines:
+        # Check if this is a main diagnostic (not a related diagnostic)
+        # Related diagnostics start with two spaces
+        is_related = line.startswith("  ") and not line.strip() == ""
 
-                # Add URL if present
-                if "url" in cause and cause["url"]:
-                    url_text = cause["url"]
-                    note["_url"] = url_text
-                    note["message"] = note["message"] + " [" + url_text + "]"
+        if not is_related and line.strip() != "":
+            # This is a main diagnostic line
+            # Add separator before this diagnostic (including the first one)
+            if not first_diagnostic:
+                output_lines.append("")  # blank line before separator
+            output_lines.append("=" * 80)
+            output_lines.append(line)
+            first_diagnostic = False
+        else:
+            # This is a related diagnostic or empty line, just add it
+            output_lines.append(line)
 
-                # Attach to diagnostic as related
-                if "related" not in diag:
-                    diag["related"] = []
-                diag["related"].append(note)
-
-                # First matching cause wins
-                break
-
-    return diagnostics
-
-def match_cause(diag, cause):
-    """
-    Check if a cause matches a diagnostic based on selectors.
-
-    All specified selectors must match.
-    Returns True for simple match, or match dict for regex matches with captures.
-    """
-
-    # match_tag
-    if "match_tag" in cause:
-        if diag.get("_tag") != cause["match_tag"]:
-            return False
-
-    # match_code
-    if "match_code" in cause:
-        if diag.get("code") != cause["match_code"]:
-            return False
-
-    # match_message (substring)
-    if "match_message" in cause:
-        msg = diag.get("message", "")
-        if cause["match_message"] not in msg:
-            return False
-
-    # match_message_regex
-    regex_match_result = None
-    if "match_message_regex" in cause:
-        msg = diag.get("message", "")
-        pattern = cause["match_message_regex"]
-
-        # Use proper regex matching from string module
-        regex_match_result = string_regex_match(pattern, msg)
-        if not regex_match_result:
-            return False
-
-    # when_code filter
-    if "when_code" in cause:
-        if diag.get("code") != cause["when_code"]:
-            return False
-
-    # when_severity filter
-    if "when_severity" in cause:
-        if diag.get("severity") != cause["when_severity"]:
-            return False
-
-    # when_source filter
-    if "when_source" in cause:
-        if diag.get("source") != cause["when_source"]:
-            return False
-
-    # Return regex match result if available (for capture groups), else True
-    return regex_match_result if regex_match_result else True
+    return "\n".join(output_lines)
 
 # ============================================================================
 # Finalization
@@ -489,7 +453,12 @@ def finalize_diagnostics(diagnostics, settings):
     """
     Apply max-matches, dedup, render, output, and compute exit code.
 
-    Returns (rendered_string, exit_code).
+    Args:
+      diagnostics: List of diagnostic dicts.
+      settings: Resolved settings dict.
+
+    Returns:
+      Tuple of (rendered_string, exit_code).
     """
     diags = diagnostics
 
@@ -520,6 +489,10 @@ def finalize_diagnostics(diagnostics, settings):
     format_val = settings.get("format", "human")
     rendered = text_render_diagnostics(diags, format = format_val)
 
+    # For human format, add separators between errors for better readability
+    if format_val == "human" and len(diags) > 1:
+        rendered = format_human_with_separators(rendered)
+
     # Print to stdout
     print(rendered)
 
@@ -539,7 +512,12 @@ def compute_exit_code(diagnostics, fail_on):
     """
     Compute exit code based on fail_on threshold.
 
-    Returns 0 or 1.
+    Args:
+      diagnostics: List of diagnostic dicts.
+      fail_on: Threshold severity level for non-zero exit ("error", "warning", or "never").
+
+    Returns:
+      Exit code: 0 or 1.
     """
     if fail_on == "never":
         return 0
@@ -560,7 +538,12 @@ def compute_exit_code(diagnostics, fail_on):
 # ============================================================================
 
 def main():
-    """Main entry point. Returns exit code."""
+    """
+    Main entry point.
+
+    Returns:
+      Exit code for the process.
+    """
 
     # Parse arguments
     spec = make_parser()
@@ -578,7 +561,6 @@ def main():
     # Load and validate configuration
     cfg = load_config(rules_path)
     validate_rules(cfg["rule"])
-    validate_causes(cfg["cause"])
 
     # Resolve settings
     settings = resolve_settings(args, cfg)
@@ -601,11 +583,8 @@ def main():
 
     log_info("Generated %d diagnostics" % len(diagnostics))
 
-    # Apply cause hints
-    diagnostics = apply_causes(diagnostics, cfg["cause"])
-
     # Finalize and render
-    rendered, exit_code = finalize_diagnostics(diagnostics, settings)
+    _, exit_code = finalize_diagnostics(diagnostics, settings)
 
     # Cleanup temp files
     tmp_cleanup_all()
