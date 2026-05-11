@@ -36,7 +36,7 @@ def make_parser():
         description = "Parse tool output into diagnostics using TOML rules",
         options = [
             args_opt("--rules", help = "Path to TOML rules file (required)"),
-            args_opt("--input", help = "Path to input log file, or '-' for stdin (required)"),
+            args_opt("--input", help = "Path to input log file (required)"),
             args_opt(
                 "--format",
                 default = None,
@@ -204,10 +204,9 @@ def stage_input(input_path, strip_ansi):
     Prepare the input file for scanning.
 
     Args:
-      input_path: Path to the input file or '-' for stdin.
+      input_path: Path to the input file.
       strip_ansi: Whether to strip ANSI escape codes from the input.
 
-    - If input is '-', read from stdin and stage to temp file
     - If strip_ansi is enabled, strip ANSI escapes to a temp file (streaming)
     - Otherwise, return input path as-is
 
