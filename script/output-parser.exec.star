@@ -10,7 +10,7 @@ describing that toolchain's error/warning patterns and common-cause hints.
 """
 
 load("//@star/sdk/star/std/args.star", "args_flag", "args_opt", "args_parse", "args_parser")
-load("//@star/sdk/star/std/fs.star", "fs_exists", "fs_read_text", "fs_write_text")
+load("//@star/sdk/star/std/fs.star", "fs_exists", "fs_read_text", "fs_write_lines", "fs_write_text")
 load("//@star/sdk/star/std/log.star", "log_debug", "log_error", "log_info")
 load("//@star/sdk/star/std/string.star", "string_replace")
 load("//@star/sdk/star/std/sys.star", "sys_exit")
@@ -20,6 +20,7 @@ load(
     "text_match_to_diagnostic",
     "text_regex_scan_tagged_file",
     "text_render_diagnostics",
+    "text_scan_file",
 )
 load("//@star/sdk/star/std/tmp.star", "tmp_cleanup_all", "tmp_file")
 load("//@star/sdk/star/std/toml.star", "toml_decode")
@@ -207,7 +208,7 @@ def stage_input(input_path, strip_ansi):
       strip_ansi: Whether to strip ANSI escape codes from the input.
 
     - If input is '-', read from stdin and stage to temp file
-    - If strip_ansi is enabled, strip ANSI escapes to a temp file
+    - If strip_ansi is enabled, strip ANSI escapes to a temp file (streaming)
     - Otherwise, return input path as-is
 
     Returns:
@@ -229,16 +230,19 @@ def stage_input(input_path, strip_ansi):
     if not strip_ansi:
         return input_path
 
-    # Strip ANSI escapes to temp file
-    log_debug("Stripping ANSI escapes from input")
-    content = fs_read_text(input_path)
+    # Strip ANSI escapes to temp file using streaming approach
+    log_debug("Stripping ANSI escapes from input (streaming)")
 
-    # Simple ANSI escape pattern: ESC [ ... m
-    # This is a simplified version; a full implementation would need proper regex
-    stripped = strip_ansi_codes(content)
+    # Define callback to strip ANSI from each line
+    def strip_line(line, line_num):
+        return strip_ansi_codes(line)
 
+    # Stream file line-by-line, stripping ANSI from each line
+    stripped_lines = text_scan_file(input_path, strip_line)
+
+    # Write stripped content to temp file
     temp_path = tmp_file(suffix = ".txt")
-    fs_write_text(temp_path, stripped)
+    fs_write_lines(temp_path, stripped_lines)
 
     return temp_path
 
