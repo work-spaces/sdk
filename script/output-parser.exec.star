@@ -293,6 +293,27 @@ def scan_file(path, rules):
 # Match to Diagnostic Conversion
 # ============================================================================
 
+def format_help_message(help_template, named_captures):
+    """
+    Format a help message template by replacing placeholders with named captures.
+
+    Placeholders in the format {name} are replaced with the corresponding value
+    from named_captures. If a placeholder has no corresponding capture, it is
+    left unchanged.
+
+    Args:
+      help_template: Help string template with placeholders like {target}, {package}, etc.
+      named_captures: Dictionary of named capture values.
+
+    Returns:
+      Formatted help string with placeholders replaced.
+    """
+    result = help_template
+    for key, value in named_captures.items():
+        placeholder = "{" + key + "}"
+        result = string_replace(result, placeholder, str(value))
+    return result
+
 def matches_to_diagnostics(matches, rules, default_source):
     """
     Convert matches to diagnostics, handling attach_to merging.
@@ -364,9 +385,13 @@ def matches_to_diagnostics(matches, rules, default_source):
             if "help" in rule and rule["help"]:
                 if "related" not in target_diag:
                     target_diag["related"] = []
+
+                # Use merged captures for interpolation
+                captures_for_help = target_diag.get("_captures", {})
+                formatted_help = format_help_message(rule["help"], captures_for_help)
                 target_diag["related"].append({
                     "tag": "help",
-                    "message": rule["help"],
+                    "message": formatted_help,
                 })
         else:
             # Create new diagnostic using text_match_to_diagnostic
@@ -393,9 +418,10 @@ def matches_to_diagnostics(matches, rules, default_source):
             if "help" in rule and rule["help"]:
                 if "related" not in diag:
                     diag["related"] = []
+                formatted_help = format_help_message(rule["help"], named)
                 diag["related"].append({
                     "tag": "help",
-                    "message": rule["help"],
+                    "message": formatted_help,
                 })
 
             diagnostics.append(diag)
