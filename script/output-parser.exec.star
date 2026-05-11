@@ -38,18 +38,18 @@ def make_parser():
             args_opt("--input", help = "Path to input log file, or '-' for stdin (required)"),
             args_opt(
                 "--format",
-                default = "human",
+                default = None,
                 choices = ["human", "github", "json", "sarif"],
-                help = "Output format (default: human)",
+                help = "Output format (default: from TOML or 'human')",
             ),
             args_opt("--output", help = "Optional file to write rendered output to"),
             args_opt(
                 "--fail-on",
-                default = "error",
+                default = None,
                 choices = ["error", "warning", "never"],
-                help = "Exit with non-zero when diagnostics meet threshold (default: error)",
+                help = "Exit with non-zero when diagnostics meet threshold (default: from TOML or 'error')",
             ),
-            args_opt("--max-matches", type = "int", default = 0, help = "Maximum matches to return (0 = unlimited)"),
+            args_opt("--max-matches", type = "int", default = None, help = "Maximum matches to return (default: from TOML or 0 = unlimited)"),
             args_flag("--no-dedup", help = "Disable diagnostic deduplication"),
             args_flag("--no-strip-ansi", help = "Disable ANSI escape stripping"),
         ],
@@ -146,42 +146,44 @@ def resolve_settings(args, cfg):
       args: Parsed command-line arguments dict.
       cfg: Configuration dict loaded from TOML file.
 
-    CLI arguments always win over TOML config.
+    Three-tier fallback: CLI args → TOML config → hardcoded defaults
 
     Returns:
       A dict with resolved settings.
     """
     parser_cfg = cfg.get("parser", {})
 
-    # Format
-    format_val = args.get("format", "human")
-    if not format_val:
+    # Format: CLI arg → TOML config → hardcoded default
+    format_val = args.get("format")
+    if format_val == None:
         format_val = parser_cfg.get("format", "human")
 
-    # Fail-on threshold
-    fail_on = args.get("fail_on", "error")
-    if not fail_on:
+    # Fail-on threshold: CLI arg → TOML config → hardcoded default
+    fail_on = args.get("fail_on")
+    if fail_on == None:
         fail_on = parser_cfg.get("fail_on", "error")
 
-    # Dedup (inverted flag logic)
-    dedup = not args.get("no_dedup", False)
+    # Dedup: CLI flag overrides TOML, otherwise use TOML → hardcoded default
+    # The --no-dedup flag means "disable dedup"
     if args.get("no_dedup", False):
         dedup = False
     else:
         dedup = parser_cfg.get("dedup", True)
 
-    # Strip ANSI (inverted flag logic)
-    strip_ansi = not args.get("no_strip_ansi", False)
+    # Strip ANSI: CLI flag overrides TOML, otherwise use TOML → hardcoded default
+    # The --no-strip-ansi flag means "disable strip_ansi"
     if args.get("no_strip_ansi", False):
         strip_ansi = False
     else:
         strip_ansi = parser_cfg.get("strip_ansi", True)
 
-    # Default source
+    # Default source from TOML (no CLI option)
     source = parser_cfg.get("source", "")
 
-    # Max matches
-    max_matches = args.get("max_matches", 0)
+    # Max matches: CLI arg → TOML config → hardcoded default
+    max_matches = args.get("max_matches")
+    if max_matches == None:
+        max_matches = parser_cfg.get("max_matches", 0)
 
     return {
         "format": format_val,
