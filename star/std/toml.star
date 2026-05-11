@@ -151,6 +151,7 @@ def toml_encode(value, pretty: bool = False):
 
     Args:
         value: The dictionary or Starlark value to encode as TOML
+        pretty: If True, format with better spacing and organization (default: False)
 
     Returns:
         A TOML-formatted string representation of the input value
