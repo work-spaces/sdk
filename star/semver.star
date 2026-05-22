@@ -135,7 +135,7 @@ def semver_filter(versions: list[str], requirements: list[str]) -> list[str]:
     """
     return semver.filter(versions, requirements)
 
-def semver_resolve(versions: list[str], requirements: list[str]):
+def semver_resolve(versions: list[str], requirements: list[str]) -> str | None:
     """
     Resolves the highest version from a list of available versions that satisfies all of the given requirements.
 
@@ -209,7 +209,7 @@ def semver_is_prerelease(version: str) -> bool:
     """
     return semver.is_prerelease(version)
 
-def semver_extract_version(name: str, suffixes: list[str] = []):
+def semver_extract_version(name: str, suffixes: list[str] = []) -> str | None:
     """
     Extracts the first semantic version found anywhere in the given string.
 
