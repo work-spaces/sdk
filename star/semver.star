@@ -5,10 +5,6 @@ Wrappers around the `semver` Starlark module for parsing, comparing,
 filtering, resolving, and extracting semantic versions.
 """
 
-load("info.star", "info_set_minimum_version")
-
-info_set_minimum_version("0.15.44")
-
 def semver_is_valid_version(version: str) -> bool:
     """
     Validates that the given string is a well-formed semantic version.
@@ -43,6 +39,7 @@ def semver_parse(version: str) -> dict:
     Returns:
         A dict with `major` (int), `minor` (int), `patch` (int), `pre` (str), and `build` (str).
     """
+
     return semver.parse(version)
 
 def semver_matches(version: str, requirement: str) -> bool:
