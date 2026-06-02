@@ -4,9 +4,9 @@ Add CMake to your sysroot.
 
 load(
     "checkout.star",
-    "CHECKOUT_TYPE_OPTIONAL",
     "checkout_add_archive",
     "checkout_add_repo",
+    "checkout_type_optional",
 )
 load("run.star", "run_add_exec", "run_add_target")
 load("ws.star", "workspace_get_absolute_path")
@@ -197,7 +197,7 @@ def cmake_add_repo(
         visibility = visibility,
     )
 
-    if not checkout_type == CHECKOUT_TYPE_OPTIONAL:
+    if not checkout_type == checkout_type_optional():
         SUBMODULE_RULE = "{}_submodules".format(name)
         SUBMODULE_DEPS = []
         if checkout_submodules:
@@ -279,7 +279,7 @@ def cmake_add_source_archive(
         visibility = visibility,
     )
 
-    if not checkout_type == CHECKOUT_TYPE_OPTIONAL:
+    if not checkout_type == checkout_type_optional():
         cmake_add_configure_build_install(
             name,
             source_directory,

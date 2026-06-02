@@ -2,7 +2,7 @@
 Shell functions
 """
 
-load("run.star", "RUN_EXPECT_SUCCESS", "run_add_exec")
+load("run.star", "run_add_exec", "run_expect_success")
 
 def cp(
         name: str,
@@ -15,7 +15,7 @@ def cp(
         help: str | None = None,
         working_directory: str | None = None,
         visibility: str | dict[str, list[str]] | None = None,
-        expect: str = RUN_EXPECT_SUCCESS):
+        expect: str = run_expect_success()):
     """
     Copy a file or directory from source to destination.
 
@@ -57,7 +57,7 @@ def mv(
         help: str | None = None,
         working_directory: str | None = None,
         visibility: str | dict[str, list[str]] | None = None,
-        expect: str = RUN_EXPECT_SUCCESS):
+        expect: str = run_expect_success()):
     """
     Rename a file or directory from source to destination.
 
@@ -99,7 +99,7 @@ def ln(
         help: str | None = None,
         working_directory: str | None = None,
         visibility: str | dict[str, list[str]] | None = None,
-        expect: str = RUN_EXPECT_SUCCESS):
+        expect: str = run_expect_success()):
     """
     Create a link from source to destination.
 
@@ -140,7 +140,7 @@ def ls(
         help: str | None = None,
         working_directory: str | None = None,
         visibility: str | dict[str, list[str]] | None = None,
-        expect: str = RUN_EXPECT_SUCCESS):
+        expect: str = run_expect_success()):
     """
     Run ls (this can be handy for checking if something exists).
 
@@ -180,7 +180,7 @@ def mkdir(
         help: str | None = None,
         working_directory: str | None = None,
         visibility: str | dict[str, list[str]] | None = None,
-        expect: str = RUN_EXPECT_SUCCESS):
+        expect: str = run_expect_success()):
     """
     Create a new directory.
 
@@ -220,7 +220,7 @@ def chmod(
         help: str | None = None,
         working_directory: str | None = None,
         visibility: str | dict[str, list[str]] | None = None,
-        expect: str = RUN_EXPECT_SUCCESS):
+        expect: str = run_expect_success()):
     """
     Changes the mode of a file or directory.
 
@@ -255,7 +255,7 @@ def shell(
         script: str,
         shell: str = "bash",
         options: list[str] = ["-c"],
-        expect: str = RUN_EXPECT_SUCCESS,
+        expect: str = run_expect_success(),
         type: str | None = None,
         inputs: list[str] | None = None,
         help: str | None = None,
