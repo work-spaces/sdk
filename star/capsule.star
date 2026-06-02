@@ -6,10 +6,10 @@ This is deprecated and will be removed in a future release.
 
 load(
     "checkout.star",
-    "CHECKOUT_TYPE_OPTIONAL",
     "checkout_add_oras_archive",
     "checkout_add_platform_archive",
     "checkout_add_repo",
+    "checkout_type_optional",
     "checkout_update_asset",
 )
 load("gh.star", "gh_add_publish_archive")
@@ -462,7 +462,7 @@ def capsule_get_checkout_type(capsule, run_name, visibility = None):
         visibility: `str|[str]` Rule visibility: `Public|Private|Rules[]`. See visbility.star for more info.
 
     Returns:
-        CHECKOUT_TYPE_OPTIONAL if the binary was downloaded
+        checkout_type_optional() if the binary was downloaded
     """
 
     ORAL_URL = _get_option(capsule, _OPTION_ORAS_URL)
@@ -507,7 +507,7 @@ def capsule_get_checkout_type(capsule, run_name, visibility = None):
         visibility = visibility,
     )
 
-    return None if is_activate_checkout else CHECKOUT_TYPE_OPTIONAL
+    return None if is_activate_checkout else checkout_type_optional()
 
 def capsule_checkout_add_repo(
         capsule,

@@ -1,16 +1,11 @@
 """
-Defines a glob expression object used with deps and targets.
+Glob helpers re-exported from the rules prelude.
+
+This module provides a stable SDK import surface for
+`//@star/prelude/rules/glob.star`.
 """
 
-def glob(includes: list[str], excludes: list[str] = []) -> dict:
-    """
-    Creates a glob expression object used with deps and targets
-
-    Args:
-        includes: list of glob expressions to include
-        excludes: list of glob expressions to exclude
-
-    Returns:
-        glob dict that can be passed to create deps and targets.
-    """
-    return {"Includes": includes, "Excludes": excludes}
+load(
+    "//@star/prelude/rules/glob.star",
+    "glob",  # @unused
+)

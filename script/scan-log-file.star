@@ -13,7 +13,13 @@ load(
 load("//@star/sdk/star/std/sys.star", "sys_exit")
 load("//@star/sdk/star/std/time.star", "time_now", "time_sleep")
 
-def main():
+def main() -> int:
+    """
+    Periodically scan a log file for a string. Exit with code 1 if the string is not found within the timeout.
+
+    Returns:
+        0 on success, 1 on failure.
+    """
     ARGUMENTS = script_get_args()
 
     NAMED_ARGUMENTS = ARGUMENTS["named"]

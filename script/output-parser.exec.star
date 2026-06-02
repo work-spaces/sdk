@@ -233,7 +233,7 @@ def stage_input(input_path, strip_ansi):
     log_debug("Stripping ANSI escapes from input (streaming)")
 
     # Define callback to strip ANSI from each line
-    def strip_line(line, line_num):
+    def strip_line(line):
         return strip_ansi_codes(line)
 
     # Stream file line-by-line, stripping ANSI from each line

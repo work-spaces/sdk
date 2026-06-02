@@ -1,4 +1,7 @@
 #!/usr/bin/env spaces
+"""
+Merge compile commands from multiple directories into a single compile_commands.json file.
+"""
 
 load(
     "//@star/sdk/star/script.star",
@@ -8,13 +11,18 @@ load(
 load(
     "//@star/sdk/star/std/fs.star",
     "fs_read_json",
-    "fs_read_text",
     "fs_write_text",
 )
 load("//@star/sdk/star/std/json.star", "json_dumps")
 load("//@star/sdk/star/std/sys.star", "sys_exit")
 
-def main():
+def main() -> int:
+    """
+    Merge compile commands from multiple directories into a single compile_commands.json file.
+
+    Returns:
+        0 on success, 1 on failure.
+    """
     ARGUMENTS = script_get_args()
     NAMED_ARGUMENTS = ARGUMENTS["named"]
 

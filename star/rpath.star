@@ -2,7 +2,7 @@
 Update RPATHs for loading shared libraries
 """
 
-load("run.star", "run_add_exec", "run_add_target")
+load("run.star", "run_add", "run_add_exec")
 
 def rpath_update_macos_install_dir(name: str, install_path: str, deps: list[str], visibility: str | dict[str, list[str]] | None = None):
     """
@@ -44,4 +44,4 @@ def rpath_update_macos_install_dir(name: str, install_path: str, deps: list[str]
         visibility = visibility,
     )
 
-    run_add_target(name, deps = [BIN_RULE_NAME, LIB_RULE_NAME], visibility = visibility)
+    run_add(name, deps = [BIN_RULE_NAME, LIB_RULE_NAME], visibility = visibility)
