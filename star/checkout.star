@@ -16,7 +16,6 @@ load(
     "checkout_add_oras_archive",  # @unused
     "checkout_add_platform_archive",  # @unused
     "checkout_add_repo",  # @unused
-    "checkout_clone_blobless",  # @unused
     "checkout_clone_default",  # @unused
     "checkout_clone_shallow",  # @unused
     "checkout_clone_worktree",  # @unused
