@@ -792,7 +792,7 @@ def checkout_update_shell(name: str, shell_path: str, args: list[str] = [], deps
         """
     checkout_update_asset(
         name,
-        destination = _CHECKOUT_SHELL_SPACES_TOML,
+        destination = "//" + _CHECKOUT_SHELL_SPACES_TOML,
         value = {
             "path": shell_path,
             "args": args,
@@ -824,7 +824,7 @@ def checkout_update_shell_startup(
     effective_env_name = {"env_name": env_name} if env_name else {}
     checkout_update_asset(
         name,
-        destination = _CHECKOUT_SHELL_SPACES_TOML,
+        destination = "//" + _CHECKOUT_SHELL_SPACES_TOML,
         value = {
             "startup": {
                 "name": script_name,
@@ -849,7 +849,7 @@ def checkout_update_shell_shortcuts(name: str, shortcuts: dict, deps: list[str] 
     if shortcuts != None:
         checkout_update_asset(
             name,
-            destination = _CHECKOUT_SHELL_SPACES_TOML,
+            destination = "//" + _CHECKOUT_SHELL_SPACES_TOML,
             value = {
                 "shortcuts": shortcuts,
             },
