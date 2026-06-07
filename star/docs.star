@@ -4,9 +4,13 @@ content folder.
 """
 
 load(
+    "asset.star",
+    "asset_hard_link",
+)
+load(
     "checkout.star",
+    "checkout_add_any_assets",
     "checkout_add_asset",
-    "checkout_add_hard_link_asset",
 )
 load("shell.star", "cp", "mkdir")
 load("std/fs.star", "fs_exists")
@@ -27,10 +31,14 @@ def docs_add_hard_link_asset(
     """
 
     if fs_exists("@docs/content/docs"):
-        checkout_add_hard_link_asset(
+        checkout_add_any_assets(
             name = name,
-            source = source,
-            destination = "@docs/content/docs/" + name + ".md",
+            assets = [
+                asset_hard_link(
+                    source = source,
+                    destination = "@docs/content/docs/" + name + ".md",
+                ),
+            ],
             deps = deps,
             type = type,
             platforms = platforms,
