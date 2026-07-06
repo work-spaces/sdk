@@ -45,6 +45,10 @@ load("visibility.star", "visibility_private")
 RUN_TYPE_TEST = "Test"
 RUN_TYPE_PRECOMMIT = "PreCommit"
 
+RUN_EXPECT_FAILURE = run_expect_failure()
+RUN_EXPECT_SUCCESS = run_expect_success()
+RUN_EXPECT_ANY = run_expect_any()
+
 def run_add_target(
         name: str,
         deps: list[str],
