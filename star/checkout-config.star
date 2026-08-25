@@ -12,13 +12,17 @@ _DEFAULT_REGISTRY_NAMESPACE = "//checkout-config-registry"
 _DEFAULT_NAMESPACE = "//checkout-config"
 _TYPE_OPTIN = "optin"
 _TYPE_OPTOUT = "optout"
-_TYPE_STRING = "string"
 _TYPE_ANY = "any"
 
 _ON = "ON"
 _OFF = "OFF"
 
-_VALID_TYPES = (_TYPE_OPTIN, _TYPE_OPTOUT, _TYPE_STRING, _TYPE_ANY)
+_REGISTRY_ENTRY_PREFIX = "CHECKOUT_CONFIG_ENTRY_"
+
+_VALID_TYPES = (_TYPE_OPTIN, _TYPE_OPTOUT, _TYPE_ANY)
+
+def _registry_entry_name(name: str) -> str:
+    return _REGISTRY_ENTRY_PREFIX + name
 
 def _option_new(
         help: str,
@@ -52,7 +56,7 @@ def _load_registered_entry(name: str, registry_namespace: str):
     Returns:
         The registered option metadata.
     """
-    registered_entry = workspace_load_value(name, registry_namespace)
+    registered_entry = workspace_load_value(_registry_entry_name(name), registry_namespace)
     if registered_entry == None:
         rlog.warn("Checkout config `{}` has not been registered".format(name))
     return registered_entry
@@ -78,7 +82,7 @@ def _load_registered_type(name: str, registry_namespace: str) -> str:
         fail("checkout config has bad type")
     return type
 
-def _expect_registered_type(name: str, expected_type: str, registry_namespace: str):
+def _expect_registered_type(name: str, expected_type: list[str], registry_namespace: str):
     """
     Validates that a checkout configuration option has the expected type.
 
@@ -91,7 +95,7 @@ def _expect_registered_type(name: str, expected_type: str, registry_namespace: s
         None.
     """
     registered_type = _load_registered_type(name, registry_namespace)
-    if registered_type != expected_type:
+    if registered_type not in expected_type:
         rlog.error("Checkout config `{}` is registered as `{}`, not `{}`".format(name, registered_type, expected_type))
         fail("checkout config has wrong type")
 
@@ -125,7 +129,7 @@ def _register_entry(name: str, help: str, type: str, namespace: str = _DEFAULT_R
     """
 
     checkout_store_value(
-        name,
+        _registry_entry_name(name),
         value = _option_new(help = help, type = type),
         path = namespace,
     )
@@ -162,21 +166,7 @@ def checkout_config_register_optout(name: str, help: str, namespace: str = _DEFA
     """
     _register_entry(name, help, type = _TYPE_OPTOUT, namespace = namespace)
 
-def checkout_config_register_string(name: str, help: str, namespace: str = _DEFAULT_REGISTRY_NAMESPACE):
-    """
-    Registers a string configuration option.
-
-    Args:
-        name: The configuration option name.
-        help: Human-readable description of the configuration option.
-        namespace: The checkout store namespace used for registration metadata.
-
-    Returns:
-        None.
-    """
-    _register_entry(name, help, type = _TYPE_STRING, namespace = namespace)
-
-def checkout_config_register_any(name: str, help: str, namespace: str = _DEFAULT_REGISTRY_NAMESPACE):
+def checkout_config_register_value(name: str, help: str, namespace: str = _DEFAULT_REGISTRY_NAMESPACE):
     """
     Registers a configuration option that can store any value.
 
@@ -191,54 +181,6 @@ def checkout_config_register_any(name: str, help: str, namespace: str = _DEFAULT
     _register_entry(name, help, type = _TYPE_ANY, namespace = namespace)
 
 def checkout_config_store_option(
-        name: str,
-        value,
-        namespace: str = _DEFAULT_NAMESPACE,
-        registry_namespace: str = _DEFAULT_REGISTRY_NAMESPACE):
-    """
-    Stores the value of a registered configuration option.
-
-    Args:
-        name: The configuration option name.
-        value: The value to store. Opt-in and opt-out options require a bool, which is stored as "ON" or "OFF".
-        namespace: The checkout store namespace used for stored option values.
-        registry_namespace: The checkout store namespace containing registered options.
-
-    Returns:
-        None.
-    """
-
-    registered_type = _load_registered_type(name, registry_namespace)
-    if registered_type == _TYPE_OPTIN or registered_type == _TYPE_OPTOUT:
-        checkout_store_value(name, value = _bool_to_checkout_value(value), path = namespace)
-        return
-
-    if registered_type == _TYPE_STRING and type(value) != "string":
-        rlog.warn("Checkout config `{}` is registered as `string`, got `{}`".format(name, type(value)))
-
-    checkout_store_value(name, value = value, path = namespace)
-
-def checkout_config_store_optin(
-        name: str,
-        value: bool,
-        namespace: str = _DEFAULT_NAMESPACE,
-        registry_namespace: str = _DEFAULT_REGISTRY_NAMESPACE):
-    """
-    Stores a bool for a registered opt-in configuration option.
-
-    Args:
-        name: The configuration option name.
-        value: The boolean value to store as "ON" or "OFF".
-        namespace: The checkout store namespace used for stored option values.
-        registry_namespace: The checkout store namespace containing registered options.
-
-    Returns:
-        None.
-    """
-    _expect_registered_type(name, _TYPE_OPTIN, registry_namespace)
-    checkout_store_value(name, value = _bool_to_checkout_value(value), path = namespace)
-
-def checkout_config_store_optout(
         name: str,
         value: bool,
         namespace: str = _DEFAULT_NAMESPACE,
@@ -255,32 +197,10 @@ def checkout_config_store_optout(
     Returns:
         None.
     """
-    _expect_registered_type(name, _TYPE_OPTOUT, registry_namespace)
+    _expect_registered_type(name, [_TYPE_OPTOUT, _TYPE_OPTIN], registry_namespace)
     checkout_store_value(name, value = _bool_to_checkout_value(value), path = namespace)
 
-def checkout_config_store_string(
-        name: str,
-        value: str,
-        namespace: str = _DEFAULT_NAMESPACE,
-        registry_namespace: str = _DEFAULT_REGISTRY_NAMESPACE):
-    """
-    Stores a string for a registered string configuration option.
-
-    Args:
-        name: The configuration option name.
-        value: The string value to store.
-        namespace: The checkout store namespace used for stored option values.
-        registry_namespace: The checkout store namespace containing registered options.
-
-    Returns:
-        None.
-    """
-    _expect_registered_type(name, _TYPE_STRING, registry_namespace)
-    if type(value) != "string":
-        rlog.warn("Checkout config `{}` is registered as `string`, got `{}`".format(name, type(value)))
-    checkout_store_value(name, value = value, path = namespace)
-
-def checkout_config_store_any(
+def checkout_config_store_value(
         name: str,
         value,
         namespace: str = _DEFAULT_NAMESPACE,
@@ -297,7 +217,7 @@ def checkout_config_store_any(
     Returns:
         None.
     """
-    _expect_registered_type(name, _TYPE_ANY, registry_namespace)
+    _expect_registered_type(name, [_TYPE_ANY], registry_namespace)
     checkout_store_value(name, value = value, path = namespace)
 
 def checkout_config_load_option(
@@ -319,6 +239,8 @@ def checkout_config_load_option(
     registered_type = _load_registered_type(name, registry_namespace)
     value = workspace_load_value(name, namespace)
 
+    _expect_registered_type(name, [_TYPE_OPTIN, _TYPE_OPTOUT], registry_namespace)
+
     if registered_type == _TYPE_OPTIN:
         return value == _ON
 
@@ -327,61 +249,7 @@ def checkout_config_load_option(
 
     return value
 
-def checkout_config_load_optin(
-        name: str,
-        namespace: str = _DEFAULT_NAMESPACE,
-        registry_namespace: str = _DEFAULT_REGISTRY_NAMESPACE) -> bool:
-    """
-    Loads an opt-in configuration option.
-
-    Args:
-        name: The configuration option name.
-        namespace: The checkout store namespace containing stored option values.
-        registry_namespace: The checkout store namespace containing registered options.
-
-    Returns:
-        True only when the stored value is "ON"; otherwise False.
-    """
-    _expect_registered_type(name, _TYPE_OPTIN, registry_namespace)
-    return workspace_load_value(name, namespace) == _ON
-
-def checkout_config_load_optout(
-        name: str,
-        namespace: str = _DEFAULT_NAMESPACE,
-        registry_namespace: str = _DEFAULT_REGISTRY_NAMESPACE) -> bool:
-    """
-    Loads an opt-out configuration option.
-
-    Args:
-        name: The configuration option name.
-        namespace: The checkout store namespace containing stored option values.
-        registry_namespace: The checkout store namespace containing registered options.
-
-    Returns:
-        False only when the stored value is "OFF"; otherwise True.
-    """
-    _expect_registered_type(name, _TYPE_OPTOUT, registry_namespace)
-    return workspace_load_value(name, namespace) != _OFF
-
-def checkout_config_load_string(
-        name: str,
-        namespace: str = _DEFAULT_NAMESPACE,
-        registry_namespace: str = _DEFAULT_REGISTRY_NAMESPACE) -> str | None:
-    """
-    Loads a string configuration option.
-
-    Args:
-        name: The configuration option name.
-        namespace: The checkout store namespace containing stored option values.
-        registry_namespace: The checkout store namespace containing registered options.
-
-    Returns:
-        The stored string value, or None when no value is stored.
-    """
-    _expect_registered_type(name, _TYPE_STRING, registry_namespace)
-    return workspace_load_value(name, namespace)
-
-def checkout_config_load_any(
+def checkout_config_load_value(
         name: str,
         namespace: str = _DEFAULT_NAMESPACE,
         registry_namespace: str = _DEFAULT_REGISTRY_NAMESPACE):
@@ -396,5 +264,5 @@ def checkout_config_load_any(
     Returns:
         The stored value, or None when no value is stored.
     """
-    _expect_registered_type(name, _TYPE_ANY, registry_namespace)
+    _expect_registered_type(name, [_TYPE_ANY], registry_namespace)
     return workspace_load_value(name, namespace)
