@@ -186,7 +186,7 @@ def checkout_config_store_option(
         namespace: str = _DEFAULT_NAMESPACE,
         registry_namespace: str = _DEFAULT_REGISTRY_NAMESPACE):
     """
-    Stores a bool for a registered opt-out configuration option.
+    Stores a bool for a registered opt-in or opt-out configuration option.
 
     Args:
         name: The configuration option name.
@@ -238,8 +238,6 @@ def checkout_config_load_option(
 
     registered_type = _load_registered_type(name, registry_namespace)
     value = workspace_load_value(name, namespace)
-
-    _expect_registered_type(name, [_TYPE_OPTIN, _TYPE_OPTOUT], registry_namespace)
 
     if registered_type == _TYPE_OPTIN:
         return value == _ON
