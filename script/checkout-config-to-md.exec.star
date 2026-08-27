@@ -31,7 +31,6 @@ Use `spaces sync --help` or `spaces co --help` for more details.
 """
 
 def _anchor_from_name(name: str) -> str:
-    normalized = string_lower(name)
     slug = string_lower(name)
     slug = string_replace(slug, " ", "-")
     slug = string_replace(slug, "--", "-")
@@ -52,11 +51,11 @@ def _render_markdown(registry: dict, values: dict) -> str:
     lines.append(_HEADER)
     lines.append("# Quick Look")
     lines.append("")
-    lines.append("| Name | Type |")
+    lines.append("| Name | Value |")
     lines.append("| --- | --- |")
 
     for name, entry in registry.items():
-        entry_value = _md_escape_inline(values.get(name, "None"))
+        entry_value = _md_escape_inline(values.get(name, "<None>"))
         lines.append("| [{}](#{}) | {} |".format(_md_escape_inline(name), _anchor_from_name(name), entry_value))
 
     lines.append("")
@@ -65,7 +64,8 @@ def _render_markdown(registry: dict, values: dict) -> str:
 
     for name, entry in registry.items():
         entry_type = str(entry.get("type", "unknown"))
-        value = values.get(name, "None")
+        is_inherit_from_env = str(entry.get("is_inherit_from_env", "unknown"))
+        value = values.get(name, "<None>")
         help_text = entry.get("help")
         if help_text == None:
             help_text = ""
@@ -73,6 +73,7 @@ def _render_markdown(registry: dict, values: dict) -> str:
         lines.append("## {}".format(name))
         lines.append("")
         lines.append("**value**: {}\n".format(_md_escape_inline(value)))
+        lines.append("**inherit from env**: {}\n".format(str(is_inherit_from_env)))
         lines.append("**type**: {}\n".format(_md_escape_inline(entry_type)))
         lines.append("**help**: {}\n".format(_md_escape_inline(help_text)))
 
@@ -102,6 +103,12 @@ def _render_markdown(registry: dict, values: dict) -> str:
     return "\n".join(lines)
 
 def main() -> int:
+    """
+    Convert the checkout config to a markdown file.
+
+    Returns:
+        Zero on success
+    """
     parser = args_parser(
         name = "checkout-config-to-md.exec.star",
         description = "Convert checkout config registry entries from store.spaces.json to markdown docs.",
