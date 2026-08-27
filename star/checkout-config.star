@@ -86,7 +86,7 @@ def _registry_entries_add(current_entries, name: str, entry: dict) -> dict:
 
     if name in current_entries:
         rlog.error("Checkout config `{}` is already registered".format(name))
-        #fail("checkout config already registered")
+        fail("checkout config already registered")
 
     updated_entries = dict(current_entries)
     updated_entries[name] = entry
@@ -193,6 +193,18 @@ def checkout_config_register_optout(
         help: str,
         namespace: str = _DEFAULT_REGISTRY_NAMESPACE,
         is_inherit_from_env: bool = False) -> None:
+    """
+    Register an opt-out option.
+
+    Args:
+        name: name of the value
+        help: help text associated with the value
+        namespace: namespace to store the value in
+        is_inherit_from_env: try to inherit from the env if the value is not provided
+
+    Returns:
+        None
+    """
     _register_entry(
         name,
         help,
@@ -204,8 +216,21 @@ def checkout_config_register_optout(
 def checkout_config_register_value(
         name: str,
         help: str,
-        namespace: str = _DEFAULT_REGISTRY_NAMESPACE) -> None:
-    _register_entry(name, help, type = _TYPE_ANY, namespace = namespace)
+        namespace: str = _DEFAULT_REGISTRY_NAMESPACE,
+        is_inherit_from_env = False) -> None:
+    """
+    Register a value of any type.
+
+    Args:
+        name: name of the value
+        help: help text associated with the value
+        namespace: namespace to store the value in
+        is_inherit_from_env: try to inherit from the env if the value is not provided
+
+    Returns:
+        None
+    """
+    _register_entry(name, help, type = _TYPE_ANY, namespace = namespace, is_inherit_from_env = is_inherit_from_env)
 
 def _validate_enum_values(name: str, values: list[dict]) -> None:
     if len(values) == 0:
@@ -283,6 +308,9 @@ def _default_stored_value_for_type(
         enum_values = _load_registered_enum_values(name, registered_entry)
         return enum_values[0]
 
+    if registered_type == _TYPE_ANY:
+        return None
+
     rlog.error("Checkout config `{}` type `{}` does not support env inheritance".format(name, registered_type))
     fail("checkout config type does not support env inheritance")
 
@@ -291,18 +319,6 @@ def _load_stored_value(
         namespace: str,
         registered_type: str,
         registered_entry: dict):
-    """
-    Loads a stored value, applying env inheritance when enabled and missing.
-
-    Args:
-        name: The configuration option name.
-        namespace: The checkout store namespace containing stored option values.
-        registered_type: Registered configuration type.
-        registered_entry: Registered option metadata.
-
-    Returns:
-        The stored value or None when not set and inheritance is disabled.
-    """
     value = workspace_load_value(name, namespace)
     if value != None:
         return value
@@ -466,7 +482,11 @@ def checkout_config_load_value(
         The stored value, or None when no value is stored.
     """
     _expect_registered_type(name, [_TYPE_ANY], registry_namespace)
-    return workspace_load_value(name, namespace)
+
+    registered_entry, registered_type = _load_registered_entry_and_type(name, registry_namespace)
+    value = _load_stored_value(name, namespace, registered_type, registered_entry)
+
+    return value
 
 def checkout_config_load_enum(
         name: str,
