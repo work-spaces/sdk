@@ -1,9 +1,7 @@
 name: Publish Release
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'  # Trigger on version tags
+  workflow_dispatch:
 
 jobs:
   build-ubuntu:
@@ -23,4 +21,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create ${{ github.ref_name }} --title "${{ github.ref_name }}" --generate-notes
-
