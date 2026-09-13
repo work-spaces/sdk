@@ -543,7 +543,8 @@ def checkout_config_add_markdown(
         name: str,
         output = "checkout-config.md",
         namespace = _DEFAULT_NAMESPACE,
-        registry_namespace = _DEFAULT_REGISTRY_NAMESPACE):
+        registry_namespace = _DEFAULT_REGISTRY_NAMESPACE,
+        deps = []):
     rules = rules_new(name, ["export_json", "export_markdown"])
     json_name = "build/{}.json".format(name)
     checkout_update_asset(
@@ -562,5 +563,5 @@ def checkout_config_add_markdown(
             "--input=" + json_name,
             "--output=" + output,
         ],
-        deps = [rules_as_dep(rules, "export_json")],
+        deps = [rules_as_dep(rules, "export_json")] + deps,
     )
