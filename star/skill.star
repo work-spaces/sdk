@@ -175,12 +175,12 @@ def skill_register_checkout_spaces_skills() -> None:
 
     skill_register_checkout(
         "spaces_exec",
-        path = "//@star/skills/spaces-exec",
+        path = "//@star/sdk/skills/spaces-exec",
         config_key = config_key,
     )
     skill_register_checkout(
         "spaces_rules",
-        path = "//@star/skills/spaces-rules",
+        path = "//@star/sdk/skills/spaces-rules",
         config_key = config_key,
     )
 
