@@ -45,6 +45,8 @@ def checkout_add_asset(
 
     This will create a file in the workspace with the given content as string value.
 
+    This function is deprecated. Use checkout_add_any_assets() instead.
+
     Args:
         name: The name of the rule.
         content: The content of the file to create.
@@ -122,6 +124,8 @@ def checkout_add_hard_link_asset(
     """
     Adds a hard link asset to the workspace.
 
+    This function is deprecated. Use checkout_add_any_assets() instead.
+
     Args:
         name: The name of the rule.
         source: The source path of the asset.
@@ -159,6 +163,8 @@ def checkout_add_soft_link_asset(
     """
     Adds a soft link asset to the workspace.
 
+    This function is deprecated. Use checkout_add_any_assets() instead.
+
     Args:
         name: The name of the rule.
         source: The source path of the soft link.
@@ -193,6 +199,8 @@ def checkout_add_target(
         visibility: str | dict[str, list[str]] | None = None):
     """
     Adds a target to the workspace.
+
+    This function is deprecated. Use checkout_add() instead.
 
     Args:
         name: The name of the rule.
@@ -229,6 +237,8 @@ def checkout_update_env(
         visibility: str | dict[str, list[str]] | None = None):
     """
     Updates the environment with the given variables and paths.
+
+    This function is deprecated. Use checkout_add_env_vars() instead.
 
     Variables other than PATH are added as key/value pairs. PATH is added as a list of values. The order
     of the PATHS is based on execution order which can be controlled using `deps`. The `system_paths`
@@ -299,6 +309,8 @@ def checkout_add_which_asset(
         visibility: str | dict[str, list[str]] | None = None):
     """
     Adds an asset to the destintion based on the which command.
+
+    This function is deprecated. Use checkout_add_any_assets() instead.
 
     Using this function creates system dependencies that may not be reproducible across different systems.
 
