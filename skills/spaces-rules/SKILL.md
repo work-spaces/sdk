@@ -198,6 +198,7 @@ Common exec options:
 - `expect = run_expect_failure()` / `run_expect_any()` for commands whose non-zero exit is expected.
 - `workspace_vars = ["CARGO_HOME", ...]` copies workspace env vars into `env` when they're set.
 - `apply_trailing_args_to` routes `spaces run rule -- args...` to a specific rule.
+- `run_add_exec()` does not accept `inputs`. Declare file and glob inputs with `deps = deps_new(files = [...], globs = [...])`; add rule dependencies with `rules = [...]` as needed.
 - Deferred tokens that resolve at execution time: `run_load_file_contents(path)`, `run_load_exit_code(":rule")`, and `run_load_env("VAR")`. The file and rule variants add their dependency automatically.
 
 Example `spaces.star` in a repo:
